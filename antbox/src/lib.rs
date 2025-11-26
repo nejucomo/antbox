@@ -34,8 +34,15 @@ impl AntBox {
 
 impl WindowHandler for AntBox {
     fn on_draw(&mut self, helper: &mut WindowHelper<()>, graphics: &mut Graphics2D) {
+        let size = helper.get_size_pixels().into_f32();
+        let denom = 2f32;
+
         graphics.clear_screen(Color::from_rgb(0.8, 0.9, 1.0));
-        graphics.draw_circle((100.0, 100.0), 75.0, Color::BLUE);
+        graphics.draw_circle(
+            (size.x / denom, size.y / denom),
+            size.magnitude() / denom / 5f32,
+            Color::BLUE,
+        );
         helper.request_redraw();
     }
 
