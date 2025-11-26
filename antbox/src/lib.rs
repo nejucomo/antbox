@@ -1,4 +1,5 @@
-use speedy2d::color::Color;
+mod colors;
+
 use speedy2d::error::BacktraceError;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationError, WindowHandler, WindowHelper,
@@ -37,11 +38,11 @@ impl WindowHandler for AntBox {
         let size = helper.get_size_pixels().into_f32();
         let denom = 2f32;
 
-        graphics.clear_screen(Color::from_rgb(0.8, 0.9, 1.0));
+        graphics.clear_screen(colors::BACKGROUND);
         graphics.draw_circle(
             (size.x / denom, size.y / denom),
             size.magnitude() / denom / 5f32,
-            Color::BLUE,
+            colors::ANT,
         );
         helper.request_redraw();
     }
