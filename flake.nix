@@ -19,9 +19,8 @@
         pkgs = import nixpkgs { inherit system overlays; };
 
         rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-      in
-      {
-        packages.default = pkgs.rustPlatform.buildRustPackage {
+
+        antboxPkg = pkgs.rustPlatform.buildRustPackage {
           pname = "antbox";
           version = "0.1.0";
 
@@ -33,16 +32,29 @@
 
           nativeBuildInputs = with pkgs; [ rustToolchain ];
 
+          buildInputs = with pkgs; [
+            SDL2
+            SDL2_gfx
+            SDL2_image
+            SDL2_mixer
+            SDL2_ttf
+          ];
+
           meta = with pkgs.lib; {
             homepage = "https://github.com/nejucomo/antbox";
             license = licenses.mit;
             maintainers = [ ];
           };
         };
+      in
+      {
+        packages.default = antboxPkg;
 
         devShells.default = pkgs.mkShell {
+          inputsFrom = [ antboxPkg ];
+
           buildInputs = with pkgs; [
-            rustToolchain
+            # rustToolchain
             rust-analyzer
           ];
         };

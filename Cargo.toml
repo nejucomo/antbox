@@ -3,3 +3,6 @@ resolver = "3"
 members = [
   "antbox",
 ]
+
+[workspace.dependencies]
+pix-engine = "0.8.0"

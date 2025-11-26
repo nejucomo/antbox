@@ -1,14 +1,18 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+mod gstate;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use pix_engine::engine::Engine;
+use pix_engine::error::Result;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub use self::gstate::GameState;
+
+pub fn run() -> Result<()> {
+    let mut engine = Engine::builder()
+        .dimensions(800, 600)
+        .title(env!("CARGO_PKG_NAME"))
+        .show_frame_rate()
+        .resizable()
+        .build()?;
+
+    let mut app = GameState::default();
+    engine.run(&mut app)
 }
