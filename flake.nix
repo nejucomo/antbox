@@ -20,13 +20,7 @@
 
         rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
-        buildInputs = with pkgs; [
-          SDL2
-          SDL2_gfx
-          SDL2_image
-          SDL2_mixer
-          SDL2_ttf
-        ];
+        buildInputs = with pkgs; [ ];
 
         antboxPkg = pkgs.rustPlatform.buildRustPackage {
           pname = "antbox";

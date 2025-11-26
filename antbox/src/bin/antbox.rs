@@ -1,5 +1,4 @@
-use antbox::AntBox;
-use pix_engine::error::Result;
+use antbox::{AntBox, Result};
 
 fn main() -> Result<()> {
     AntBox::run()

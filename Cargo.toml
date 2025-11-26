@@ -5,4 +5,5 @@ members = [
 ]
 
 [workspace.dependencies]
-pix-engine = "0.8.0"
+anyhow = "1.0.100"
+speedy2d = "2.1.0"
