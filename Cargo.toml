@@ -2,6 +2,7 @@
 resolver = "3"
 members = [
   "antbox",
+  "cellauto",
   "logging-options",
 ]
 
