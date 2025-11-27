@@ -4,15 +4,20 @@ members = [
   "antbox",
   "cellauto",
   "logging-options",
+  "try-from-unwrap",
 ]
 
 [workspace.package]
 edition = "2024"
 
 [workspace.dependencies]
+antbox = { path = "antbox"}
+cellauto = { path = "cellauto"}
+logging-options = { path = "logging-options"}
+try-from-unwrap = { path = "try-from-unwrap"}
+
 anyhow = "1.0.100"
 clap = "4.5.53"
 env_logger = "0.11.8"
 log = "0.4.28"
-logging-options = { path = "logging-options" }
 speedy2d = "2.1.0"
