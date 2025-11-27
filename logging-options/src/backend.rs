@@ -1,3 +1,9 @@
+//! Traits abstracting the logging [Backend]
+//!
+//! Applications can just use [Backend::init_from_options].
+//!
+//! New [Backend] impls need to also implement the other traits here.
+
 /// A logging [Backend] initializes and provides the actual logging functionality
 pub trait Backend {
     /// The [BackendBuilder] for [Self]

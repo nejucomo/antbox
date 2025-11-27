@@ -106,6 +106,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "env_logger",
+ "log",
+ "logging-options",
  "speedy2d",
 ]
 

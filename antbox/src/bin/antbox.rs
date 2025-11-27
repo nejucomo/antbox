@@ -1,5 +1,5 @@
-use antbox::{AntBox, Result};
+use antbox::Result;
 
 fn main() -> Result<()> {
-    AntBox::run()
+    antbox::run()
 }
