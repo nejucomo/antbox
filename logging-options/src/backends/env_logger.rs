@@ -9,8 +9,9 @@ impl Backend for Logger {
     fn builder() -> Self::Builder {
         let mut b = env_logger::builder();
         b.format_level(true)
-            .format_file(true)
-            .format_line_number(true)
+            .format_source_path(false)
+            .format_module_path(false)
+            .format_target(true)
             .format_timestamp_millis();
         b
     }
