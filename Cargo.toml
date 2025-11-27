@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "antbox",
   "cellauto",
+  "geom",
   "logging-options",
   "try-from-unwrap",
 ]
@@ -11,10 +12,11 @@ members = [
 edition = "2024"
 
 [workspace.dependencies]
-antbox = { path = "antbox"}
-cellauto = { path = "cellauto"}
-logging-options = { path = "logging-options"}
-try-from-unwrap = { path = "try-from-unwrap"}
+antbox = { path = "antbox" }
+antbox-geom = { path = "geom" }
+cellauto = { path = "cellauto" }
+logging-options = { path = "logging-options" }
+try-from-unwrap = { path = "try-from-unwrap" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"
