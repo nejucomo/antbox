@@ -118,6 +118,8 @@ version = "0.1.0"
 dependencies = [
  "derive-new",
  "derive_more",
+ "num-integer",
+ "try-from-unwrap",
 ]
 
 [[package]]
@@ -200,6 +202,9 @@ dependencies = [
 [[package]]
 name = "cellauto"
 version = "0.1.0"
+dependencies = [
+ "antbox-geom",
+]
 
 [[package]]
 name = "cfg-if"

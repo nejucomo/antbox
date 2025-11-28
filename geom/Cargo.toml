@@ -5,4 +5,6 @@ edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-derive_more = { workspace  = true, feature = [ "from", "into" ] }
+derive_more = { workspace  = true, features = [ "from", "into" ] }
+num-integer.workspace = true
+try-from-unwrap.workspace = true
