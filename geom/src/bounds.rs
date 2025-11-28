@@ -20,10 +20,13 @@ impl Bounds {
     }
 
     /// Iterate over the [BoundPoint]s herein
-    pub fn iter_points(&self) -> impl Iterator<Item = BoundPoint> {
-        (0..usize::tfu(self.area()))
-            .map(u32::tfu)
-            .map(|ix| Point::new(ix % self.width, ix / self.width))
-            .map(|pt| BoundPoint::new(pt, *self))
+    pub fn iter_points(self) -> impl Iterator<Item = BoundPoint> {
+        (0..usize::tfu(self.area())).map(move |ix| self.ix_to_bp(ix))
+    }
+
+    pub(crate) fn ix_to_bp(self, ix: usize) -> BoundPoint {
+        let u = u32::tfu(ix);
+        assert!(u < self.area());
+        BoundPoint::new(Point::new(u % self.width, u / self.width), self)
     }
 }
