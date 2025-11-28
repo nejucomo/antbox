@@ -105,6 +105,7 @@ name = "antbox"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "cellauto",
  "clap",
  "env_logger",
  "log",
