@@ -1,14 +1,19 @@
 /// A Conway's Life [Cell]
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Cell {
-    life: bool,
+    alive: bool,
     neighbors: u8,
 }
 
 impl Cell {
     /// Is this [Cell] alive?
     pub fn is_alive(self) -> bool {
-        self.life
+        self.alive
+    }
+
+    /// Is this [Cell] alive?
+    pub fn set_alive(&mut self, alive: bool) {
+        self.alive = alive;
     }
 
     /// The number of neighbors
