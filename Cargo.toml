@@ -20,9 +20,10 @@ try-from-unwrap = { path = "try-from-unwrap" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"
-derive_more = "2.0.1"
 derive-new = "0.7.0"
+derive_more = "2.0.1"
 env_logger = "0.11.8"
+itertools = "0.14.0"
 log = "0.4.28"
 num-integer = "0.1.46"
 speedy2d = "2.1.0"
