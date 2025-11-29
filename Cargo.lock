@@ -114,6 +114,7 @@ dependencies = [
  "logging-options",
  "rand",
  "speedy2d",
+<<<<<<< HEAD
 ]
 
 [[package]]
@@ -125,6 +126,8 @@ dependencies = [
  "derive_more",
  "rand",
  "try-from-unwrap",
+=======
+>>>>>>> 043938d (Switch `antbox-geom` to be `usize` based and nuke `try-from-unwrap` crate.)
 ]
 
 [[package]]
