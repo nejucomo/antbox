@@ -3,33 +3,27 @@ use std::time::{Duration, Instant};
 #[derive(Debug)]
 pub struct TickTimer {
     interval: Duration,
-    previnst: Option<Instant>,
+    next: Instant,
 }
 
 impl TickTimer {
     pub fn new(millis: u64) -> Self {
+        let interval = Duration::from_millis(millis);
         TickTimer {
-            interval: Duration::from_millis(millis),
-            previnst: None,
+            interval,
+            next: Instant::now() + interval,
         }
     }
 
-    pub fn check_update(&mut self) -> bool {
-        let now = Instant::now();
-        let do_update = self
-            .previnst
-            .map(|pi| now >= pi + self.interval)
-            .unwrap_or(true);
-
-        if do_update {
-            self.previnst = Some(now);
-        }
-        do_update
+    pub fn wait_for_tick(&mut self) {
+        std::thread::sleep(self.next - Instant::now());
+        self.next = Instant::now() + self.interval;
+        log::debug!("TICK");
     }
 }
 
 impl Default for TickTimer {
     fn default() -> Self {
-        Self::new(50)
+        Self::new(2000)
     }
 }

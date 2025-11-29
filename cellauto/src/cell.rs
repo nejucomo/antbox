@@ -1,5 +1,5 @@
 /// A Conway's Life [Cell]
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Cell {
     alive: bool,
     neighbors: u8,

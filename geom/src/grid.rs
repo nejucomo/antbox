@@ -5,7 +5,7 @@ use try_from_unwrap::TryFromUnwrap as _;
 use crate::{BoundPoint, Bounds};
 
 /// A 2-D grid of `T` cells
-#[derive(Debug)]
+#[derive(Clone, PartialEq)]
 pub struct Grid<T> {
     bounds: Bounds,
     cells: Vec<T>,
@@ -57,5 +57,14 @@ impl<T> Index<BoundPoint> for Grid<T> {
 impl<T> IndexMut<BoundPoint> for Grid<T> {
     fn index_mut(&mut self, bp: BoundPoint) -> &mut Self::Output {
         &mut self.cells[usize::from(bp)]
+    }
+}
+
+impl<T> std::fmt::Debug for Grid<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Grid")
+            .field("bounds", &self.bounds)
+            .field("cells", &"..")
+            .finish()
     }
 }

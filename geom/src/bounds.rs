@@ -5,7 +5,7 @@ use try_from_unwrap::TryFromUnwrap;
 use crate::{BoundPoint, Point};
 
 /// Two-dimensional area bounds
-#[derive(Copy, Clone, Debug, From, Into, new)]
+#[derive(Copy, Clone, Debug, From, Into, new, PartialEq)]
 pub struct Bounds {
     /// The width
     pub width: u32,
