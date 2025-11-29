@@ -5,7 +5,6 @@ members = [
   "cellauto",
   "geom",
   "logging-options",
-  "try-from-unwrap",
 ]
 
 [workspace.package]
@@ -16,7 +15,6 @@ antbox = { path = "antbox" }
 antbox-cellauto = { path = "cellauto" }
 antbox-geom = { path = "geom" }
 logging-options = { path = "logging-options" }
-try-from-unwrap = { path = "try-from-unwrap" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"

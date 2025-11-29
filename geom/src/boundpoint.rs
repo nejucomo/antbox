@@ -2,7 +2,6 @@ use std::ops::Add;
 
 use derive_more::{From, Into};
 use derive_new::new;
-use try_from_unwrap::TryFromUnwrap as _;
 
 use crate::{Bounds, Direction, Point};
 
@@ -27,22 +26,22 @@ impl BoundPoint {
     }
 
     /// The x coordinate
-    pub fn x(self) -> u32 {
+    pub fn x(self) -> usize {
         self.pt.x
     }
 
     /// The y coordinate
-    pub fn y(self) -> u32 {
+    pub fn y(self) -> usize {
         self.pt.y
     }
 
     /// The width bound
-    pub fn width(self) -> u32 {
+    pub fn width(self) -> usize {
         self.bounds.width
     }
 
     /// The height bound
-    pub fn height(self) -> u32 {
+    pub fn height(self) -> usize {
         self.bounds.height
     }
 
@@ -54,7 +53,7 @@ impl BoundPoint {
 
 impl From<BoundPoint> for usize {
     fn from(bp: BoundPoint) -> Self {
-        usize::tfu(bp.pt.y * bp.bounds.width + bp.pt.x)
+        bp.pt.y * bp.bounds.width + bp.pt.x
     }
 }
 
@@ -67,16 +66,11 @@ impl Add<Direction> for BoundPoint {
             bounds: Bounds { width, height },
         } = self;
 
-        // TODO: The lesson is to hardcode `isize` or `usize`, not `u32` in the geometry types.
-        let x = isize::tfu(x);
-        let y = isize::tfu(y);
-        let width = isize::tfu(width);
-        let height = isize::tfu(height);
+        // TODO: The lesson is to hardcode `isize` or `usize`, not `usize` in the geometry types.
+        let (dx, dy) = dir.wrap_around_deltas(width, height);
+        let nx = (x + dx) % width;
+        let ny = (y + dy) % height;
 
-        let (dx, dy) = dir.deltas();
-        let nx = (x + width + dx) % width;
-        let ny = (y + height + dy) % height;
-
-        BoundPoint::new((u32::tfu(nx), u32::tfu(ny)), self.bounds)
+        BoundPoint::new((nx, ny), self.bounds)
     }
 }
