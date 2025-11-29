@@ -131,6 +131,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "antbox-engine"
+version = "0.1.0"
+
+[[package]]
 name = "antbox-geom"
 version = "0.1.0"
 dependencies = [
