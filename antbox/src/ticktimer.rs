@@ -24,6 +24,6 @@ impl TickTimer {
 
 impl Default for TickTimer {
     fn default() -> Self {
-        Self::new(2000)
+        Self::new(200)
     }
 }
