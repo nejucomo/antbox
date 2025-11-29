@@ -1,28 +1,23 @@
+use derive_more::{From, Into};
+
 /// A Conway's Life [Cell]
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
-pub struct Cell {
-    alive: bool,
-    neighbors: u8,
-}
+#[derive(Copy, Clone, Default, From, Into, PartialEq)]
+pub struct Cell(bool);
 
 impl Cell {
     /// Is this [Cell] alive?
     pub fn is_alive(self) -> bool {
-        self.alive
+        self.0
     }
 
     /// Is this [Cell] alive?
     pub fn set_alive(&mut self, alive: bool) {
-        self.alive = alive;
+        self.0 = alive;
     }
+}
 
-    /// The number of neighbors
-    pub fn neighbor_count(self) -> u8 {
-        self.neighbors
-    }
-
-    /// Increment the number of neighbors
-    pub(crate) fn count_neighbor(&mut self) {
-        self.neighbors += 1
+impl std::fmt::Debug for Cell {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", if self.0 { '⏺' } else { '•' })
     }
 }

@@ -212,6 +212,7 @@ dependencies = [
  "derive-new",
  "derive_more",
  "rand",
+ "try-from-unwrap",
 ]
 
 [[package]]
