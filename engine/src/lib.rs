@@ -1,14 +1,12 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! The `antbox` engine encapsulates all state evolution in a standalone thread
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod notification;
+mod notifier;
+mod spawn;
+mod ticktimer;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::notification::Notification;
+pub use self::notifier::Notifier;
+pub use self::spawn::spawn;
+pub use self::ticktimer::TickTimer;

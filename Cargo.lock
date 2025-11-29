@@ -104,7 +104,11 @@ dependencies = [
 name = "antbox"
 version = "0.1.0"
 dependencies = [
+<<<<<<< HEAD
  "antbox-cellauto",
+=======
+ "antbox-engine",
+>>>>>>> 536f20a (Carve out `antbox-engine` into stand-alone crate.)
  "antbox-geom",
  "anyhow",
  "clap",
@@ -133,6 +137,14 @@ dependencies = [
 [[package]]
 name = "antbox-engine"
 version = "0.1.0"
+dependencies = [
+ "antbox-geom",
+ "cellauto",
+ "derive-new",
+ "derive_more",
+ "log",
+ "rand",
+]
 
 [[package]]
 name = "antbox-geom"
