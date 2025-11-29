@@ -1,122 +1,145 @@
-use speedy2d::Graphics2D;
-use speedy2d::dimen::{UVec2, Vec2};
+use rand::Rng;
 use speedy2d::window::{
-    KeyScancode, ModifiersState, MouseButton, MouseScrollDistance, VirtualKeyCode, WindowHandler,
-    WindowHelper, WindowStartupInfo,
+    KeyScancode, VirtualKeyCode, WindowHandler, WindowHelper, WindowStartupInfo,
 };
+use speedy2d::{Graphics2D, Window};
 
-use crate::AntBox;
+use crate::{AntBox, Result, colors};
 
-#[derive(Debug, Default)]
-pub struct AntBoxWindow(Option<AntBox>);
+use State::{Initialized, Ready};
 
-#[allow(unused_variables)]
-impl WindowHandler<()> for AntBoxWindow {
+// TODO: Make this private to this mod (to encapsulate graphics)
+pub(crate) const CELL_LENGTH: u32 = 30;
+
+/// # TODO
+///
+/// - Hide the states privately behind public interface
+pub struct AntBoxWindow<R>(Option<State<R>>)
+where
+    R: Rng + 'static;
+
+enum State<R>
+where
+    R: Rng + 'static,
+{
+    Ready { rng: R, cellprob: f64 },
+    Initialized { antbox: AntBox<R> },
+}
+
+impl<R> AntBoxWindow<R>
+where
+    R: Rng + 'static,
+{
+    pub fn new(rng: R, cellprob: f64) -> Self {
+        AntBoxWindow(Some(Ready { rng, cellprob }))
+    }
+
+    pub fn run(self) -> Result<()> {
+        assert!(matches!(self.0.as_ref().unwrap(), Ready { .. }));
+
+        let w = Window::<()>::new_fullscreen_borderless(env!("CARGO_PKG_NAME"))?;
+        w.run_loop(self);
+    }
+
+    fn antbox_mut(&mut self) -> &mut AntBox<R> {
+        match self.0.as_mut() {
+            Some(Initialized { antbox }) => antbox,
+            state => panic!("invalid state {state:#?}"),
+        }
+    }
+
+    fn on_virtual_key_down(&mut self, helper: &mut WindowHelper<()>, vkc: VirtualKeyCode) {
+        use VirtualKeyCode::Escape;
+
+        match vkc {
+            Escape => {
+                log::info!("bye!");
+                helper.terminate_loop();
+            }
+            _ => {
+                // Ignore
+            }
+        }
+    }
+}
+
+impl<R> WindowHandler<()> for AntBoxWindow<R>
+where
+    R: Rng + 'static,
+{
     fn on_start(&mut self, helper: &mut WindowHelper<()>, info: WindowStartupInfo) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_start(helper, info)
+        match self.0.take().unwrap() {
+            Ready { rng, cellprob } => {
+                let viewsize = *info.viewport_size_pixels();
+                let sfactor = info.scale_factor();
+                log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
+                let antbox = AntBox::new(rng, cellprob, viewsize);
+                self.0 = Some(Initialized { antbox });
+                helper.request_redraw();
+            }
+
+            Initialized { antbox } => {
+                panic!("multiple on_start events: {antbox:#?}");
+            }
         }
     }
 
-    fn on_user_event(&mut self, helper: &mut WindowHelper<()>, user_event: ()) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_user_event(helper, user_event)
-        }
-    }
+    fn on_draw(&mut self, _: &mut WindowHelper<()>, graphics: &mut Graphics2D) {
+        let antbox = self.antbox_mut();
+        let cl = CELL_LENGTH as f32;
 
-    fn on_resize(&mut self, helper: &mut WindowHelper<()>, size_pixels: UVec2) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_resize(helper, size_pixels)
-        }
-    }
+        graphics.clear_screen(colors::BACKGROUND);
 
-    fn on_mouse_grab_status_changed(&mut self, helper: &mut WindowHelper<()>, mouse_grabbed: bool) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_mouse_grab_status_changed(helper, mouse_grabbed)
-        }
-    }
-
-    fn on_fullscreen_status_changed(&mut self, helper: &mut WindowHelper<()>, fullscreen: bool) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_fullscreen_status_changed(helper, fullscreen)
-        }
-    }
-
-    fn on_scale_factor_changed(&mut self, helper: &mut WindowHelper<()>, scale_factor: f64) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_scale_factor_changed(helper, scale_factor)
-        }
-    }
-
-    fn on_draw(&mut self, helper: &mut WindowHelper<()>, graphics: &mut Graphics2D) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_draw(helper, graphics)
-        }
-    }
-
-    fn on_mouse_move(&mut self, helper: &mut WindowHelper<()>, position: Vec2) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_mouse_move(helper, position)
-        }
-    }
-
-    fn on_mouse_button_down(&mut self, helper: &mut WindowHelper<()>, button: MouseButton) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_mouse_button_down(helper, button)
-        }
-    }
-
-    fn on_mouse_button_up(&mut self, helper: &mut WindowHelper<()>, button: MouseButton) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_mouse_button_up(helper, button)
-        }
-    }
-
-    fn on_mouse_wheel_scroll(
-        &mut self,
-        helper: &mut WindowHelper<()>,
-        distance: MouseScrollDistance,
-    ) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_mouse_wheel_scroll(helper, distance)
+        for (pt, cell) in antbox.food_grid().iter() {
+            if cell.is_alive() {
+                graphics.draw_circle(
+                    (
+                        cl * (pt.x() as f32) + cl / 2.0,
+                        cl * (pt.y() as f32) + cl / 2.0,
+                    ),
+                    cl / 2.0,
+                    colors::FOOD,
+                );
+            }
         }
     }
 
     fn on_key_down(
         &mut self,
         helper: &mut WindowHelper<()>,
-        virtual_key_code: Option<VirtualKeyCode>,
-        scancode: KeyScancode,
+        ovkc: Option<VirtualKeyCode>,
+        _: KeyScancode,
     ) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_key_down(helper, virtual_key_code, scancode)
+        if let Some(keycode) = ovkc {
+            self.on_virtual_key_down(helper, keycode)
         }
     }
+}
 
-    fn on_key_up(
-        &mut self,
-        helper: &mut WindowHelper<()>,
-        virtual_key_code: Option<VirtualKeyCode>,
-        scancode: KeyScancode,
-    ) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_key_up(helper, virtual_key_code, scancode)
-        }
+impl<R> std::fmt::Debug for AntBoxWindow<R>
+where
+    R: Rng + 'static,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("AntBoxWindow").field(&self.0).finish()
     }
+}
 
-    fn on_keyboard_char(&mut self, helper: &mut WindowHelper<()>, unicode_codepoint: char) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_keyboard_char(helper, unicode_codepoint)
-        }
-    }
-
-    fn on_keyboard_modifiers_changed(
-        &mut self,
-        helper: &mut WindowHelper<()>,
-        modifiers: ModifiersState,
-    ) {
-        if let Some(ab) = self.0.as_mut() {
-            ab.on_keyboard_modifiers_changed(helper, modifiers)
+impl<R> std::fmt::Debug for State<R>
+where
+    R: Rng + 'static,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Ready { rng: _, cellprob } => f
+                .debug_struct("Ready")
+                .field("rng", &"..")
+                .field("cellprob", cellprob)
+                .finish(),
+            Self::Initialized { antbox } => f
+                .debug_struct("Initialized")
+                .field("antbox", antbox)
+                .finish(),
         }
     }
 }

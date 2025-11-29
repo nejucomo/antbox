@@ -20,5 +20,5 @@ pub fn run() -> Result<()> {
     let opts = Options::parse();
     env_logger::Logger::init_from_options(&opts.logopts);
 
-    AntBox::run()
+    AntBoxWindow::new(rand::rng(), 0.7).run()
 }

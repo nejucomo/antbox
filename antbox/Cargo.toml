@@ -4,10 +4,14 @@ version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
+antbox-geom.workspace = true
 anyhow.workspace = true
 cellauto.workspace = true
 clap = { workspace = true, features = ["derive"] }
+derive_more.workspace = true
 env_logger.workspace = true
 log.workspace = true
 logging-options.workspace = true
+rand.workspace = true
 speedy2d.workspace = true
+try-from-unwrap.workspace = true

@@ -1,75 +1,64 @@
+use antbox_geom::Bounds;
+use cellauto::{GenGen, Generation};
+use rand::Rng;
+use rand::distr::Distribution;
+
 use speedy2d::dimen::UVec2;
-use speedy2d::window::{
-    KeyScancode, VirtualKeyCode, WindowHandler, WindowHelper, WindowStartupInfo,
-};
-use speedy2d::{Graphics2D, Window};
 
-use crate::{Result, TickTimer, colors};
+use crate::TickTimer;
 
-#[derive(Debug, Default)]
-pub struct AntBox {
-    prevwinsize: Option<UVec2>,
+pub struct AntBox<R>
+where
+    R: Rng + 'static,
+{
+    #[allow(dead_code)]
+    rng: R,
+    viewsize: UVec2,
+    foodgrid: Generation,
     tt: TickTimer,
 }
 
-impl AntBox {
-    pub fn run() -> Result<()> {
-        let w = Window::<()>::new_fullscreen_borderless(env!("CARGO_PKG_NAME"))?;
-        w.run_loop(Self::default());
+impl<R> AntBox<R>
+where
+    R: Rng + 'static,
+{
+    pub fn new(mut rng: R, cellprob: f64, viewsize: UVec2) -> Self
+    where
+        R: Rng,
+    {
+        let foodgrid = {
+            let w = viewsize.x / crate::window::CELL_LENGTH;
+            let h = viewsize.y / crate::window::CELL_LENGTH;
+            let gg = GenGen::new(cellprob, Bounds::new(w, h));
+
+            gg.sample(&mut rng)
+        };
+
+        let tt = TickTimer::default();
+
+        AntBox {
+            rng,
+            viewsize,
+            foodgrid,
+            tt,
+        }
+    }
+
+    pub fn food_grid(&self) -> &Generation {
+        &self.foodgrid
     }
 }
 
-impl AntBox {
-    pub fn on_virtual_key_down(&mut self, helper: &mut WindowHelper<()>, vkc: VirtualKeyCode) {
-        use VirtualKeyCode::Escape;
-
-        match vkc {
-            Escape => {
-                log::info!("byte!");
-                helper.terminate_loop();
-            }
-            _ => {
-                // Ignore
-            }
-        }
-    }
-}
-
-impl WindowHandler for AntBox {
-    fn on_start(&mut self, helper: &mut WindowHelper<()>, info: WindowStartupInfo) {
-        let _ = (helper, info);
-        todo!()
-    }
-
-    fn on_draw(&mut self, helper: &mut WindowHelper<()>, graphics: &mut Graphics2D) {
-        if self.tt.check_update() {
-            let size = self.prevwinsize.get_or_insert_with(|| {
-                let size = helper.get_size_pixels();
-                log::debug!("window size: {size:?}");
-                size
-            });
-
-            let fsize = size.into_f32();
-            let denom = 2f32;
-
-            graphics.clear_screen(colors::BACKGROUND);
-            graphics.draw_circle(
-                (fsize.x / denom, fsize.y / denom),
-                fsize.magnitude() / denom / 5f32,
-                colors::ANT,
-            );
-            helper.request_redraw();
-        }
-    }
-
-    fn on_key_down(
-        &mut self,
-        helper: &mut WindowHelper<()>,
-        ovkc: Option<VirtualKeyCode>,
-        _: KeyScancode,
-    ) {
-        if let Some(keycode) = ovkc {
-            self.on_virtual_key_down(helper, keycode)
-        }
+impl<R> std::fmt::Debug for AntBox<R>
+where
+    R: Rng + 'static,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AntBox")
+            .field("rng", &"..")
+            .field("viewsize", &self.viewsize)
+            .field("foodgrid", &self.foodgrid)
+            .field("tt", &self.tt)
+            .finish()
     }
 }

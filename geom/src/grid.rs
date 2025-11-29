@@ -17,6 +17,14 @@ impl<T> Grid<T> {
         self.bounds
     }
 
+    /// Iterate over `(pt, &T)`
+    pub fn iter(&self) -> impl Iterator<Item = (BoundPoint, &T)> {
+        self.cells
+            .iter()
+            .enumerate()
+            .map(|(ix, cptr)| (self.bounds.ix_to_bp(ix), cptr))
+    }
+
     /// Iterate over `(pt, &mut T)`
     pub fn iter_mut(&mut self) -> impl Iterator<Item = (BoundPoint, &mut T)> {
         self.cells
