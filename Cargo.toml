@@ -13,8 +13,8 @@ edition = "2024"
 
 [workspace.dependencies]
 antbox = { path = "antbox" }
+antbox-cellauto = { path = "cellauto" }
 antbox-geom = { path = "geom" }
-cellauto = { path = "cellauto" }
 logging-options = { path = "logging-options" }
 try-from-unwrap = { path = "try-from-unwrap" }
 

@@ -1,4 +1,4 @@
-use cellauto::Generation;
+use antbox_cellauto::Generation;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
     WindowStartupInfo,
