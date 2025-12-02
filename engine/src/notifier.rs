@@ -1,4 +1,4 @@
-use cellauto::Generation;
+use antbox_cellauto::Generation;
 
 use crate::Notification;
 use crate::notification::NewFoodGeneration;

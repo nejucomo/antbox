@@ -1,5 +1,5 @@
+use antbox_cellauto::{ConwaysLife, GenGen, Ruleset as _};
 use antbox_geom::Bounds;
-use cellauto::{ConwaysLife, GenGen, Ruleset as _};
 use rand::SeedableRng as _;
 use rand::distr::Distribution;
 use rand::rngs::StdRng;
