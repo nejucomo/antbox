@@ -6,7 +6,8 @@ edition.workspace = true
 [dependencies]
 antbox-cellauto.workspace = true
 antbox-geom.workspace = true
-derive_more = { workspace = true, features = [ "from", "into" ] }
+antbox-state.workspace = true
 derive-new.workspace = true
+derive_more = { workspace = true, features = [ "from", "into" ] }
 log.workspace = true
 rand.workspace = true

@@ -1,10 +1,19 @@
 use antbox_geom::Grid;
+use derive_more::{Deref, DerefMut, From, Into};
+use derive_new::new;
 
-use crate::{Generation, Ruleset};
+use crate::{Evolvable, Generation};
 
-/// The [Ruleset] for [Conway's Life](https://conwaylife.com/wiki/Conway's_Game_of_Life)
-#[derive(Copy, Clone, Debug, Default)]
-pub struct ConwaysLife;
+/// A wrapper for a [Generation] providing an [Evolvable] implementation of [Conway's Life](https://conwaylife.com/wiki/Conway's_Game_of_Life)
+#[derive(Debug, Deref, DerefMut, From, Into, new, PartialEq)]
+pub struct ConwaysLife(Generation);
+
+impl Evolvable for ConwaysLife {
+    fn evolve(&self) -> Self {
+        let nc = neighbor_counts(&self.0);
+        ConwaysLife::from(next_gen_from_neighbor_counts(&self.0, &nc))
+    }
+}
 
 pub fn conways_rule(already_alive: bool, neighbor_count: u8) -> bool {
     match neighbor_count {
@@ -44,29 +53,20 @@ pub fn next_gen_from_neighbor_counts(g: &Generation, nc: &Grid<u8>) -> Generatio
     nextgen
 }
 
-impl Ruleset for ConwaysLife {
-    fn next_generation(&self, g: &Generation) -> Generation {
-        let nc = neighbor_counts(g);
-        next_gen_from_neighbor_counts(g, &nc)
-    }
-}
-
 #[test]
 fn twiddler() {
     use antbox_geom::Bounds;
 
-    let mut gs = vec![Generation::from(Bounds::new(5, 5))];
+    let mut gs = vec![ConwaysLife::from(Generation::from(Bounds::new(5, 5)))];
     gs[0][(2, 1)].set_alive(true);
     gs[0][(2, 2)].set_alive(true);
     gs[0][(2, 3)].set_alive(true);
 
     dbg!(&gs[0], neighbor_counts(&gs[0]));
 
-    let nextgen = ConwaysLife.next_generation(&gs[0]);
-    gs.push(nextgen);
-
-    let nextgen = ConwaysLife.next_generation(&gs[1]);
-    gs.push(nextgen);
+    // Evolve two new generations:
+    gs.push(gs.last().unwrap().evolve());
+    gs.push(gs.last().unwrap().evolve());
 
     assert_ne!(gs[0], gs[1]);
     assert_eq!(gs[0], gs[2]);

@@ -1,5 +1,6 @@
-use antbox_cellauto::{ConwaysLife, GenGen, Ruleset as _};
+use antbox_cellauto::Evolvable as _;
 use antbox_geom::Bounds;
+use antbox_state::{GenParams, State};
 use rand::SeedableRng as _;
 use rand::distr::Distribution;
 use rand::rngs::StdRng;
@@ -30,19 +31,13 @@ where
     N: Notifier,
 {
     let mut rng = StdRng::seed_from_u64(rngseed);
-    let mut gencnt = 0;
-    let mut foodgrid = GenGen::new(cellprob, bounds).sample(&mut rng);
+    let mut state: State = GenParams::new(cellprob, bounds).sample(&mut rng);
     let mut tt = TickTimer::start(200); // TODO: allow application control
 
-    log::debug!("sending initial foodgrid");
-
     loop {
-        let nextfg = ConwaysLife.next_generation(&foodgrid);
-        let prevfg = std::mem::replace(&mut foodgrid, nextfg);
-
-        notifier.post_new_food_generation(gencnt, prevfg)?;
-        gencnt += 1;
-
+        let next = state.evolve();
+        let previous = std::mem::replace(&mut state, next);
+        notifier.post(previous)?;
         tt.wait_for_tick();
     }
 }

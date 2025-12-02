@@ -1,14 +1,8 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Provides [State] and supporting types for functional, I/O-free `antbox` state evolution
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod genparams;
+mod state;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::genparams::GenParams;
+pub use self::state::State;

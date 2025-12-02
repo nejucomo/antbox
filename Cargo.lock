@@ -124,7 +124,6 @@ dependencies = [
  "antbox-geom",
  "derive-new",
  "derive_more",
- "rand",
 ]
 
 [[package]]
@@ -133,6 +132,7 @@ version = "0.1.0"
 dependencies = [
  "antbox-cellauto",
  "antbox-geom",
+ "antbox-state",
  "derive-new",
  "derive_more",
  "log",
@@ -151,6 +151,14 @@ dependencies = [
 [[package]]
 name = "antbox-state"
 version = "0.1.0"
+dependencies = [
+ "antbox-cellauto",
+ "antbox-geom",
+ "derive-new",
+ "derive_more",
+ "log",
+ "rand",
+]
 
 [[package]]
 name = "anyhow"
