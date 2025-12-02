@@ -6,6 +6,7 @@ members = [
   "engine",
   "geom",
   "logging-options",
+  "state",
 ]
 
 [workspace.package]
@@ -16,6 +17,7 @@ antbox = { path = "antbox" }
 antbox-cellauto = { path = "cellauto" }
 antbox-engine = { path = "engine" }
 antbox-geom = { path = "geom" }
+antbox-state = { path = "state" }
 logging-options = { path = "logging-options" }
 
 anyhow = "1.0.100"
