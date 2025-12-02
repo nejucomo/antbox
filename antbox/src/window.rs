@@ -7,7 +7,7 @@ use speedy2d::window::{
 use speedy2d::{Graphics2D, Window};
 
 use crate::notifier::SpeedyNotifier;
-use crate::{colors, Result};
+use crate::{Result, colors};
 
 // TODO: Make this private to this mod (to encapsulate graphics)
 pub(crate) const CELL_LENGTH: u32 = 30;
@@ -69,14 +69,14 @@ impl AntBoxWindow {
 
 impl WindowHandler<Notification> for AntBoxWindow {
     fn on_user_event(&mut self, helper: &mut WindowHelper<Notification>, notif: Notification) {
-        use Notification::NewFoodGeneration;
+        use Notification::NewState;
 
-        log::debug!("received notification: {:#?}", notif);
         match &mut self.0 {
             Pending { .. } => panic!("on_user_event() invalid state `Pending`"),
             Active { foodgrid } => match notif {
-                NewFoodGeneration(nfg) => {
-                    *foodgrid = Some(nfg.grid);
+                NewState(ns) => {
+                    log::debug!("Received new antbox state: {:?}", ns.gencnt);
+                    *foodgrid = Some(ns.food.into());
                     helper.request_redraw();
                 }
             },

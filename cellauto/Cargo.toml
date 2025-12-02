@@ -6,5 +6,4 @@ edition.workspace = true
 [dependencies]
 antbox-geom.workspace = true
 derive-new.workspace = true
-derive_more = { workspace = true, features = [ "from", "into" ] }
-rand.workspace = true
+derive_more = { workspace = true, features = [ "from", "into", "deref", "deref_mut" ] }

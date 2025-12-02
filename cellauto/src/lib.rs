@@ -3,15 +3,13 @@
 
 mod cell;
 mod conwayslife;
-mod randgen;
-mod ruleset;
+mod evolve;
 
 use antbox_geom::Grid;
 
 pub use self::cell::Cell;
 pub use self::conwayslife::ConwaysLife;
-pub use self::randgen::GenGen;
-pub use self::ruleset::Ruleset;
+pub use self::evolve::Evolvable;
 
 /// A [Generation] represents the state at "a point in time" in the cellular automaton
 pub type Generation = Grid<Cell>;

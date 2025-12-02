@@ -1,13 +1,12 @@
 [package]
-name = "antbox-engine"
+name = "antbox-state"
 version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
 antbox-cellauto.workspace = true
 antbox-geom.workspace = true
-antbox-state.workspace = true
-derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into" ] }
+derive-new.workspace = true
 log.workspace = true
 rand.workspace = true
