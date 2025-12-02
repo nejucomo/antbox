@@ -24,16 +24,16 @@ impl Direction {
     }
 
     /// Return the coordinate deltas for this direction
-    pub fn deltas(self) -> (isize, isize) {
+    pub fn wrap_around_deltas(self, width: usize, height: usize) -> (usize, usize) {
         match self {
-            North => (0, -1),
-            NorthEast => (1, -1),
+            North => (0, height - 1),
+            NorthEast => (1, height - 1),
             East => (1, 0),
             SouthEast => (1, 1),
             South => (0, 1),
-            SouthWest => (-1, 1),
-            West => (-1, 0),
-            NorthWest => (-1, -1),
+            SouthWest => (width - 1, 1),
+            West => (width - 1, 0),
+            NorthWest => (width - 1, height - 1),
         }
     }
 }

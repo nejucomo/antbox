@@ -3,7 +3,6 @@ use derive_more::{From, Into};
 use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
-use try_from_unwrap::TryFromUnwrap;
 
 use crate::{Cell, Generation};
 
@@ -16,7 +15,7 @@ pub struct GenGen {
 
 impl Distribution<Generation> for GenGen {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Generation {
-        let area = usize::tfu(self.bounds.area());
+        let area = self.bounds.area();
         let mut cells = Vec::with_capacity(area);
         for _ in 0..area {
             cells.push(self.sample(rng));

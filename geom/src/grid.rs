@@ -1,7 +1,5 @@
 use std::ops::{Index, IndexMut};
 
-use try_from_unwrap::TryFromUnwrap as _;
-
 use crate::{BoundPoint, Bounds, Point};
 
 /// A 2-D grid of `T` cells
@@ -18,7 +16,7 @@ impl<T> Grid<T> {
     ///
     /// If `bounds.area() != cells.len()` this panics
     pub fn new(bounds: Bounds, cells: Vec<T>) -> Self {
-        assert_eq!(usize::tfu(bounds.area()), cells.len());
+        assert_eq!(bounds.area(), cells.len());
         Grid { bounds, cells }
     }
 
@@ -62,7 +60,7 @@ where
     fn from(bounds: Bounds) -> Self {
         Grid {
             bounds,
-            cells: vec![T::default(); usize::tfu(bounds.area())],
+            cells: vec![T::default(); bounds.area()],
         }
     }
 }
@@ -83,10 +81,10 @@ impl<T> Index<Point> for Grid<T> {
     }
 }
 
-impl<T> Index<(u32, u32)> for Grid<T> {
+impl<T> Index<(usize, usize)> for Grid<T> {
     type Output = T;
 
-    fn index(&self, p: (u32, u32)) -> &Self::Output {
+    fn index(&self, p: (usize, usize)) -> &Self::Output {
         &self[Point::from(p)]
     }
 }
@@ -104,8 +102,8 @@ impl<T> IndexMut<Point> for Grid<T> {
     }
 }
 
-impl<T> IndexMut<(u32, u32)> for Grid<T> {
-    fn index_mut(&mut self, p: (u32, u32)) -> &mut Self::Output {
+impl<T> IndexMut<(usize, usize)> for Grid<T> {
+    fn index_mut(&mut self, p: (usize, usize)) -> &mut Self::Output {
         &mut self[Point::from(p)]
     }
 }
@@ -116,7 +114,7 @@ where
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Grid [")?;
-        for row in self.cells.chunks_exact(usize::tfu(self.bounds.width)) {
+        for row in self.cells.chunks_exact(self.bounds.width) {
             write!(f, "  ")?;
             for t in row {
                 write!(f, "{t:?}")?;

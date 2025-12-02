@@ -5,7 +5,7 @@ use derive_new::new;
 #[derive(Copy, Clone, Debug, From, Into, new)]
 pub struct Point {
     /// The x coordinate
-    pub x: u32,
+    pub x: usize,
     /// The y coordinate
-    pub y: u32,
+    pub y: usize,
 }
