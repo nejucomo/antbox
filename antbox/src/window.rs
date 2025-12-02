@@ -1,11 +1,13 @@
 use antbox_cellauto::Generation;
+use antbox_engine::Notification;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
     WindowStartupInfo,
 };
 use speedy2d::{Graphics2D, Window};
 
-use crate::{AntBox, Result, colors};
+use crate::notifier::SpeedyNotifier;
+use crate::{colors, Result};
 
 // TODO: Make this private to this mod (to encapsulate graphics)
 pub(crate) const CELL_LENGTH: u32 = 30;
@@ -46,7 +48,11 @@ impl AntBoxWindow {
         }
     }
 
-    fn on_virtual_key_down(&mut self, helper: &mut WindowHelper<Generation>, vkc: VirtualKeyCode) {
+    fn on_virtual_key_down(
+        &mut self,
+        helper: &mut WindowHelper<Notification>,
+        vkc: VirtualKeyCode,
+    ) {
         use VirtualKeyCode::Escape;
 
         match vkc {
@@ -61,19 +67,23 @@ impl AntBoxWindow {
     }
 }
 
-impl WindowHandler<Generation> for AntBoxWindow {
-    fn on_user_event(&mut self, helper: &mut WindowHelper<Generation>, nextgen: Generation) {
-        log::debug!("received new foodgrid");
+impl WindowHandler<Notification> for AntBoxWindow {
+    fn on_user_event(&mut self, helper: &mut WindowHelper<Notification>, notif: Notification) {
+        use Notification::NewFoodGeneration;
+
+        log::debug!("received notification: {:#?}", notif);
         match &mut self.0 {
             Pending { .. } => panic!("on_user_event() invalid state `Pending`"),
-            Active { foodgrid } => {
-                *foodgrid = Some(nextgen);
-                helper.request_redraw();
-            }
+            Active { foodgrid } => match notif {
+                NewFoodGeneration(nfg) => {
+                    *foodgrid = Some(nfg.grid);
+                    helper.request_redraw();
+                }
+            },
         }
     }
 
-    fn on_start(&mut self, helper: &mut WindowHelper<Generation>, info: WindowStartupInfo) {
+    fn on_start(&mut self, helper: &mut WindowHelper<Notification>, info: WindowStartupInfo) {
         let nextstate = match &self.0 {
             &Pending { rngseed, cellprob } => {
                 let viewsize = *info.viewport_size_pixels();
@@ -82,11 +92,10 @@ impl WindowHandler<Generation> for AntBoxWindow {
                 let sfactor = info.scale_factor();
                 log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
 
-                let sender = helper.create_user_event_sender();
-                std::thread::spawn(move || AntBox::new(rngseed, cellprob, (w, h), sender).run());
+                let notifier = SpeedyNotifier::from(helper.create_user_event_sender());
+                antbox_engine::spawn(rngseed, cellprob, (w, h), notifier);
 
                 helper.request_redraw();
-
                 Active { foodgrid: None }
             }
 
@@ -96,7 +105,7 @@ impl WindowHandler<Generation> for AntBoxWindow {
         self.0 = nextstate;
     }
 
-    fn on_draw(&mut self, _: &mut WindowHelper<Generation>, graphics: &mut Graphics2D) {
+    fn on_draw(&mut self, _: &mut WindowHelper<Notification>, graphics: &mut Graphics2D) {
         let cl = CELL_LENGTH as f32;
 
         graphics.clear_screen(colors::BACKGROUND);
@@ -122,7 +131,7 @@ impl WindowHandler<Generation> for AntBoxWindow {
 
     fn on_key_down(
         &mut self,
-        helper: &mut WindowHelper<Generation>,
+        helper: &mut WindowHelper<Notification>,
         ovkc: Option<VirtualKeyCode>,
         _: KeyScancode,
     ) {

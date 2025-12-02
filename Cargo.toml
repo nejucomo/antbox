@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "antbox",
   "cellauto",
+  "engine",
   "geom",
   "logging-options",
 ]
@@ -13,6 +14,7 @@ edition = "2024"
 [workspace.dependencies]
 antbox = { path = "antbox" }
 antbox-cellauto = { path = "cellauto" }
+antbox-engine = { path = "engine" }
 antbox-geom = { path = "geom" }
 logging-options = { path = "logging-options" }
 

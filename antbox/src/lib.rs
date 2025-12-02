@@ -1,7 +1,6 @@
-mod antbox;
 mod cliopts;
 mod colors;
-mod ticktimer;
+mod notifier;
 mod window;
 
 use clap::Parser as _;
@@ -11,9 +10,7 @@ use speedy2d::window::WindowCreationError;
 
 pub type Result<T> = std::result::Result<T, BacktraceError<WindowCreationError>>;
 
-pub use self::antbox::AntBox;
 pub use self::cliopts::Options;
-pub use self::ticktimer::TickTimer;
 pub use self::window::AntBoxWindow;
 
 pub fn run() -> Result<()> {

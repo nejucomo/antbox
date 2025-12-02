@@ -5,6 +5,7 @@ edition.workspace = true
 
 [dependencies]
 antbox-cellauto.workspace = true
+antbox-engine.workspace = true
 antbox-geom.workspace = true
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }

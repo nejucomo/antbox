@@ -104,7 +104,11 @@ dependencies = [
 name = "antbox"
 version = "0.1.0"
 dependencies = [
+<<<<<<< HEAD
  "antbox-cellauto",
+=======
+ "antbox-engine",
+>>>>>>> 536f20a (Carve out `antbox-engine` into stand-alone crate.)
  "antbox-geom",
  "anyhow",
  "clap",
@@ -114,6 +118,7 @@ dependencies = [
  "logging-options",
  "rand",
  "speedy2d",
+<<<<<<< HEAD
 ]
 
 [[package]]
@@ -125,6 +130,20 @@ dependencies = [
  "derive_more",
  "rand",
  "try-from-unwrap",
+=======
+>>>>>>> 043938d (Switch `antbox-geom` to be `usize` based and nuke `try-from-unwrap` crate.)
+]
+
+[[package]]
+name = "antbox-engine"
+version = "0.1.0"
+dependencies = [
+ "antbox-geom",
+ "cellauto",
+ "derive-new",
+ "derive_more",
+ "log",
+ "rand",
 ]
 
 [[package]]
