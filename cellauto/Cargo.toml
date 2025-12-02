@@ -1,0 +1,11 @@
+[package]
+name = "antbox-cellauto"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+antbox-geom.workspace = true
+derive-new.workspace = true
+derive_more = { workspace = true, features = [ "from", "into" ] }
+rand.workspace = true
+try-from-unwrap.workspace = true

@@ -1,8 +1,8 @@
 mod antbox;
 mod cliopts;
 mod colors;
-mod conways;
 mod ticktimer;
+mod window;
 
 use clap::Parser as _;
 use logging_options::Backend as _;
@@ -13,12 +13,12 @@ pub type Result<T> = std::result::Result<T, BacktraceError<WindowCreationError>>
 
 pub use self::antbox::AntBox;
 pub use self::cliopts::Options;
-pub use self::conways::ConwaysLife;
 pub use self::ticktimer::TickTimer;
+pub use self::window::AntBoxWindow;
 
 pub fn run() -> Result<()> {
     let opts = Options::parse();
     env_logger::Logger::init_from_options(&opts.logopts);
 
-    AntBox::run()
+    AntBoxWindow::new(0, 0.7).run()
 }

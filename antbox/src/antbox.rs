@@ -1,70 +1,68 @@
-use speedy2d::dimen::UVec2;
-use speedy2d::window::{KeyScancode, VirtualKeyCode, WindowHandler, WindowHelper};
-use speedy2d::{Graphics2D, Window};
+use antbox_cellauto::{ConwaysLife, GenGen, Generation, Ruleset as _};
+use antbox_geom::Bounds;
+use rand::SeedableRng as _;
+use rand::distr::Distribution;
+use rand::rngs::StdRng;
+use speedy2d::window::{EventLoopSendError, UserEventSender};
 
-use crate::{ConwaysLife, Result, TickTimer, colors};
+use crate::TickTimer;
 
-#[derive(Debug, Default)]
 pub struct AntBox {
-    prevwinsize: Option<UVec2>,
-    tt: TickTimer,
-    #[allow(dead_code)]
-    conways: ConwaysLife,
+    foodgrid: Generation,
+    /// Food generation
+    fgen: usize,
+    evsender: UserEventSender<Generation>,
 }
 
 impl AntBox {
-    pub fn run() -> Result<()> {
-        let w = Window::<()>::new_fullscreen_borderless(env!("CARGO_PKG_NAME"))?;
-        w.run_loop(Self::default());
+    pub fn new<B>(
+        rngseed: u64,
+        cellprob: f64,
+        bounds: B,
+        evsender: UserEventSender<Generation>,
+    ) -> Self
+    where
+        B: Into<Bounds>,
+    {
+        let mut rng = StdRng::seed_from_u64(rngseed);
+        let foodgrid = GenGen::new(cellprob, bounds.into()).sample(&mut rng);
+
+        AntBox {
+            foodgrid,
+            fgen: 0,
+            evsender,
+        }
     }
-}
 
-impl AntBox {
-    pub fn on_virtual_key_down(&mut self, helper: &mut WindowHelper<()>, vkc: VirtualKeyCode) {
-        use VirtualKeyCode::Escape;
+    pub fn run(self) {
+        self.run_inner().unwrap();
+    }
 
-        match vkc {
-            Escape => {
-                log::info!("byte!");
-                helper.terminate_loop();
-            }
-            _ => {
-                // Ignore
-            }
+    fn run_inner(mut self) -> Result<(), EventLoopSendError> {
+        let mut tt = TickTimer::default();
+
+        log::debug!("sending initial foodgrid");
+        self.evsender.send_event(self.foodgrid.clone())?;
+
+        loop {
+            tt.wait_for_tick();
+
+            let fg = self.foodgrid;
+            self.foodgrid = ConwaysLife.next_generation(&fg);
+            assert!(self.foodgrid != fg);
+
+            self.evsender.send_event(fg)?;
         }
     }
 }
 
-impl WindowHandler for AntBox {
-    fn on_draw(&mut self, helper: &mut WindowHelper<()>, graphics: &mut Graphics2D) {
-        if self.tt.check_update() {
-            let size = self.prevwinsize.get_or_insert_with(|| {
-                let size = helper.get_size_pixels();
-                log::debug!("window size: {size:?}");
-                size
-            });
-
-            let fsize = size.into_f32();
-            let denom = 2f32;
-
-            graphics.clear_screen(colors::BACKGROUND);
-            graphics.draw_circle(
-                (fsize.x / denom, fsize.y / denom),
-                fsize.magnitude() / denom / 5f32,
-                colors::ANT,
-            );
-            helper.request_redraw();
-        }
-    }
-
-    fn on_key_down(
-        &mut self,
-        helper: &mut WindowHelper<()>,
-        ovkc: Option<VirtualKeyCode>,
-        _: KeyScancode,
-    ) {
-        if let Some(keycode) = ovkc {
-            self.on_virtual_key_down(helper, keycode)
-        }
+impl std::fmt::Debug for AntBox {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AntBox")
+            .field("rng", &"..")
+            .field("foodgrid", &self.foodgrid)
+            .field("fgen", &self.fgen)
+            .field("evsender", &"..")
+            .finish()
     }
 }

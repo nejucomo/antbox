@@ -2,16 +2,29 @@
 resolver = "3"
 members = [
   "antbox",
+  "cellauto",
+  "geom",
   "logging-options",
+  "try-from-unwrap",
 ]
 
 [workspace.package]
 edition = "2024"
 
 [workspace.dependencies]
+antbox = { path = "antbox" }
+antbox-cellauto = { path = "cellauto" }
+antbox-geom = { path = "geom" }
+logging-options = { path = "logging-options" }
+try-from-unwrap = { path = "try-from-unwrap" }
+
 anyhow = "1.0.100"
 clap = "4.5.53"
+derive-new = "0.7.0"
+derive_more = "2.0.1"
 env_logger = "0.11.8"
+itertools = "0.14.0"
 log = "0.4.28"
-logging-options = { path = "logging-options" }
+num-integer = "0.1.46"
+rand = "0.9.2"
 speedy2d = "2.1.0"

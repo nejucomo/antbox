@@ -1,0 +1,10 @@
+[package]
+name = "antbox-geom"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+derive-new.workspace = true
+derive_more = { workspace  = true, features = [ "from", "into" ] }
+itertools.workspace = true
+try-from-unwrap.workspace = true
