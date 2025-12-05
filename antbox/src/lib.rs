@@ -17,5 +17,5 @@ pub fn run() -> Result<()> {
     let opts = Options::parse();
     env_logger::Logger::init_from_options(&opts.logopts);
 
-    AntBoxWindow::new(0, 0.7).run()
+    AntBoxWindow::new(opts.genparams).run()
 }

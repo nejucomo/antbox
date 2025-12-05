@@ -107,6 +107,7 @@ dependencies = [
  "antbox-cellauto",
  "antbox-engine",
  "antbox-geom",
+ "antbox-state",
  "anyhow",
  "clap",
  "derive_more",
@@ -154,6 +155,7 @@ version = "0.1.0"
 dependencies = [
  "antbox-cellauto",
  "antbox-geom",
+ "clap",
  "derive-new",
  "derive_more",
  "log",

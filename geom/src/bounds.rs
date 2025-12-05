@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use derive_more::{From, Into};
 use derive_new::new;
 
@@ -32,5 +34,16 @@ impl Bounds {
 impl From<(u32, u32)> for Bounds {
     fn from((w, h): (u32, u32)) -> Self {
         Bounds::new(usize::try_from(w).unwrap(), usize::try_from(h).unwrap())
+    }
+}
+
+impl FromStr for Bounds {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (w, h) = s.split_once('x').ok_or("missing 'x' infix")?;
+        let w = w.parse().map_err(|_| "parse error in width")?;
+        let h = h.parse().map_err(|_| "parse error in height")?;
+        Ok(Bounds::new(w, h))
     }
 }

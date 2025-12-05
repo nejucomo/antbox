@@ -7,6 +7,7 @@ edition.workspace = true
 antbox-cellauto.workspace = true
 antbox-engine.workspace = true
 antbox-geom.workspace = true
+antbox-state.workspace = true
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
 derive_more.workspace = true

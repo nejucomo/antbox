@@ -1,5 +1,6 @@
 use antbox_cellauto::Generation;
 use antbox_engine::Notification;
+use antbox_state::GenParams;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
     WindowStartupInfo,
@@ -22,13 +23,13 @@ pub struct AntBoxWindow(State);
 
 #[derive(Debug)]
 enum State {
-    Pending { rngseed: u64, cellprob: f64 },
+    Pending(GenParams),
     Active { foodgrid: Option<Generation> },
 }
 
 impl AntBoxWindow {
-    pub fn new(rngseed: u64, cellprob: f64) -> Self {
-        AntBoxWindow(Pending { rngseed, cellprob })
+    pub fn new(genparams: GenParams) -> Self {
+        AntBoxWindow(Pending(genparams))
     }
 
     pub fn run(self) -> Result<()> {
@@ -84,16 +85,14 @@ impl WindowHandler<Notification> for AntBoxWindow {
     }
 
     fn on_start(&mut self, helper: &mut WindowHelper<Notification>, info: WindowStartupInfo) {
-        let nextstate = match &self.0 {
-            &Pending { rngseed, cellprob } => {
-                let viewsize = *info.viewport_size_pixels();
-                let w = viewsize.x / CELL_LENGTH;
-                let h = viewsize.y / CELL_LENGTH;
-                let sfactor = info.scale_factor();
-                log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
+        let viewsize = *info.viewport_size_pixels();
+        let sfactor = info.scale_factor();
+        log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
 
+        let nextstate = match &self.0 {
+            &Pending(gp) => {
                 let notifier = SpeedyNotifier::from(helper.create_user_event_sender());
-                antbox_engine::spawn(rngseed, cellprob, (w, h), notifier);
+                antbox_engine::spawn(gp, notifier);
 
                 helper.request_redraw();
                 Active { foodgrid: None }
