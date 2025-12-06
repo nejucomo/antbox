@@ -10,9 +10,6 @@ use speedy2d::{Graphics2D, Window};
 use crate::notifier::SpeedyNotifier;
 use crate::{Result, colors};
 
-// TODO: Make this private to this mod (to encapsulate graphics)
-pub(crate) const CELL_LENGTH: u32 = 30;
-
 use State::{Active, Pending};
 
 /// # TODO
@@ -104,21 +101,26 @@ impl WindowHandler<Notification> for AntBoxWindow {
         self.0 = nextstate;
     }
 
-    fn on_draw(&mut self, _: &mut WindowHelper<Notification>, graphics: &mut Graphics2D) {
-        let cl = CELL_LENGTH as f32;
-
+    fn on_draw(&mut self, helper: &mut WindowHelper<Notification>, graphics: &mut Graphics2D) {
         graphics.clear_screen(colors::BACKGROUND);
 
         if let Some(foodgrid) = self.pop_food_grid() {
+            let winsize = helper.get_size_pixels().into_f32();
+            let bounds = foodgrid.bounds();
+            let w32 = bounds.width as f32;
+            let h32 = bounds.height as f32;
+            let cell_width = winsize.x / w32;
+            let cell_height = winsize.y / h32;
+
             log::debug!("drawing popped food grid");
             for (pt, cell) in foodgrid.iter() {
                 if cell.is_alive() {
                     graphics.draw_circle(
                         (
-                            cl * (pt.x() as f32) + cl / 2.0,
-                            cl * (pt.y() as f32) + cl / 2.0,
+                            cell_width * (pt.x() as f32) + cell_width / 2.0,
+                            cell_height * (pt.y() as f32) + cell_height / 2.0,
                         ),
-                        cl / 2.0,
+                        cell_width.min(cell_height) / 2.0,
                         colors::FOOD,
                     );
                 }
