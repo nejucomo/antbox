@@ -1,5 +1,6 @@
 use antbox_cellauto::Generation;
 use antbox_engine::Notification;
+use antbox_state::GenParams;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
     WindowStartupInfo,
@@ -8,9 +9,6 @@ use speedy2d::{Graphics2D, Window};
 
 use crate::notifier::SpeedyNotifier;
 use crate::{Result, colors};
-
-// TODO: Make this private to this mod (to encapsulate graphics)
-pub(crate) const CELL_LENGTH: u32 = 30;
 
 use State::{Active, Pending};
 
@@ -22,13 +20,13 @@ pub struct AntBoxWindow(State);
 
 #[derive(Debug)]
 enum State {
-    Pending { rngseed: u64, cellprob: f64 },
+    Pending(GenParams),
     Active { foodgrid: Option<Generation> },
 }
 
 impl AntBoxWindow {
-    pub fn new(rngseed: u64, cellprob: f64) -> Self {
-        AntBoxWindow(Pending { rngseed, cellprob })
+    pub fn new(genparams: GenParams) -> Self {
+        AntBoxWindow(Pending(genparams))
     }
 
     pub fn run(self) -> Result<()> {
@@ -84,16 +82,14 @@ impl WindowHandler<Notification> for AntBoxWindow {
     }
 
     fn on_start(&mut self, helper: &mut WindowHelper<Notification>, info: WindowStartupInfo) {
-        let nextstate = match &self.0 {
-            &Pending { rngseed, cellprob } => {
-                let viewsize = *info.viewport_size_pixels();
-                let w = viewsize.x / CELL_LENGTH;
-                let h = viewsize.y / CELL_LENGTH;
-                let sfactor = info.scale_factor();
-                log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
+        let viewsize = *info.viewport_size_pixels();
+        let sfactor = info.scale_factor();
+        log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
 
+        let nextstate = match &self.0 {
+            &Pending(gp) => {
                 let notifier = SpeedyNotifier::from(helper.create_user_event_sender());
-                antbox_engine::spawn(rngseed, cellprob, (w, h), notifier);
+                antbox_engine::spawn(gp, notifier);
 
                 helper.request_redraw();
                 Active { foodgrid: None }
@@ -105,21 +101,26 @@ impl WindowHandler<Notification> for AntBoxWindow {
         self.0 = nextstate;
     }
 
-    fn on_draw(&mut self, _: &mut WindowHelper<Notification>, graphics: &mut Graphics2D) {
-        let cl = CELL_LENGTH as f32;
-
+    fn on_draw(&mut self, helper: &mut WindowHelper<Notification>, graphics: &mut Graphics2D) {
         graphics.clear_screen(colors::BACKGROUND);
 
         if let Some(foodgrid) = self.pop_food_grid() {
+            let winsize = helper.get_size_pixels().into_f32();
+            let bounds = foodgrid.bounds();
+            let w32 = bounds.width as f32;
+            let h32 = bounds.height as f32;
+            let cell_width = winsize.x / w32;
+            let cell_height = winsize.y / h32;
+
             log::debug!("drawing popped food grid");
             for (pt, cell) in foodgrid.iter() {
                 if cell.is_alive() {
                     graphics.draw_circle(
                         (
-                            cl * (pt.x() as f32) + cl / 2.0,
-                            cl * (pt.y() as f32) + cl / 2.0,
+                            cell_width * (pt.x() as f32) + cell_width / 2.0,
+                            cell_height * (pt.y() as f32) + cell_height / 2.0,
                         ),
-                        cl / 2.0,
+                        cell_width.min(cell_height) / 2.0,
                         colors::FOOD,
                     );
                 }
