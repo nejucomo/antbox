@@ -16,7 +16,7 @@ pub struct GenParams {
     seed: u64,
     #[clap(long, default_value = "0.7", help_heading = "Generation Parameters")]
     cell_prob: f64,
-    #[clap(long, default_value = "120x80", help_heading = "Generation Parameters")]
+    #[clap(long, default_value = "90x60", help_heading = "Generation Parameters")]
     grid_size: Bounds,
 }
 
