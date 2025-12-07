@@ -27,7 +27,7 @@ impl StateGfx {
     }
 
     fn draw_food_neighbors(&self, graphics: &mut Graphics2D, cellsize: Vec2) {
-        let crad = cellsize.x.min(cellsize.y) / 2.0;
+        let crad = cellsize.x.min(cellsize.y) / 1.9;
 
         for (pt, &cnt) in self.0.food.neighbor_counts().iter() {
             if cnt > 0 {
