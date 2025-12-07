@@ -4,6 +4,7 @@ pub const BACKGROUND: Color = Color::from_rgb(0.12, 0.1, 0.17);
 // pub const ANT: Color = Color::from_rgb(0.1, 0.1, 0.17);
 pub const FOOD: Color = Color::from_rgb(0.1, 0.5, 0.17);
 pub const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
+pub const SEEDPOD: Color = Color::DARK_GRAY;
 pub const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
 
 pub fn food_neighbor_count(c: u8) -> Color {

@@ -27,7 +27,7 @@ impl StateGfx {
     }
 
     fn draw_food_neighbors(&self, graphics: &mut Graphics2D, cellsize: Vec2) {
-        let crad = cellsize.x.min(cellsize.y) / 2.3; // >2 to "shrink" the berry cluster.
+        let crad = cellsize.x.min(cellsize.y) / 2.0;
 
         for (pt, &cnt) in self.0.food.neighbor_counts().iter() {
             if cnt > 0 {
@@ -41,14 +41,14 @@ impl StateGfx {
                 let c = cnt as f32;
                 let theta = PI / c;
 
-                let berryrad = if cnt == 1 {
-                    0.8 * crad
-                } else {
-                    crad * theta.sin() / (1.0 + theta.sin())
+                let berryrad = {
+                    let magic_sauce = (theta * 0.71).sin();
+                    crad * (magic_sauce / (1.1 + magic_sauce))
                 };
 
-                let spoke = TrigVec::new(PI / c, crad - berryrad);
+                let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
 
+                graphics.draw_circle(center, crad, colors::SEEDPOD);
                 for berry in 0..cnt {
                     let bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
                     graphics.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
