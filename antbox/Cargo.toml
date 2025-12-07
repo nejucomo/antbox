@@ -10,7 +10,8 @@ antbox-geom.workspace = true
 antbox-state.workspace = true
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
-derive_more.workspace = true
+derive-new.workspace = true
+derive_more = { workspace = true, features = ["try_into"] }
 env_logger.workspace = true
 log.workspace = true
 logging-options.workspace = true

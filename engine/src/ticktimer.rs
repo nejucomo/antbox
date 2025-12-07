@@ -20,6 +20,6 @@ impl TickTimer {
     pub(crate) fn wait_for_tick(&mut self) {
         std::thread::sleep(self.next - Instant::now());
         self.next = Instant::now() + self.interval;
-        log::debug!("TICK");
+        // log::debug!("TICK");
     }
 }

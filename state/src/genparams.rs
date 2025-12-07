@@ -16,11 +16,7 @@ pub struct GenParams {
     seed: u64,
     #[clap(long, default_value = "0.7", help_heading = "Generation Parameters")]
     cell_prob: f64,
-    #[clap(
-        long,
-        default_value = "180x120",
-        help_heading = "Generation Parameters"
-    )]
+    #[clap(long, default_value = "120x80", help_heading = "Generation Parameters")]
     grid_size: Bounds,
 }
 
@@ -41,7 +37,7 @@ impl Distribution<State> for GenParams {
 impl Distribution<ConwaysLife> for GenParams {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ConwaysLife {
         let g: Generation = self.sample(rng);
-        ConwaysLife::from(g)
+        ConwaysLife::new(g)
     }
 }
 
