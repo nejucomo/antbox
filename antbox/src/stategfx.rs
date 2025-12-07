@@ -113,7 +113,7 @@ impl<'a> RenderRound<'a> {
         for (pt, center) in self.iter_pts_and_centers() {
             let cell = self.state.food.life()[pt];
             if cell.is_alive() {
-                g.draw_circle(center, self.food_cell_radius / 2.0, colors::FOOD);
+                g.draw_circle(center, self.food_cell_radius / 2.0, colors::FOODLIFE);
             }
         }
     }

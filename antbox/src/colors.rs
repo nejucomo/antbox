@@ -1,22 +1,23 @@
 use speedy2d::color::Color;
 
 pub const BACKGROUND: Color = Color::from_rgb(0.12, 0.1, 0.17);
-pub const WIRE_FRAME: Color = Color::from_rgb(0.2, 0.2, 0.25);
+pub const WIRE_FRAME: Color = Color::from_rgb(0.1, 0.12, 0.16);
 
 // pub const ANT: Color = Color::from_rgb(0.1, 0.1, 0.17);
-//
+
 pub const SEEDPOD: Color = Color::DARK_GRAY;
 pub const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
-pub const FOOD: Color = Color::from_rgb(0.1, 0.5, 0.17);
+pub const RIPE: Color = Color::from_rgb(0.1, 0.5, 0.17);
 pub const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
+pub const FOODLIFE: Color = Color::from_rgb(0.8, 0.95, 0.77);
 
 pub fn food_neighbor_count(c: u8) -> Color {
     assert!(c > 0 && c < 9, "{c:?}");
     let c = c as f32;
     if c <= 3.0 {
-        SEED.interpolate(FOOD, c / 3.0)
+        SEED.interpolate(RIPE, c / 3.0)
     } else {
-        FOOD.interpolate(OVERCROWDED, (c - 3.0) / 5.0)
+        RIPE.interpolate(OVERCROWDED, (c - 3.0) / 5.0)
     }
 }
 
