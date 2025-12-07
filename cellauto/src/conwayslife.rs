@@ -1,17 +1,43 @@
-use antbox_geom::Grid;
-use derive_more::{Deref, DerefMut, From, Into};
-use derive_new::new;
+use antbox_geom::{Bounds, Grid};
+use derive_more::{From, Into};
 
 use crate::{Evolvable, Generation};
 
 /// A wrapper for a [Generation] providing an [Evolvable] implementation of [Conway's Life](https://conwaylife.com/wiki/Conway's_Game_of_Life)
-#[derive(Debug, Deref, DerefMut, From, Into, new, PartialEq)]
-pub struct ConwaysLife(Generation);
+#[derive(Debug, From, Into, PartialEq)]
+pub struct ConwaysLife {
+    /// Life status
+    life: Generation,
+    /// Neighbor-counts for `self.life`
+    nc: Grid<u8>,
+}
+
+impl ConwaysLife {
+    /// Construct a new state given a `life` grid of booleans
+    pub fn new(life: Generation) -> Self {
+        let nc = neighbor_counts(&life);
+        ConwaysLife { life, nc }
+    }
+
+    /// The [Bounds] of the [Self::life] grid
+    pub fn bounds(&self) -> Bounds {
+        self.life.bounds()
+    }
+
+    /// The grid of "is_alive" boolean states
+    pub fn life(&self) -> &Generation {
+        &self.life
+    }
+
+    /// The grid of neighbor counts for [Self::life]
+    pub fn neighbor_counts(&self) -> &Grid<u8> {
+        &self.nc
+    }
+}
 
 impl Evolvable for ConwaysLife {
     fn evolve(&self) -> Self {
-        let nc = neighbor_counts(&self.0);
-        ConwaysLife::from(next_gen_from_neighbor_counts(&self.0, &nc))
+        ConwaysLife::new(next_gen_from_neighbor_counts(&self.life, &self.nc))
     }
 }
 
@@ -57,12 +83,13 @@ pub fn next_gen_from_neighbor_counts(g: &Generation, nc: &Grid<u8>) -> Generatio
 fn twiddler() {
     use antbox_geom::Bounds;
 
-    let mut gs = vec![ConwaysLife::from(Generation::from(Bounds::new(5, 5)))];
-    gs[0][(2, 1)].set_alive(true);
-    gs[0][(2, 2)].set_alive(true);
-    gs[0][(2, 3)].set_alive(true);
+    let mut g0 = Generation::from(Bounds::new(5, 5));
+    g0[(2, 1)].set_alive(true);
+    g0[(2, 2)].set_alive(true);
+    g0[(2, 3)].set_alive(true);
+    dbg!(&g0, neighbor_counts(&g0));
 
-    dbg!(&gs[0], neighbor_counts(&gs[0]));
+    let mut gs = vec![ConwaysLife::new(g0)];
 
     // Evolve two new generations:
     gs.push(gs.last().unwrap().evolve());

@@ -41,7 +41,7 @@ impl Distribution<State> for GenParams {
 impl Distribution<ConwaysLife> for GenParams {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ConwaysLife {
         let g: Generation = self.sample(rng);
-        ConwaysLife::from(g)
+        ConwaysLife::new(g)
     }
 }
 

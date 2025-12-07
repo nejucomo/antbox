@@ -18,18 +18,40 @@ impl StateGfx {
 
         graphics.clear_screen(colors::BACKGROUND);
 
-        self.draw_food_life(graphics, cellsize);
+        self.draw_food_neighbors(graphics, cellsize);
+        // self.draw_food_life(graphics, cellsize);
     }
 
+    fn draw_food_neighbors(&self, graphics: &mut Graphics2D, cellsize: Vec2) {
+        let radbase = cellsize.x.min(cellsize.y) / 12.0;
+
+        for (pt, &cnt) in self.0.food.neighbor_counts().iter() {
+            if cnt > 0 {
+                let cnt = cnt as f32;
+                graphics.draw_circle(
+                    (
+                        cellsize.x * (pt.x() as f32) + cellsize.x / 2.0,
+                        cellsize.y * (pt.y() as f32) + cellsize.y / 2.0,
+                    ),
+                    radbase + (radbase * 2.0 * cnt),
+                    colors::food_neighbor_count(cnt),
+                );
+            }
+        }
+    }
+
+    #[allow(dead_code)]
     fn draw_food_life(&self, graphics: &mut Graphics2D, cellsize: Vec2) {
-        for (pt, cell) in self.0.food.iter() {
+        let radius = cellsize.x.min(cellsize.y) / 2.0;
+
+        for (pt, cell) in self.0.food.life().iter() {
             if cell.is_alive() {
                 graphics.draw_circle(
                     (
                         cellsize.x * (pt.x() as f32) + cellsize.x / 2.0,
                         cellsize.y * (pt.y() as f32) + cellsize.y / 2.0,
                     ),
-                    cellsize.x.min(cellsize.y) / 2.0,
+                    radius,
                     colors::FOOD,
                 );
             }
