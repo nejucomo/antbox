@@ -51,7 +51,7 @@ impl WindowHandler<Notification> for AntBoxWindow {
             NewState(ns) => {
                 log::debug!("Received new antbox state: {:?}", ns.gencnt);
                 assert!(matches!(&self.0, Generating | Sgfx(_)));
-                self.0 = Sgfx(StateGfx::from(ns));
+                self.0 = Sgfx(StateGfx::new(ns));
                 helper.request_redraw();
             }
         };
