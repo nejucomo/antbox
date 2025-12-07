@@ -5,10 +5,11 @@ use speedy2d::dimen::Vec2;
 
 use crate::colors;
 
+/// Encapsulate all graphics rendering for a [State]
 #[derive(Debug, From, Deref, DerefMut)]
-pub(crate) struct StateWin(State);
+pub(crate) struct StateGfx(State);
 
-impl StateWin {
+impl StateGfx {
     pub(crate) fn draw(&self, graphics: &mut Graphics2D, viewsize: Vec2) {
         let bounds = self.0.food.bounds();
         let w32 = bounds.width as f32;

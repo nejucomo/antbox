@@ -9,7 +9,7 @@ use speedy2d::{Graphics2D, Window};
 
 use crate::Result;
 use crate::notifier::SpeedyNotifier;
-use crate::statewin::StateWin;
+use crate::stategfx::StateGfx;
 
 use WinState::*;
 
@@ -24,7 +24,7 @@ pub struct AntBoxWindow(WinState);
 enum WinState {
     Pending(GenParams),
     Generating,
-    World(StateWin),
+    Sgfx(StateGfx),
 }
 
 impl AntBoxWindow {
@@ -50,8 +50,8 @@ impl WindowHandler<Notification> for AntBoxWindow {
         match notif {
             NewState(ns) => {
                 log::debug!("Received new antbox state: {:?}", ns.gencnt);
-                assert!(matches!(&self.0, Generating | World(_)));
-                self.0 = World(StateWin::from(ns));
+                assert!(matches!(&self.0, Generating | Sgfx(_)));
+                self.0 = Sgfx(StateGfx::from(ns));
                 helper.request_redraw();
             }
         };
@@ -72,7 +72,7 @@ impl WindowHandler<Notification> for AntBoxWindow {
     }
 
     fn on_draw(&mut self, helper: &mut WindowHelper<Notification>, graphics: &mut Graphics2D) {
-        let stwin: &StateWin = (&self.0).try_into().unwrap();
+        let stwin: &StateGfx = (&self.0).try_into().unwrap();
         let winsize = helper.get_size_pixels().into_f32();
         stwin.draw(graphics, winsize);
     }
