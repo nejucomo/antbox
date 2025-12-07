@@ -110,6 +110,7 @@ dependencies = [
  "antbox-state",
  "anyhow",
  "clap",
+ "derive-new",
  "derive_more",
  "env_logger",
  "log",
