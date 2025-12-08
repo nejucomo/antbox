@@ -1,11 +1,11 @@
 use antbox_engine::Notification;
 use antbox_state::GenParams;
+use mealy_machine::Slot;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
     WindowStartupInfo,
 };
 use speedy2d::{Graphics2D, Window};
-use state_slot::Slot;
 
 use crate::Result;
 use crate::notifier::SpeedyNotifier;
