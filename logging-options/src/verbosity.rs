@@ -8,23 +8,23 @@ use crate::backend::LoggingOptions;
 #[group(multiple = false)]
 pub struct Verbosity {
     /// Do not log any messages
-    #[arg(short, long, help_heading = "Log Verbosity")]
+    #[clap(short, long, help_heading = "Log Verbosity")]
     silent: bool,
 
     /// Log only errors
-    #[arg(short, long, help_heading = "Log Verbosity")]
+    #[clap(short, long, help_heading = "Log Verbosity")]
     quiet: bool,
 
     /// Log verbose info messages
-    #[arg(short, long, help_heading = "Log Verbosity")]
+    #[clap(short, long, help_heading = "Log Verbosity")]
     verbose: bool,
 
     /// Log debug messages
-    #[arg(short, long, help_heading = "Log Verbosity")]
+    #[clap(short, long, help_heading = "Log Verbosity")]
     debug: bool,
 
     /// Log highly verbose trace messages
-    #[arg(short, long, help_heading = "Log Verbosity")]
+    #[clap(short, long, help_heading = "Log Verbosity")]
     trace: bool,
 }
 
