@@ -1,9 +1,7 @@
-mod angle;
 mod cliopts;
 mod colors;
 mod notifier;
 mod stategfx;
-mod trigvec;
 mod window;
 
 use clap::Parser as _;

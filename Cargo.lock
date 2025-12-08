@@ -108,6 +108,7 @@ dependencies = [
  "antbox-engine",
  "antbox-geom",
  "antbox-state",
+ "antbox-trig",
  "anyhow",
  "clap",
  "derive-new",
@@ -167,6 +168,11 @@ dependencies = [
 [[package]]
 name = "antbox-trig"
 version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "derive_more",
+ "speedy2d",
+]
 
 [[package]]
 name = "anyhow"

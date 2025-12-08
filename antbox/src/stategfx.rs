@@ -2,13 +2,12 @@ use std::f32::consts::PI;
 
 use antbox_geom::{BoundPoint, Bounds};
 use antbox_state::State;
+use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::angle::Angle;
 use crate::colors;
-use crate::trigvec::TrigVec;
 
 /// Encapsulate all graphics rendering for a [State]
 #[derive(Debug, new)]

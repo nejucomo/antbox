@@ -8,10 +8,12 @@ use derive_more::Into;
 pub struct Angle(f32);
 
 impl Angle {
+    /// The cosine of this angle
     pub fn cos(self) -> f32 {
         self.0.cos()
     }
 
+    /// The sine of this angle
     pub fn sin(self) -> f32 {
         self.0.sin()
     }
