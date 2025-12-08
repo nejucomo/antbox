@@ -1,0 +1,9 @@
+[package]
+name = "antbox-trig"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+derive-new.workspace = true
+derive_more.workspace = true
+speedy2d.workspace = true
