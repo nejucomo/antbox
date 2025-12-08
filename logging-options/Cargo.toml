@@ -1,9 +1,12 @@
 [package]
 name = "logging-options"
+description = "Reusable `clap` options for logging (e.g. `--quiet` vs `--debug`) with pluggable logging providers."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
-clap.workspace = true
+clap = { workspace = true, features = ["derive"] }
 env_logger.workspace = true
 log.workspace = true

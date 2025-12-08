@@ -1,6 +1,9 @@
 [package]
 name = "antbox-geom"
+description = "Two-dimensional logical grid coordinate utilities for `antbox`."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]

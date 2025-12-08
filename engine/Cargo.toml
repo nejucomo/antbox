@@ -1,6 +1,9 @@
 [package]
 name = "antbox-engine"
+description = "A dedicated thread engine for evolving & controlling `antbox` states."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]

@@ -1,6 +1,9 @@
 [package]
 name = "mealy-machine"
+description = "Minimal trait set for Mealy machine FSMs along with a convenient mutation containst `Slot` type."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]

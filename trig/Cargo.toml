@@ -1,9 +1,12 @@
 [package]
 name = "antbox-trig"
+description = "Two-dimensional polar coordinate support for `antbox` graphics."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-derive_more.workspace = true
+derive_more = { workspace = true, features = ["from", "into"] }
 speedy2d.workspace = true

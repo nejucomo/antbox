@@ -1,6 +1,9 @@
 [package]
 name = "antbox-state"
+description = "The logical state of the `antbox` cellular automaton / artificial life toy."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]

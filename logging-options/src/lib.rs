@@ -2,8 +2,9 @@
 //!
 //! # TODOs
 //!
-//! - Implement features for different logger backends (e.g. `env_logger`, `tracing`, etc...)
+//! - Switch to `tracing` (e.g. `env_logger`, `tracing`, etc...)
 //! - Provide a facility to defer to the app for argument names, especially short `-q` style arg names to work with apps with colliding options
+//! - Generalize to a "re-usable component with `clap` arguments" framework?
 #![deny(unsafe_code, missing_docs)]
 
 pub mod backend;

@@ -1,6 +1,9 @@
 [package]
 name = "antbox-cellauto"
+description = "Cellular automaton support for `antbox`."
 version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
