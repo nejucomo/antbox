@@ -6,6 +6,7 @@ members = [
   "engine",
   "geom",
   "logging-options",
+  "slot",
   "state",
 ]
 
@@ -19,6 +20,7 @@ antbox-engine = { path = "engine" }
 antbox-geom = { path = "geom" }
 antbox-state = { path = "state" }
 logging-options = { path = "logging-options" }
+state-slot = { path = "slot" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"
