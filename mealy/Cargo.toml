@@ -1,5 +1,5 @@
 [package]
-name = "state-slot"
+name = "mealy-machine"
 version = "0.1.0"
 edition.workspace = true
 

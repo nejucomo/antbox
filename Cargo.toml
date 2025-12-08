@@ -6,7 +6,7 @@ members = [
   "engine",
   "geom",
   "logging-options",
-  "slot",
+  "mealy",
   "state",
   "trig",
 ]
@@ -22,7 +22,7 @@ antbox-geom = { path = "geom" }
 antbox-state = { path = "state" }
 antbox-trig = { path = "trig" }
 logging-options = { path = "logging-options" }
-state-slot = { path = "slot" }
+mealy-machine = { path = "mealy" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"

@@ -116,9 +116,9 @@ dependencies = [
  "env_logger",
  "log",
  "logging-options",
+ "mealy-machine",
  "rand",
  "speedy2d",
- "state-slot",
 ]
 
 [[package]]
@@ -961,6 +961,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "mealy-machine"
+version = "0.1.0"
+
+[[package]]
 name = "memchr"
 version = "2.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1540,10 +1544,6 @@ dependencies = [
  "wasm-bindgen",
  "web-sys",
 ]
-
-[[package]]
-name = "state-slot"
-version = "0.1.0"
 
 [[package]]
 name = "strsim"

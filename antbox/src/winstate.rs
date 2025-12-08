@@ -1,8 +1,8 @@
 use antbox_state::{GenParams, State};
 use derive_more::{From, TryInto};
+use mealy_machine::UpdateInput;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
-use state_slot::UpdateInput;
 
 use crate::notifier::SpeedyNotifier;
 use crate::stategfx::StateGfx;
