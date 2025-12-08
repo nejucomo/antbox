@@ -1,4 +1,4 @@
-/// A type which can functionally update (ie: with move-semantics) given an `Input` to a new state and while producing an [Output](IOTransform::Output)
+/// A type which can functionally update (ie: with move-semantics) given an `Input` to a new state and while producing an [Output](UpdateIO::Output)
 pub trait UpdateIO<Input>: Sized {
     /// The output of a transform
     type Output;

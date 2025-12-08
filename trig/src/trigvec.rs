@@ -3,7 +3,6 @@ use derive_new::new;
 use speedy2d::dimen::Vec2;
 
 use crate::angle::Angle;
-// use speedy2d::dimen::Vec2;
 
 /// A two-dimensional vector using polar coordinates
 #[derive(Copy, Clone, Debug, new, From, Into)]
@@ -21,7 +20,7 @@ impl TrigVec {
         TrigVec::new(self.angle + angle, self.distance)
     }
 
-    /// Convert to a [speedy2d::Vec2]
+    /// Convert to a [Vec2]
     pub fn into_vec2(self) -> Vec2 {
         self.into()
     }
