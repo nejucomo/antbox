@@ -8,5 +8,5 @@ edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-derive_more.workspace = true
+derive_more = { workspace = true, features = ["from", "into"] }
 speedy2d.workspace = true
