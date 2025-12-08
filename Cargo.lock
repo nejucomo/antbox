@@ -117,6 +117,7 @@ dependencies = [
  "logging-options",
  "rand",
  "speedy2d",
+ "state-slot",
 ]
 
 [[package]]
@@ -162,6 +163,10 @@ dependencies = [
  "log",
  "rand",
 ]
+
+[[package]]
+name = "antbox-trig"
+version = "0.1.0"
 
 [[package]]
 name = "anyhow"

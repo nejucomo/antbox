@@ -8,6 +8,7 @@ members = [
   "logging-options",
   "slot",
   "state",
+  "trig",
 ]
 
 [workspace.package]
@@ -19,6 +20,7 @@ antbox-cellauto = { path = "cellauto" }
 antbox-engine = { path = "engine" }
 antbox-geom = { path = "geom" }
 antbox-state = { path = "state" }
+antbox-trig = { path = "trig" }
 logging-options = { path = "logging-options" }
 state-slot = { path = "slot" }
 
