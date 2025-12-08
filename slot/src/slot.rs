@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::IOTransform;
+use crate::UpdateIO;
 use crate::optext::OptionExt as _;
 
 /// Hold a state and contain functional transitions within a mutable interface
@@ -18,12 +18,12 @@ impl<T> Slot<T> {
     }
 
     /// Transform the state
-    pub fn transform<Input>(&mut self, input: Input) -> T::Output
+    pub fn update<Input>(&mut self, input: Input) -> T::Output
     where
-        T: IOTransform<Input>,
+        T: UpdateIO<Input>,
     {
         let prevstate = self.0.take().unslot();
-        let (nextstate, output) = prevstate.transform_io(input);
+        let (nextstate, output) = prevstate.update_io(input);
         self.0 = Some(nextstate);
         output
     }
@@ -55,5 +55,23 @@ impl<T> Deref for Slot<T> {
 impl<T> DerefMut for Slot<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0.as_mut().unslot()
+    }
+}
+
+impl<T, U> AsRef<U> for Slot<T>
+where
+    T: AsRef<U>,
+{
+    fn as_ref(&self) -> &U {
+        self.deref().as_ref()
+    }
+}
+
+impl<T, U> AsMut<U> for Slot<T>
+where
+    T: AsMut<U>,
+{
+    fn as_mut(&mut self) -> &mut U {
+        self.deref_mut().as_mut()
     }
 }

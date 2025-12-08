@@ -3,6 +3,7 @@ mod colors;
 mod notifier;
 mod stategfx;
 mod window;
+mod winstate;
 
 use clap::Parser as _;
 use logging_options::Backend as _;
@@ -18,5 +19,5 @@ pub fn run() -> Result<()> {
     let opts = Options::parse();
     env_logger::Logger::init_from_options(&opts.logopts);
 
-    AntBoxWindow::new(opts.genparams).run()
+    AntBoxWindow::run(opts.genparams)
 }
