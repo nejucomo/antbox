@@ -1,8 +1,10 @@
 [package]
 name = "antbox-tick-timer"
+description = "A very simple sleep-injecting non-realtime framerate timer"
 version = "0.1.0"
 edition.workspace = true
 license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+log.workspace = true
