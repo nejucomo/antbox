@@ -1,24 +1,60 @@
+use std::cmp::Ordering::{Equal, Greater, Less};
 use std::f32::consts::PI;
 
-use antbox_geom::{BoundPoint, Bounds};
+use antbox_geom::{BoundPoint, Bounds, Grid};
 use antbox_state::State;
 use antbox_trig::{Angle, TrigVec};
-use derive_new::new;
 use mealy_machine::{IntoNext, UpdateInput};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
 use crate::{Tick, colors};
 
+const TICKS_PER_CONWAY: usize = 10;
+
 /// Encapsulate all graphics rendering for a [State]
-#[derive(Debug, new)]
+#[derive(Debug)]
 pub(crate) struct AnimationState {
-    state: State,
+    antbox: State,
+    /// Ticks until we advance antbox [State]
+    ticksleft: usize,
+    /// Intermediate seed pods transitioning towards `antbox` state
+    foodtransients: Grid<(u8, bool)>,
+}
+
+impl AnimationState {
+    pub fn new(antbox: State) -> Self {
+        let foodtransients = Grid::from(antbox.bounds);
+        AnimationState {
+            antbox,
+            ticksleft: 0, // We always advance one Conway on first update
+            foodtransients,
+        }
+    }
+
+    fn reconcile_transients(&mut self) {
+        for (pt, (nc, alive)) in self.foodtransients.iter_mut() {
+            let targetnc = self.antbox.food.neighbor_counts()[pt];
+            let (next_nc, next_alive) = match targetnc.cmp(nc) {
+                Less => (*nc - 1, false),
+                Greater => (*nc + 1, false),
+                Equal => (*nc, true),
+            };
+            *nc = next_nc;
+            *alive = next_alive;
+        }
+    }
 }
 
 impl UpdateInput<Tick> for AnimationState {
     fn update_input(mut self, _: Tick) -> Self {
-        self.state = self.state.into_next();
+        if self.ticksleft == 0 {
+            self.antbox = self.antbox.into_next();
+            self.ticksleft = TICKS_PER_CONWAY;
+        } else {
+            self.ticksleft -= 1;
+        }
+        self.reconcile_transients();
         self
     }
 }
@@ -33,7 +69,7 @@ struct RenderMetrics {
 impl AnimationState {
     pub(crate) fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
         let food_cell_bounds = {
-            let bounds = self.state.food.bounds();
+            let bounds = self.antbox.food.bounds();
             let w32 = bounds.width as f32;
             let h32 = bounds.height as f32;
 
@@ -48,7 +84,6 @@ impl AnimationState {
 
         self.draw_background(gfx, rm);
         self.draw_food_pods(gfx, rm);
-        self.draw_food_life(gfx, rm);
         self.draw_wire_frame(gfx, rm);
     }
 
@@ -57,7 +92,7 @@ impl AnimationState {
     }
 
     fn draw_wire_frame(&self, g: &mut Graphics2D, rm: &RenderMetrics) {
-        let Bounds { width, height } = self.state.food.bounds();
+        let Bounds { width, height } = self.antbox.food.bounds();
         for col in 0..width {
             let x = (col as f32) * rm.food_cell_bounds.x;
             g.draw_line((x, 0.0), (x, rm.view_size.y), 1.0, colors::WIRE_FRAME);
@@ -72,7 +107,7 @@ impl AnimationState {
         let crad = rm.food_cell_radius * 0.9; // crowded flavor
 
         for (pt, center) in self.iter_pts_and_centers(rm) {
-            let cnt = self.state.food.neighbor_counts()[pt];
+            let (cnt, alive) = self.foodtransients[pt];
             if cnt > 0 {
                 let cellrotation = Angle::from(center.magnitude());
                 let berrycolor = colors::food_neighbor_count(cnt);
@@ -92,15 +127,9 @@ impl AnimationState {
                     let bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
                     g.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
                 }
-            }
-        }
-    }
-
-    fn draw_food_life(&self, g: &mut Graphics2D, rm: &RenderMetrics) {
-        for (pt, center) in self.iter_pts_and_centers(rm) {
-            let cell = self.state.food.life()[pt];
-            if cell.is_alive() {
-                g.draw_circle(center, rm.food_cell_radius / 2.0, colors::FOODLIFE);
+                if alive {
+                    g.draw_circle(center, rm.food_cell_radius / 2.0, colors::FOODLIFE);
+                }
             }
         }
     }
@@ -108,7 +137,7 @@ impl AnimationState {
     fn iter_pts_and_centers(&self, rm: &RenderMetrics) -> impl Iterator<Item = (BoundPoint, Vec2)> {
         let Vec2 { x: cellw, y: cellh } = rm.food_cell_bounds;
 
-        self.state.food.bounds().iter_points().map(move |pt| {
+        self.antbox.food.bounds().iter_points().map(move |pt| {
             (
                 pt,
                 Vec2::new(

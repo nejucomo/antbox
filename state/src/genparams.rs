@@ -30,7 +30,7 @@ impl GenParams {
 
 impl Distribution<State> for GenParams {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> State {
-        State::new(0, self.sample(rng))
+        State::new(self.sample(rng))
     }
 }
 
