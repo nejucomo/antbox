@@ -14,16 +14,10 @@ use crate::{Tick, colors};
 #[derive(Debug, new)]
 pub(crate) struct AnimationState {
     state: State,
-    #[new(value = "true")]
-    draw_food_pods: bool,
-    #[new(value = "true")]
-    draw_food_life: bool,
-    #[new(value = "true")]
-    draw_wire_frame: bool,
 }
 
 impl AnimationState {
-    pub(crate) fn draw(&self, graphics: &mut Graphics2D, view_size: Vec2) {
+    pub(crate) fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
         let state = &self.state;
 
         let food_cell_bounds = {
@@ -41,19 +35,10 @@ impl AnimationState {
             food_cell_radius: food_cell_bounds.x.min(food_cell_bounds.y) / 2.0,
         };
 
-        rr.draw_background(graphics);
-
-        if self.draw_food_pods {
-            rr.draw_food_pods(graphics);
-        }
-
-        if self.draw_food_life {
-            rr.draw_food_life(graphics);
-        }
-
-        if self.draw_wire_frame {
-            rr.draw_wire_frame(graphics);
-        }
+        rr.draw_background(gfx);
+        rr.draw_food_pods(gfx);
+        rr.draw_food_life(gfx);
+        rr.draw_wire_frame(gfx);
     }
 }
 
