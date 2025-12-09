@@ -3,6 +3,8 @@
 
 use std::time::{Duration, Instant};
 
+use either::Either::{self, Left, Right};
+
 /// The default frame rate for `antbox`
 pub const DEFAULT_FRAME_RATE: f64 = 10.0;
 
@@ -10,7 +12,7 @@ pub const DEFAULT_FRAME_RATE: f64 = 10.0;
 #[derive(Copy, Clone, Debug)]
 pub struct TickTimer {
     interval: Duration,
-    next: Instant,
+    target: Instant,
 }
 
 impl TickTimer {
@@ -23,7 +25,7 @@ impl TickTimer {
     pub fn with_interval(interval: Duration) -> Self {
         TickTimer {
             interval,
-            next: Instant::now(),
+            target: Instant::now(),
         }
     }
 
@@ -39,26 +41,18 @@ impl TickTimer {
     pub fn sleep_check(&mut self) -> bool {
         let now = Instant::now();
 
-        let earliness = self.next.checked_duration_since(now);
-        let lateness = now.checked_duration_since(self.next);
-
-        let on_time = match (earliness, lateness) {
-            (Some(earliness), None) => {
+        match diff_instants(now, self.target) {
+            Right(earliness) => {
                 std::thread::sleep(earliness);
+                self.target += self.interval;
                 true
             }
-            (None, Some(lateness)) => {
+            Left(lateness) => {
                 log::debug!("tick late: {lateness:?}");
+                self.target = now + self.interval;
                 false
             }
-            (earliness, lateness) => {
-                panic!(
-                    "Inconsistent early/late calculation: early {earliness:?}, lateness: {lateness:?} in {self:#?}"
-                );
-            }
-        };
-        self.next = now + self.interval;
-        on_time
+        }
     }
 }
 
@@ -68,15 +62,12 @@ impl Default for TickTimer {
     }
 }
 
-// pub fn launch(d: Duration, ues: UserEventSender<Tick>) {
-//     spawn(move || {
-//         let mut next = Instant::now();
-
-//         loop {
-//             sleep(next - Instant::now());
-//             let now = Instant::now();
-//             ues.send_event(Tick(now));
-//             next = now + d;
-//         }
-//     });
-// }
+fn diff_instants(a: Instant, b: Instant) -> Either<Duration, Duration> {
+    match (a.checked_duration_since(b), b.checked_duration_since(a)) {
+        (None, Some(r)) => Right(r),
+        (Some(l), None) => Left(l),
+        (l, r) => {
+            panic!("Inconsistent diff_instants({a:?}, {b:?}): ({l:?}, {r:?}");
+        }
+    }
+}
