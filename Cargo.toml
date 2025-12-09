@@ -8,6 +8,7 @@ members = [
   "logging-options",
   "mealy",
   "state",
+  "tick",
   "trig",
 ]
 
@@ -22,6 +23,7 @@ antbox-cellauto = { version = "0.1.0", path = "cellauto" }
 antbox-engine = { version = "0.1.0", path = "engine" }
 antbox-geom = { version = "0.1.0", path = "geom" }
 antbox-state = { version = "0.1.0", path = "state" }
+antbox-tick-timer = { version = "0.1.0", path = "tick" }
 antbox-trig = { version = "0.1.0", path = "trig" }
 logging-options = { version = "0.1.0", path = "logging-options" }
 mealy-machine = { version = "0.1.0", path = "mealy" }

@@ -166,6 +166,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "antbox-tick-timer"
+version = "0.1.0"
+
+[[package]]
 name = "antbox-trig"
 version = "0.1.0"
 dependencies = [
