@@ -1,17 +1,19 @@
 use std::f32::consts::PI;
 
+use antbox_cellauto::Evolvable as _;
 use antbox_geom::{BoundPoint, Bounds};
 use antbox_state::State;
 use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
+use mealy_machine::UpdateInput;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::colors;
+use crate::{Tick, colors};
 
 /// Encapsulate all graphics rendering for a [State]
 #[derive(Debug, new)]
-pub(crate) struct StateGfx {
+pub(crate) struct AnimationState {
     state: State,
     #[new(value = "true")]
     draw_food_pods: bool,
@@ -21,7 +23,7 @@ pub(crate) struct StateGfx {
     draw_wire_frame: bool,
 }
 
-impl StateGfx {
+impl AnimationState {
     pub(crate) fn draw(&self, graphics: &mut Graphics2D, view_size: Vec2) {
         let state = &self.state;
 
@@ -53,6 +55,13 @@ impl StateGfx {
         if self.draw_wire_frame {
             rr.draw_wire_frame(graphics);
         }
+    }
+}
+
+impl UpdateInput<Tick> for AnimationState {
+    fn update_input(mut self, _: Tick) -> Self {
+        self.state = self.state.evolve();
+        self
     }
 }
 
