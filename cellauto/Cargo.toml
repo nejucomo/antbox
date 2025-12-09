@@ -10,3 +10,4 @@ edition.workspace = true
 antbox-geom.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into", "deref", "deref_mut" ] }
+mealy-machine.workspace = true
