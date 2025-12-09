@@ -73,7 +73,7 @@ impl WindowHandler<Tick> for AntBoxWindow {
 
     fn on_key_down(
         &mut self,
-        helper: &mut WindowHelper<Tick>,
+        _: &mut WindowHelper<Tick>,
         ovkc: Option<VirtualKeyCode>,
         _: KeyScancode,
     ) {
@@ -82,7 +82,7 @@ impl WindowHandler<Tick> for AntBoxWindow {
         match ovkc {
             Some(Escape) => {
                 log::info!("bye!");
-                helper.terminate_loop();
+                std::process::exit(0);
             }
             _ => {
                 // Ignore
