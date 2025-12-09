@@ -1,6 +1,7 @@
-use antbox_cellauto::{ConwaysLife, Evolvable};
+use antbox_cellauto::ConwaysLife;
 use derive_more::{From, Into};
 use derive_new::new;
+use mealy_machine::IntoNext;
 
 /// The `antbox` functional, I/O-free [State]
 #[derive(Debug, From, Into, new)]
@@ -11,11 +12,11 @@ pub struct State {
     pub food: ConwaysLife,
 }
 
-impl Evolvable for State {
-    fn evolve(&self) -> Self {
+impl IntoNext for State {
+    fn into_next(self) -> Self {
         State {
             gencnt: self.gencnt + 1,
-            food: self.food.evolve(),
+            food: self.food.into_next(),
         }
     }
 }

@@ -128,6 +128,7 @@ dependencies = [
  "antbox-geom",
  "derive-new",
  "derive_more",
+ "mealy-machine",
 ]
 
 [[package]]
@@ -149,6 +150,7 @@ dependencies = [
  "derive-new",
  "derive_more",
  "log",
+ "mealy-machine",
  "rand",
 ]
 

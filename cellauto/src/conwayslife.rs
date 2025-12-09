@@ -1,10 +1,11 @@
 use antbox_geom::{Bounds, Grid};
 use derive_more::{From, Into};
+use mealy_machine::IntoNext;
 
-use crate::{Evolvable, Generation};
+use crate::Generation;
 
-/// A wrapper for a [Generation] providing an [Evolvable] implementation of [Conway's Life](https://conwaylife.com/wiki/Conway's_Game_of_Life)
-#[derive(Debug, From, Into, PartialEq)]
+/// A wrapper for a [Generation] providing an [IntoNext] implementation of [Conway's Life](https://conwaylife.com/wiki/Conway's_Game_of_Life)
+#[derive(Clone, Debug, From, Into, PartialEq)]
 pub struct ConwaysLife {
     /// Life status
     life: Generation,
@@ -35,9 +36,9 @@ impl ConwaysLife {
     }
 }
 
-impl Evolvable for ConwaysLife {
-    fn evolve(&self) -> Self {
-        ConwaysLife::new(next_gen_from_neighbor_counts(&self.life, &self.nc))
+impl IntoNext for ConwaysLife {
+    fn into_next(self) -> Self {
+        ConwaysLife::new(next_gen_from_neighbor_counts(self.life, self.nc))
     }
 }
 
@@ -69,7 +70,7 @@ pub fn neighbor_counts(g: &Generation) -> Grid<u8> {
     neighbors
 }
 
-pub fn next_gen_from_neighbor_counts(g: &Generation, nc: &Grid<u8>) -> Generation {
+pub fn next_gen_from_neighbor_counts(g: Generation, nc: Grid<u8>) -> Generation {
     let mut nextgen = Generation::from(g.bounds());
 
     for (pt, c) in nextgen.iter_mut() {
@@ -91,9 +92,9 @@ fn twiddler() {
 
     let mut gs = vec![ConwaysLife::new(g0)];
 
-    // Evolve two new generations:
-    gs.push(gs.last().unwrap().evolve());
-    gs.push(gs.last().unwrap().evolve());
+    // evolve two new generations:
+    gs.push(gs.last().cloned().unwrap().into_next());
+    gs.push(gs.last().cloned().unwrap().into_next());
 
     assert_ne!(gs[0], gs[1]);
     assert_eq!(gs[0], gs[2]);

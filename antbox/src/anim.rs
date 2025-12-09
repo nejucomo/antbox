@@ -1,11 +1,10 @@
 use std::f32::consts::PI;
 
-use antbox_cellauto::Evolvable as _;
 use antbox_geom::{BoundPoint, Bounds};
 use antbox_state::State;
 use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
-use mealy_machine::UpdateInput;
+use mealy_machine::{IntoNext, UpdateInput};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
@@ -60,7 +59,7 @@ impl AnimationState {
 
 impl UpdateInput<Tick> for AnimationState {
     fn update_input(mut self, _: Tick) -> Self {
-        self.state = self.state.evolve();
+        self.state = self.state.into_next();
         self
     }
 }
