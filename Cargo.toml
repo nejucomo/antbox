@@ -3,7 +3,6 @@ resolver = "3"
 members = [
   "antbox",
   "cellauto",
-  "engine",
   "geom",
   "logging-options",
   "mealy",
@@ -20,7 +19,6 @@ homepage = "https://github.com/nejucomo/antbox"
 [workspace.dependencies]
 antbox = { version = "0.1.0", path = "antbox" }
 antbox-cellauto = { version = "0.1.0", path = "cellauto" }
-antbox-engine = { version = "0.1.0", path = "engine" }
 antbox-geom = { version = "0.1.0", path = "geom" }
 antbox-state = { version = "0.1.0", path = "state" }
 antbox-tick-timer = { version = "0.1.0", path = "tick" }

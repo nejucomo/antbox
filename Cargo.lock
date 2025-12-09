@@ -105,9 +105,9 @@ name = "antbox"
 version = "0.1.0"
 dependencies = [
  "antbox-cellauto",
- "antbox-engine",
  "antbox-geom",
  "antbox-state",
+ "antbox-tick-timer",
  "antbox-trig",
  "anyhow",
  "clap",
@@ -128,19 +128,6 @@ dependencies = [
  "antbox-geom",
  "derive-new",
  "derive_more",
-]
-
-[[package]]
-name = "antbox-engine"
-version = "0.1.0"
-dependencies = [
- "antbox-cellauto",
- "antbox-geom",
- "antbox-state",
- "derive-new",
- "derive_more",
- "log",
- "rand",
 ]
 
 [[package]]

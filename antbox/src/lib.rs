@@ -1,9 +1,7 @@
+mod anim;
 mod cliopts;
 mod colors;
-mod notifier;
-mod stategfx;
 mod window;
-mod winstate;
 
 use clap::Parser as _;
 use logging_options::Backend as _;
@@ -11,6 +9,10 @@ use speedy2d::error::BacktraceError;
 use speedy2d::window::WindowCreationError;
 
 pub type Result<T> = std::result::Result<T, BacktraceError<WindowCreationError>>;
+
+/// A unit newtype for readability of framerate ticks(rather than `()`)
+#[derive(Copy, Clone, Debug)]
+struct Tick;
 
 pub use self::cliopts::Options;
 pub use self::window::AntBoxWindow;
