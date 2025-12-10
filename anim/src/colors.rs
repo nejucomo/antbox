@@ -1,17 +1,18 @@
 use speedy2d::color::Color;
 
-pub const BACKGROUND: Color = Color::from_rgb(0.12, 0.1, 0.17);
-pub const WIRE_FRAME: Color = Color::from_rgb(0.1, 0.12, 0.16);
+/// The background color
+pub(crate) const BACKGROUND: Color = Color::from_rgb(0.12, 0.1, 0.17);
+pub(crate) const WIRE_FRAME: Color = Color::from_rgb(0.1, 0.12, 0.16);
 
-// pub const ANT: Color = Color::from_rgb(0.1, 0.1, 0.17);
+// pub(crate) const ANT: Color = Color::from_rgb(0.1, 0.1, 0.17);
 
-pub const SEEDPOD: Color = Color::DARK_GRAY;
-pub const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
-pub const RIPE: Color = Color::from_rgb(0.1, 0.5, 0.17);
-pub const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
-pub const FOODLIFE: Color = Color::from_rgb(0.8, 0.95, 0.77);
+pub(crate) const SEEDPOD: Color = Color::from_rgba(0.25, 0.25, 0.25, 0.75);
+pub(crate) const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
+pub(crate) const RIPE: Color = Color::from_rgb(0.1, 0.5, 0.17);
+pub(crate) const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
+pub(crate) const FOODLIFE: Color = Color::from_rgb(0.5, 0.77, 0.46);
 
-pub fn food_neighbor_count(c: u8) -> Color {
+pub(crate) fn food_neighbor_count(c: u8) -> Color {
     assert!(c < 9, "{c:?}");
     let c = c as f32;
     if c <= 3.0 {
@@ -21,7 +22,7 @@ pub fn food_neighbor_count(c: u8) -> Color {
     }
 }
 
-pub trait Interpolate {
+pub(crate) trait Interpolate {
     fn interpolate(self, other: Self, factor: f32) -> Self;
 }
 

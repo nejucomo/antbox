@@ -4,19 +4,19 @@ use std::f32::consts::PI;
 use antbox_geom::{BoundPoint, Bounds, Grid};
 use antbox_state::{GenParams, State};
 use antbox_trig::{Angle, TrigVec};
-use mealy_machine::{IntoNext, UpdateInput};
+use mealy_machine::IntoNext;
 use rand::Rng as _;
 use rand::rngs::StdRng;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::{Tick, colors};
+use crate::colors;
 
-const TICKS_PER_CONWAY: usize = 10;
+const TICKS_PER_CONWAY: usize = 50;
 
-/// Encapsulate all graphics rendering for a [State]
+/// Encapsulate a [State] with extra animation-specific state
 #[derive(Debug)]
-pub(crate) struct AnimationState {
+pub struct AnimationState {
     rng: StdRng,
     antbox: State,
     /// Ticks until we advance antbox [State]
@@ -26,6 +26,7 @@ pub(crate) struct AnimationState {
 }
 
 impl AnimationState {
+    /// Initialize
     pub fn new(gp: GenParams) -> Self {
         let (rng, antbox) = gp.generate_state();
         let foodtransients = Grid::from(antbox.bounds);
@@ -39,7 +40,10 @@ impl AnimationState {
 
     fn reconcile_transients(&mut self) {
         for (pt, (nc, alive)) in self.foodtransients.iter_mut() {
-            if self.rng.random_ratio(1, 3) {
+            if self
+                .rng
+                .random_ratio(2, TICKS_PER_CONWAY.try_into().unwrap())
+            {
                 let target_nc = self.antbox.food.neighbor_counts()[pt];
                 let (next_nc, allow_life) = match target_nc.cmp(nc) {
                     Less => (*nc - 1, false),
@@ -53,8 +57,8 @@ impl AnimationState {
     }
 }
 
-impl UpdateInput<Tick> for AnimationState {
-    fn update_input(mut self, _: Tick) -> Self {
+impl IntoNext for AnimationState {
+    fn into_next(mut self) -> Self {
         if self.ticksleft == 0 {
             self.antbox = self.antbox.into_next();
             self.ticksleft = TICKS_PER_CONWAY;
@@ -74,7 +78,8 @@ struct RenderMetrics {
 }
 
 impl AnimationState {
-    pub(crate) fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
+    /// Draw `self` onto `gfx`
+    pub fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
         let food_cell_bounds = {
             let bounds = self.antbox.food.bounds();
             let w32 = bounds.width as f32;
@@ -124,7 +129,12 @@ impl AnimationState {
 
                 let berryrad = {
                     let magic_sauce = (theta * 0.71).sin();
-                    crad * (magic_sauce / (1.1 + magic_sauce))
+                    let seedf = if cnt == 1 {
+                        center.magnitude_squared().rem_euclid(1.0).powf(0.3)
+                    } else {
+                        1.0
+                    };
+                    crad * seedf * (magic_sauce / (1.1 + magic_sauce))
                 };
 
                 let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
@@ -134,7 +144,12 @@ impl AnimationState {
                 }
                 g.draw_circle(center, crad * 0.9, colors::SEEDPOD);
                 for berry in 0..cnt {
-                    let bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
+                    let mut bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
+
+                    if cnt == 1 {
+                        bspoke = bspoke.scale(center.magnitude().rem_euclid(1.0));
+                    }
+
                     g.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
                 }
             }
