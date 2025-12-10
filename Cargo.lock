@@ -122,6 +122,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "antbox-animation"
+version = "0.1.0"
+
+[[package]]
 name = "antbox-cellauto"
 version = "0.1.0"
 dependencies = [
