@@ -6,8 +6,6 @@ use antbox_state::State as AntboxState;
 use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
 use mealy_machine::UpdateInput;
-use rand::Rng as _;
-use rand::rngs::StdRng;
 
 use crate::{Drawable, GfxLayout, TICKS_PER_CONWAY, colors};
 
@@ -27,8 +25,11 @@ impl From<Bounds> for Food {
     }
 }
 
-impl UpdateInput<(&mut StdRng, &AntboxState)> for Food {
-    fn update_input(mut self, (rng, ast): (&mut StdRng, &AntboxState)) -> Self {
+impl<R> UpdateInput<(&mut R, &AntboxState)> for Food
+where
+    R: rand::Rng,
+{
+    fn update_input(mut self, (rng, ast): (&mut R, &AntboxState)) -> Self {
         for (pt, cell) in self.0.iter_mut() {
             if rng.random_ratio(2, TICKS_PER_CONWAY.try_into().unwrap()) {
                 let target_nc = ast.food.neighbor_counts()[pt];

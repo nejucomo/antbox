@@ -1,6 +1,5 @@
 use antbox_state::{GenParams, State as AntboxState};
-use mealy_machine::{IntoNext, UpdateInput as _};
-use rand::rngs::StdRng;
+use mealy_machine::{IntoNext, UpdateInput};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
@@ -9,18 +8,16 @@ use crate::{GfxLayout, GridLayout, TICKS_PER_CONWAY, UpdateCycler, layers};
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
 pub struct AnimationState {
-    rng: StdRng,
     antbox: UpdateCycler<AntboxState>,
     food: layers::Food,
 }
 
 impl AnimationState {
     /// Initialize
-    pub fn new(gp: GenParams) -> Self {
-        let (rng, antbox) = gp.generate_state();
+    pub fn new<R: rand::Rng>(rng: &mut R, gp: GenParams) -> Self {
+        let antbox = gp.generate_state(rng);
         let bounds = antbox.bounds;
         AnimationState {
-            rng,
             antbox: UpdateCycler::new(antbox, TICKS_PER_CONWAY),
             food: layers::Food::from(bounds),
         }
@@ -37,18 +34,16 @@ impl AnimationState {
     }
 }
 
-impl IntoNext for AnimationState {
-    fn into_next(self) -> Self {
-        // TODO: Make the state stack `Update<&mut StdRng>`
-        let AnimationState {
-            mut rng,
-            antbox,
-            food,
-        } = self;
+impl<R> UpdateInput<&mut R> for AnimationState
+where
+    R: rand::Rng,
+{
+    fn update_input(self, r: &mut R) -> Self {
+        let AnimationState { antbox, food } = self;
 
         let antbox = antbox.into_next();
-        let food = food.update_input((&mut rng, &antbox));
+        let food = food.update_input((r, &antbox));
 
-        AnimationState { rng, antbox, food }
+        AnimationState { antbox, food }
     }
 }
