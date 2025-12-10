@@ -129,6 +129,9 @@ dependencies = [
  "antbox-geom",
  "antbox-state",
  "antbox-trig",
+ "derive-debug",
+ "derive-new",
+ "derive_more",
  "mealy-machine",
  "rand",
  "speedy2d",
@@ -528,6 +531,17 @@ checksum = "73770f8e1fe7d64df17ca66ad28994a0a623ea497fa69486e14984e715c5d174"
 dependencies = [
  "adler32",
  "byteorder",
+]
+
+[[package]]
+name = "derive-debug"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e53ef7e1cf756fd5a8e74b9a0a9504ec446eddde86c3063a76ff26a13b7773b1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
 ]
 
 [[package]]

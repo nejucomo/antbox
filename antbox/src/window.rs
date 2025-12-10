@@ -2,6 +2,7 @@ use antbox_animation::AnimationState;
 use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use mealy_machine::Slot;
+use rand::rngs::StdRng;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
     WindowStartupInfo,
@@ -15,23 +16,26 @@ use crate::{Result, Tick};
 /// - Hide the states privately behind public interface
 #[derive(Debug)]
 pub struct AntBoxWindow {
+    rng: StdRng,
     started: bool,
     anim: Slot<AnimationState>,
 }
 
 impl AntBoxWindow {
-    pub fn run(gp: GenParams) -> Result<()> {
+    pub fn run(rng: StdRng, gp: GenParams) -> Result<()> {
         let w = Window::new_with_user_events(
             env!("CARGO_PKG_NAME"),
             WindowCreationOptions::new_fullscreen_borderless(),
         )?;
-        w.run_loop(Self::new(gp));
+        w.run_loop(Self::new(rng, gp));
     }
 
-    fn new(gp: GenParams) -> Self {
+    fn new(mut rng: StdRng, gp: GenParams) -> Self {
+        let anim = Slot::from(AnimationState::new(&mut rng, gp));
         AntBoxWindow {
+            rng,
             started: false,
-            anim: Slot::from(AnimationState::new(gp)),
+            anim,
         }
     }
 
@@ -52,7 +56,7 @@ impl AntBoxWindow {
 
 impl WindowHandler<Tick> for AntBoxWindow {
     fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
-        self.anim.update_next();
+        self.anim.update_io(&mut self.rng);
         helper.request_redraw();
     }
 

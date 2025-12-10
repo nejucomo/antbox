@@ -3,17 +3,14 @@ use antbox_geom::Bounds;
 use clap::Args;
 use derive_more::{From, Into};
 use derive_new::new;
+use rand::Rng;
 use rand::distr::Distribution;
-use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng as _};
 
 use crate::State;
 
 /// A [Distribution] for generating a [State]
 #[derive(Args, Copy, Clone, Debug, From, Into, new)]
 pub struct GenParams {
-    #[clap(long, default_value = "0", help_heading = "Generation Parameters")]
-    seed: u64,
     #[clap(long, default_value = "0.7", help_heading = "Generation Parameters")]
     cell_prob: f64,
     #[clap(long, default_value = "70x40", help_heading = "Generation Parameters")]
@@ -22,10 +19,8 @@ pub struct GenParams {
 
 impl GenParams {
     /// Generate the initial state from the parameters
-    pub fn generate_state(self) -> (StdRng, State) {
-        let mut rng = StdRng::seed_from_u64(self.seed);
-        let st = self.sample(&mut rng);
-        (rng, st)
+    pub fn generate_state<R: Rng>(self, rng: &mut R) -> State {
+        self.sample(rng)
     }
 }
 
