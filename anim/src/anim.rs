@@ -129,7 +129,12 @@ impl AnimationState {
 
                 let berryrad = {
                     let magic_sauce = (theta * 0.71).sin();
-                    crad * (magic_sauce / (1.1 + magic_sauce))
+                    let seedf = if cnt == 1 {
+                        center.magnitude_squared().rem_euclid(1.0).powf(0.3)
+                    } else {
+                        1.0
+                    };
+                    crad * seedf * (magic_sauce / (1.1 + magic_sauce))
                 };
 
                 let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
@@ -139,7 +144,12 @@ impl AnimationState {
                 }
                 g.draw_circle(center, crad * 0.9, colors::SEEDPOD);
                 for berry in 0..cnt {
-                    let bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
+                    let mut bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
+
+                    if cnt == 1 {
+                        bspoke = bspoke.scale(center.magnitude().rem_euclid(1.0));
+                    }
+
                     g.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
                 }
             }

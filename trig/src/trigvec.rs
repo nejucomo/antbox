@@ -15,16 +15,6 @@ pub struct TrigVec {
 }
 
 impl TrigVec {
-    /// Rotate the vector by `angle` in a counter-clockwise direction
-    pub fn rotate<A: Into<Angle>>(self, angle: A) -> Self {
-        TrigVec::new(self.angle + angle, self.distance)
-    }
-
-    /// Convert to a [Vec2]
-    pub fn into_vec2(self) -> Vec2 {
-        self.into()
-    }
-
     /// The `x` cartesian coordinate
     pub fn x(self) -> f32 {
         self.angle.cos() * self.distance
@@ -33,6 +23,21 @@ impl TrigVec {
     /// The `y` cartesian coordinate
     pub fn y(self) -> f32 {
         self.angle.sin() * self.distance
+    }
+
+    /// Convert to a [Vec2]
+    pub fn into_vec2(self) -> Vec2 {
+        self.into()
+    }
+
+    /// Rotate the vector by `angle` in a counter-clockwise direction
+    pub fn rotate<A: Into<Angle>>(self, angle: A) -> Self {
+        TrigVec::new(self.angle + angle, self.distance)
+    }
+
+    /// Scale the vector by `factor`
+    pub fn scale(self, factor: f32) -> Self {
+        TrigVec::new(self.angle, self.distance * factor)
     }
 }
 
