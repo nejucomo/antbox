@@ -4,19 +4,19 @@ use std::f32::consts::PI;
 use antbox_geom::{BoundPoint, Bounds, Grid};
 use antbox_state::{GenParams, State};
 use antbox_trig::{Angle, TrigVec};
-use mealy_machine::{IntoNext, UpdateInput};
+use mealy_machine::IntoNext;
 use rand::Rng as _;
 use rand::rngs::StdRng;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::{Tick, colors};
+use crate::colors;
 
 const TICKS_PER_CONWAY: usize = 50;
 
-/// Encapsulate all graphics rendering for a [State]
+/// Encapsulate a [State] with extra animation-specific state
 #[derive(Debug)]
-pub(crate) struct AnimationState {
+pub struct AnimationState {
     rng: StdRng,
     antbox: State,
     /// Ticks until we advance antbox [State]
@@ -26,6 +26,7 @@ pub(crate) struct AnimationState {
 }
 
 impl AnimationState {
+    /// Initialize
     pub fn new(gp: GenParams) -> Self {
         let (rng, antbox) = gp.generate_state();
         let foodtransients = Grid::from(antbox.bounds);
@@ -56,8 +57,8 @@ impl AnimationState {
     }
 }
 
-impl UpdateInput<Tick> for AnimationState {
-    fn update_input(mut self, _: Tick) -> Self {
+impl IntoNext for AnimationState {
+    fn into_next(mut self) -> Self {
         if self.ticksleft == 0 {
             self.antbox = self.antbox.into_next();
             self.ticksleft = TICKS_PER_CONWAY;
@@ -77,7 +78,8 @@ struct RenderMetrics {
 }
 
 impl AnimationState {
-    pub(crate) fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
+    /// Draw `self` onto `gfx`
+    pub fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
         let food_cell_bounds = {
             let bounds = self.antbox.food.bounds();
             let w32 = bounds.width as f32;

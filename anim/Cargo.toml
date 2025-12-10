@@ -7,3 +7,9 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+antbox-geom.workspace = true
+antbox-state.workspace = true
+antbox-trig.workspace = true
+mealy-machine.workspace = true
+rand.workspace = true
+speedy2d.workspace = true

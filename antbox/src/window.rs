@@ -1,3 +1,4 @@
+use antbox_animation::AnimationState;
 use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use mealy_machine::Slot;
@@ -7,7 +8,6 @@ use speedy2d::window::{
 };
 use speedy2d::{Graphics2D, Window};
 
-use crate::anim::AnimationState;
 use crate::{Result, Tick};
 
 /// # TODO
@@ -51,8 +51,8 @@ impl AntBoxWindow {
 }
 
 impl WindowHandler<Tick> for AntBoxWindow {
-    fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, tick: Tick) {
-        self.anim.update(tick);
+    fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
+        self.anim.update_next();
         helper.request_redraw();
     }
 

@@ -104,6 +104,7 @@ dependencies = [
 name = "antbox"
 version = "0.1.0"
 dependencies = [
+ "antbox-animation",
  "antbox-cellauto",
  "antbox-geom",
  "antbox-state",
@@ -124,6 +125,14 @@ dependencies = [
 [[package]]
 name = "antbox-animation"
 version = "0.1.0"
+dependencies = [
+ "antbox-geom",
+ "antbox-state",
+ "antbox-trig",
+ "mealy-machine",
+ "rand",
+ "speedy2d",
+]
 
 [[package]]
 name = "antbox-cellauto"

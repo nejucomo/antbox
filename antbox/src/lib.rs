@@ -1,6 +1,4 @@
-mod anim;
 mod cliopts;
-mod colors;
 mod window;
 
 use clap::Parser as _;

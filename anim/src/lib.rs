@@ -1,14 +1,7 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Extends `antbox` game state along with animation states
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod anim;
+mod colors;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::anim::AnimationState;
