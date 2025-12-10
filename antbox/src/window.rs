@@ -31,7 +31,7 @@ impl AntBoxWindow {
     fn new(gp: GenParams) -> Self {
         AntBoxWindow {
             started: false,
-            anim: Slot::from(AnimationState::new(gp.generate_state())),
+            anim: Slot::from(AnimationState::new(gp)),
         }
     }
 

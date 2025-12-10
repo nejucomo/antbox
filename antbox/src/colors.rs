@@ -12,7 +12,7 @@ pub const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
 pub const FOODLIFE: Color = Color::from_rgb(0.8, 0.95, 0.77);
 
 pub fn food_neighbor_count(c: u8) -> Color {
-    assert!(c > 0 && c < 9, "{c:?}");
+    assert!(c < 9, "{c:?}");
     let c = c as f32;
     if c <= 3.0 {
         SEED.interpolate(RIPE, c / 3.0)
