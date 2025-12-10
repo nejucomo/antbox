@@ -62,12 +62,23 @@ impl Default for TickTimer {
     }
 }
 
-fn diff_instants(a: Instant, b: Instant) -> Either<Duration, Duration> {
-    match (a.checked_duration_since(b), b.checked_duration_since(a)) {
+fn diff_instants(now: Instant, target: Instant) -> Either<Duration, Duration> {
+    fn checked_duration_since(a: Instant, b: Instant) -> Option<Duration> {
+        instant_to_none(a.checked_duration_since(b))
+    }
+
+    fn instant_to_none(optd: Option<Duration>) -> Option<Duration> {
+        optd.and_then(|d| if d.is_zero() { None } else { Some(d) })
+    }
+
+    match (
+        checked_duration_since(now, target),
+        target.checked_duration_since(now),
+    ) {
         (None, Some(r)) => Right(r),
         (Some(l), None) => Left(l),
         (l, r) => {
-            panic!("Inconsistent diff_instants({a:?}, {b:?}): ({l:?}, {r:?}");
+            panic!("Inconsistent diff_instants({now:?}, {target:?}): ({l:?}, {r:?}");
         }
     }
 }
