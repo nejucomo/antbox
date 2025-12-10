@@ -39,15 +39,15 @@ impl AnimationState {
 
     fn reconcile_transients(&mut self) {
         for (pt, (nc, alive)) in self.foodtransients.iter_mut() {
-            if self.rng.random_ratio(1, 2) {
-                let targetnc = self.antbox.food.neighbor_counts()[pt];
-                let (next_nc, next_alive) = match targetnc.cmp(nc) {
+            if self.rng.random_ratio(1, 3) {
+                let target_nc = self.antbox.food.neighbor_counts()[pt];
+                let (next_nc, allow_life) = match target_nc.cmp(nc) {
                     Less => (*nc - 1, false),
                     Greater => (*nc + 1, false),
                     Equal => (*nc, true),
                 };
                 *nc = next_nc;
-                *alive = next_alive;
+                *alive = allow_life && self.antbox.food.life()[pt].is_alive();
             }
         }
     }
@@ -115,7 +115,7 @@ impl AnimationState {
 
         for (pt, center) in self.iter_pts_and_centers(rm) {
             let (cnt, alive) = self.foodtransients[pt];
-            if cnt > 0 {
+            if alive || cnt > 0 {
                 let cellrotation = Angle::from(center.magnitude());
                 let berrycolor = colors::food_neighbor_count(cnt);
 
@@ -129,13 +129,13 @@ impl AnimationState {
 
                 let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
 
-                g.draw_circle(center, crad, colors::SEEDPOD);
+                if alive {
+                    g.draw_circle(center, crad, colors::FOODLIFE);
+                }
+                g.draw_circle(center, crad * 0.9, colors::SEEDPOD);
                 for berry in 0..cnt {
                     let bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
                     g.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
-                }
-                if alive {
-                    g.draw_circle(center, rm.food_cell_radius / 5.0, colors::FOODLIFE);
                 }
             }
         }
