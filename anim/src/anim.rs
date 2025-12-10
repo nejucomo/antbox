@@ -4,16 +4,13 @@ use rand::rngs::StdRng;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::{GfxLayout, GridLayout, TICKS_PER_CONWAY, layers};
+use crate::{GfxLayout, GridLayout, TICKS_PER_CONWAY, UpdateCycler, layers};
 
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
 pub struct AnimationState {
     rng: StdRng,
-    antbox: AntboxState,
-    /// Ticks until we advance antbox [AntboxState]
-    ticksleft: usize,
-    /// Intermediate seed pods transitioning towards `antbox` state
+    antbox: UpdateCycler<AntboxState>,
     food: layers::Food,
 }
 
@@ -24,8 +21,7 @@ impl AnimationState {
         let bounds = antbox.bounds;
         AnimationState {
             rng,
-            antbox,
-            ticksleft: 0, // We always advance one Conway on first update
+            antbox: UpdateCycler::new(antbox, TICKS_PER_CONWAY),
             food: layers::Food::from(bounds),
         }
     }
@@ -47,23 +43,12 @@ impl IntoNext for AnimationState {
         let AnimationState {
             mut rng,
             antbox,
-            ticksleft,
             food,
         } = self;
 
-        let (antbox, ticksleft) = if ticksleft == 0 {
-            (antbox.into_next(), TICKS_PER_CONWAY)
-        } else {
-            (antbox, ticksleft - 1)
-        };
-
+        let antbox = antbox.into_next();
         let food = food.update_input((&mut rng, &antbox));
 
-        AnimationState {
-            rng,
-            antbox,
-            ticksleft,
-            food,
-        }
+        AnimationState { rng, antbox, food }
     }
 }
