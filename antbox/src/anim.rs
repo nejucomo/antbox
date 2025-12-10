@@ -12,7 +12,7 @@ use speedy2d::dimen::Vec2;
 
 use crate::{Tick, colors};
 
-const TICKS_PER_CONWAY: usize = 10;
+const TICKS_PER_CONWAY: usize = 50;
 
 /// Encapsulate all graphics rendering for a [State]
 #[derive(Debug)]
@@ -39,7 +39,10 @@ impl AnimationState {
 
     fn reconcile_transients(&mut self) {
         for (pt, (nc, alive)) in self.foodtransients.iter_mut() {
-            if self.rng.random_ratio(1, 3) {
+            if self
+                .rng
+                .random_ratio(2, TICKS_PER_CONWAY.try_into().unwrap())
+            {
                 let target_nc = self.antbox.food.neighbor_counts()[pt];
                 let (next_nc, allow_life) = match target_nc.cmp(nc) {
                     Less => (*nc - 1, false),

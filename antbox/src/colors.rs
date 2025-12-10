@@ -5,11 +5,11 @@ pub const WIRE_FRAME: Color = Color::from_rgb(0.1, 0.12, 0.16);
 
 // pub const ANT: Color = Color::from_rgb(0.1, 0.1, 0.17);
 
-pub const SEEDPOD: Color = Color::DARK_GRAY;
+pub const SEEDPOD: Color = Color::from_rgba(0.25, 0.25, 0.25, 0.75);
 pub const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
 pub const RIPE: Color = Color::from_rgb(0.1, 0.5, 0.17);
 pub const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
-pub const FOODLIFE: Color = Color::from_rgb(0.8, 0.95, 0.77);
+pub const FOODLIFE: Color = Color::from_rgb(0.5, 0.77, 0.46);
 
 pub fn food_neighbor_count(c: u8) -> Color {
     assert!(c < 9, "{c:?}");
