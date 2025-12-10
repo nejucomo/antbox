@@ -2,9 +2,11 @@ use std::cmp::Ordering::{Equal, Greater, Less};
 use std::f32::consts::PI;
 
 use antbox_geom::{BoundPoint, Bounds, Grid};
-use antbox_state::State;
+use antbox_state::{GenParams, State};
 use antbox_trig::{Angle, TrigVec};
 use mealy_machine::{IntoNext, UpdateInput};
+use rand::Rng as _;
+use rand::rngs::StdRng;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
@@ -15,6 +17,7 @@ const TICKS_PER_CONWAY: usize = 10;
 /// Encapsulate all graphics rendering for a [State]
 #[derive(Debug)]
 pub(crate) struct AnimationState {
+    rng: StdRng,
     antbox: State,
     /// Ticks until we advance antbox [State]
     ticksleft: usize,
@@ -23,9 +26,11 @@ pub(crate) struct AnimationState {
 }
 
 impl AnimationState {
-    pub fn new(antbox: State) -> Self {
+    pub fn new(gp: GenParams) -> Self {
+        let (rng, antbox) = gp.generate_state();
         let foodtransients = Grid::from(antbox.bounds);
         AnimationState {
+            rng,
             antbox,
             ticksleft: 0, // We always advance one Conway on first update
             foodtransients,
@@ -34,14 +39,16 @@ impl AnimationState {
 
     fn reconcile_transients(&mut self) {
         for (pt, (nc, alive)) in self.foodtransients.iter_mut() {
-            let targetnc = self.antbox.food.neighbor_counts()[pt];
-            let (next_nc, next_alive) = match targetnc.cmp(nc) {
-                Less => (*nc - 1, false),
-                Greater => (*nc + 1, false),
-                Equal => (*nc, true),
-            };
-            *nc = next_nc;
-            *alive = next_alive;
+            if self.rng.random_ratio(1, 2) {
+                let targetnc = self.antbox.food.neighbor_counts()[pt];
+                let (next_nc, next_alive) = match targetnc.cmp(nc) {
+                    Less => (*nc - 1, false),
+                    Greater => (*nc + 1, false),
+                    Equal => (*nc, true),
+                };
+                *nc = next_nc;
+                *alive = next_alive;
+            }
         }
     }
 }
@@ -128,7 +135,7 @@ impl AnimationState {
                     g.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
                 }
                 if alive {
-                    g.draw_circle(center, rm.food_cell_radius / 2.0, colors::FOODLIFE);
+                    g.draw_circle(center, rm.food_cell_radius / 5.0, colors::FOODLIFE);
                 }
             }
         }

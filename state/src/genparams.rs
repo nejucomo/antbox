@@ -22,9 +22,10 @@ pub struct GenParams {
 
 impl GenParams {
     /// Generate the initial state from the parameters
-    pub fn generate_state(self) -> State {
+    pub fn generate_state(self) -> (StdRng, State) {
         let mut rng = StdRng::seed_from_u64(self.seed);
-        self.sample(&mut rng)
+        let st = self.sample(&mut rng);
+        (rng, st)
     }
 }
 
