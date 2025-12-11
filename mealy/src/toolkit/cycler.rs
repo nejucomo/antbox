@@ -1,10 +1,11 @@
 use derive_more::{Deref, DerefMut};
 use derive_new::new;
-use mealy_machine::IntoNext;
+
+use crate::IntoNext;
 
 /// Updates an inner state every [Self::interval] updates
 #[derive(Debug, Deref, DerefMut, new)]
-pub struct UpdateCycler<T> {
+pub struct Cycler<T> {
     #[deref]
     #[deref_mut]
     inner: T,
@@ -17,12 +18,12 @@ pub struct UpdateCycler<T> {
     pub current: usize,
 }
 
-impl<T> IntoNext for UpdateCycler<T>
+impl<T> IntoNext for Cycler<T>
 where
     T: IntoNext,
 {
     fn into_next(self) -> Self {
-        let UpdateCycler {
+        let Cycler {
             inner,
             interval,
             current,
@@ -30,7 +31,7 @@ where
 
         let current = if current >= interval { 0 } else { current + 1 };
 
-        UpdateCycler {
+        Cycler {
             inner: if current == 0 {
                 inner.into_next()
             } else {

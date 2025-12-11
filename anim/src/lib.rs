@@ -7,12 +7,10 @@ mod drawable;
 mod gfxlayout;
 mod gridlayout;
 pub mod layers;
-mod updatecycler;
 
 pub use self::anim::AnimationState;
 pub use self::drawable::Drawable;
 pub use self::gfxlayout::GfxLayout;
 pub use self::gridlayout::GridLayout;
-pub use self::updatecycler::UpdateCycler;
 
 const TICKS_PER_CONWAY: usize = 50;

@@ -8,6 +8,7 @@
 mod intonext;
 mod optext;
 mod slot;
+pub mod toolkit;
 mod upin;
 mod upio;
 
