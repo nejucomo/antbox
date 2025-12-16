@@ -1,9 +1,11 @@
+use derive_more::From;
+
 use crate::Ant;
 
 use self::Object::{AntHole, Food};
 
 /// The type of [Object]s which can be in a [Spot](crate::Spot) in the [State](crate::State)
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, From, Eq, PartialEq)]
 pub enum Object {
     /// A food particle
     Food,
@@ -28,6 +30,13 @@ pub trait Objectish: Sized + Copy {
 
     /// This as an ant hole?
     fn is_ant_hole(self) -> bool;
+
+    /// Modify this object based on `ant` attempting to step on it
+    ///
+    /// # Return
+    ///
+    /// Return if `ant` successfully stepped here.
+    fn stepped_upon(&mut self, ant: Ant) -> bool;
 }
 
 impl Objectish for Object {
@@ -44,5 +53,18 @@ impl Objectish for Object {
 
     fn is_ant_hole(self) -> bool {
         matches!(self, AntHole)
+    }
+
+    fn stepped_upon(&mut self, _: Ant) -> bool {
+        let ons = match self {
+            Food => Some(Ant::WithFood.into()),
+            AntHole => todo!("step on anthole"),
+            _ => None,
+        };
+
+        if let Some(nextself) = ons {
+            *self = nextself;
+        }
+        ons.is_some()
     }
 }

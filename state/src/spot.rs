@@ -15,9 +15,19 @@ impl Spot {
         self.obj.is_none()
     }
 
+    /// The [Object] in this [Spot]
+    pub fn object(self) -> Option<Object> {
+        self.obj
+    }
+
     /// The magnitude of the [Pheromone] at this [Spot]
     pub fn pheromone_magnitude(self, ph: Pheromone) -> u8 {
         self.pheromones.magnitude(ph)
+    }
+
+    /// Take the [Object]
+    pub fn take_object(&mut self) -> Option<Object> {
+        self.obj.take()
     }
 
     fn object_val<F, T>(self, f: F) -> T
@@ -40,6 +50,16 @@ impl Objectish for Spot {
 
     fn is_ant_hole(self) -> bool {
         self.object_val(Object::is_ant_hole)
+    }
+
+    fn stepped_upon(&mut self, ant: Ant) -> bool {
+        match self.obj.as_mut() {
+            Some(obj) => obj.stepped_upon(ant),
+            None => {
+                self.obj = Some(ant.into());
+                true
+            }
+        }
     }
 }
 

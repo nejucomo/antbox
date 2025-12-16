@@ -5,7 +5,7 @@ use derive_new::new;
 use mealy_machine::UpdateInput;
 
 use crate::randutil::ShuffleIntoVec as _;
-use crate::{Objectish as _, Pheromone, Spot};
+use crate::{Ant, Objectish as _, Pheromone, Spot};
 
 /// The `antbox` functional, I/O-free [State]
 #[derive(Debug, From, Into, Deref, new)]
@@ -21,7 +21,7 @@ pub struct State {
 impl State {
     /// Return the directions from `pt` which have the `greatest`/weakest magnitude of `ph`
     pub fn pheromone_gradient(&self, pt: BoundPoint, ph: Pheromone, greatest: bool) -> DirSet {
-        let it = Direction::each().map(|d| self.grid[pt + d].pheromone_magnitude(ph));
+        let it = Direction::each().map(|d| self[pt + d].pheromone_magnitude(ph));
 
         let best = if greatest {
             it.max()
@@ -30,8 +30,7 @@ impl State {
         }
         .unwrap();
 
-        self.grid
-            .directions_where(pt, |spot| spot.pheromone_magnitude(ph) == best)
+        self.directions_where(pt, |spot| spot.pheromone_magnitude(ph) == best)
     }
 
     fn step_ants<R>(mut self, rng: &mut R) -> Self
@@ -39,16 +38,22 @@ impl State {
         R: rand::Rng,
     {
         let ants = self
-            .grid
             .iter()
             .filter_map(|(pt, spot)| spot.as_ant().map(|ant| (pt, ant)))
             .shuffle_into_vec(rng);
 
         for (pt, ant) in ants {
-            ant.step(&mut self, rng, pt);
+            ant.sense_then_step(&mut self, rng, pt);
         }
 
         self
+    }
+
+    pub(crate) fn move_ant(&mut self, ant: Ant, src: BoundPoint, dst: BoundPoint) {
+        if self.grid[dst].stepped_upon(ant) {
+            let shadow = self.grid[src].take_object();
+            assert_eq!(Some(crate::Object::Ant(ant)), shadow);
+        }
     }
 }
 

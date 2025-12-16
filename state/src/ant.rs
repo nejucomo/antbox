@@ -1,11 +1,13 @@
-use antbox_geom::BoundPoint;
+use antbox_geom::{BoundPoint, DirSet};
 use rand::Rng;
 use rand::distr::Distribution;
 
 use crate::{Objectish as _, Pheromone, State};
 
+use self::Ant::*;
+
 /// The state of an ant
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Ant {
     /// The ant is exploring
     Exploring,
@@ -17,14 +19,19 @@ pub enum Ant {
 
 impl Ant {
     /// Take a step
-    pub fn step<R>(self, state: &mut State, rng: &mut R, pt: BoundPoint)
+    pub fn sense_then_step<R>(self, state: &mut State, rng: &mut R, pt: BoundPoint)
     where
         R: Rng,
     {
-        use Ant::*;
+        let dirs = self.sense(state, pt);
+        let dir = dirs.sample(rng).unwrap();
+        state.move_ant(self, pt, pt + dir);
+    }
+
+    fn sense(self, state: &mut State, pt: BoundPoint) -> DirSet {
         use Pheromone::*;
 
-        let dirs = match self {
+        match self {
             Exploring => state
                 .pheromone_gradient(pt, Food, false)
                 .intersect(state.pheromone_gradient(pt, Home, false)),
@@ -39,10 +46,6 @@ impl Ant {
                 }
             }
             WithFood => state.pheromone_gradient(pt, Home, true),
-        };
-
-        let dir = dirs.sample(rng).unwrap();
-
-        todo!("{dir:?}")
+        }
     }
 }
