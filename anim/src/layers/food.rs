@@ -1,6 +1,7 @@
 use std::cmp::Ordering::{Equal, Greater, Less};
 use std::f32::consts::PI;
 
+use antbox_clife::ConwayGrid as _;
 use antbox_geom::{Bounds, Grid};
 use antbox_state::State as AntboxState;
 use antbox_trig::{Angle, TrigVec};
@@ -32,7 +33,7 @@ where
     fn update_input(mut self, (rng, ast): (&mut R, &AntboxState)) -> Self {
         for (pt, cell) in self.0.iter_mut() {
             if rng.random_ratio(2, TICKS_PER_CONWAY.try_into().unwrap()) {
-                let (target_life, target_nc) = ast.food_life_and_neighbors(pt);
+                let (target_life, target_nc) = ast.life_and_neighbors(pt);
 
                 let newcell = match (target_nc as u8).cmp(&cell.seeds) {
                     Less => FoodCell::new(cell.seeds - 1, false),

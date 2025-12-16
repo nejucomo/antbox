@@ -1,6 +1,6 @@
 use antbox_state::{GenParams, State as AntboxState};
+use mealy_machine::UpdateInput;
 use mealy_machine::toolkit::Cycler;
-use mealy_machine::{IntoNext, UpdateInput};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
@@ -40,14 +40,14 @@ impl<R> UpdateInput<&mut R> for AnimationState
 where
     R: rand::Rng,
 {
-    fn update_input(self, r: &mut R) -> Self {
+    fn update_input(self, rng: &mut R) -> Self {
         let AnimationState {
             antbox,
             foodeco: food,
         } = self;
 
-        let antbox = antbox.into_next();
-        let food = food.update_input((r, &antbox));
+        let antbox = antbox.update_input(rng);
+        let food = food.update_input((rng, &antbox));
 
         AnimationState {
             antbox,

@@ -1,7 +1,7 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
 
-use crate::IntoNext;
+use crate::{IntoNext, UpdateInput};
 
 /// Updates an inner state every [Self::interval] updates
 #[derive(Debug, Deref, DerefMut, AsRef, new)]
@@ -35,6 +35,31 @@ where
         Cycler {
             inner: if current == 0 {
                 inner.into_next()
+            } else {
+                inner
+            },
+            interval,
+            current,
+        }
+    }
+}
+
+impl<T, I> UpdateInput<I> for Cycler<T>
+where
+    T: UpdateInput<I>,
+{
+    fn update_input(self, i: I) -> Self {
+        let Cycler {
+            inner,
+            interval,
+            current,
+        } = self;
+
+        let current = if current >= interval { 0 } else { current + 1 };
+
+        Cycler {
+            inner: if current == 0 {
+                inner.update_input(i)
             } else {
                 inner
             },
