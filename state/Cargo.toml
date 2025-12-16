@@ -7,7 +7,7 @@ homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
-antbox-cellauto.workspace = true
+antbox-clife.workspace = true
 antbox-geom.workspace = true
 clap = { workspace = true, features = ["derive"] }
 derive-new.workspace = true

@@ -1,4 +1,4 @@
-use antbox_cellauto::{Cell, ConwaysLife, Generation};
+use antbox_clife::{Cell, ConwaysLife, Generation};
 use antbox_geom::Bounds;
 use clap::Args;
 use derive_more::{From, Into};

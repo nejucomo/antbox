@@ -1,4 +1,4 @@
-use antbox_cellauto::ConwaysLife;
+use antbox_clife::ConwaysLife;
 use antbox_geom::Bounds;
 use derive_more::{From, Into};
 use mealy_machine::IntoNext;

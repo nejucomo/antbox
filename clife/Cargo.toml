@@ -1,5 +1,5 @@
 [package]
-name = "antbox-cellauto"
+name = "antbox-clife"
 description = "Cellular automaton support for `antbox`."
 version = "0.1.0"
 license.workspace = true
