@@ -2,6 +2,7 @@
 pub trait ConwayCell {
     /// Whether or not the cell is alive according to Conway's Life
     fn is_alive(&self) -> bool;
+
     /// Set the life status according to Conway's Life
     fn set_alive(&mut self, alive: bool);
 }

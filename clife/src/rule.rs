@@ -1,5 +1,5 @@
 /// Given if a cell is `already_alive` and the `neighbor_count` return whether it would be alive in the next iteration according to Conway's Life rule
-pub fn conways_rule(already_alive: bool, neighbor_count: u8) -> bool {
+pub fn conways_rule(already_alive: bool, neighbor_count: usize) -> bool {
     match neighbor_count {
         // underpopulation or over-exposure:
         0 | 1 | 4..=8 => false,

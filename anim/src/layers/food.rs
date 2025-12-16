@@ -11,7 +11,7 @@ use crate::{Drawable, GfxLayout, TICKS_PER_CONWAY, colors};
 
 /// The layer of animated food state
 #[derive(Debug)]
-pub struct Food(Grid<FoodCell>);
+pub struct FoodDecoration(Grid<FoodCell>);
 
 #[derive(Copy, Clone, Debug, Default, new)]
 struct FoodCell {
@@ -19,26 +19,28 @@ struct FoodCell {
     alive: bool,
 }
 
-impl From<Bounds> for Food {
+impl From<Bounds> for FoodDecoration {
     fn from(b: Bounds) -> Self {
-        Food(Grid::from(b))
+        FoodDecoration(Grid::from(b))
     }
 }
 
-impl<R> UpdateInput<(&mut R, &AntboxState)> for Food
+impl<R> UpdateInput<(&mut R, &AntboxState)> for FoodDecoration
 where
     R: rand::Rng,
 {
     fn update_input(mut self, (rng, ast): (&mut R, &AntboxState)) -> Self {
         for (pt, cell) in self.0.iter_mut() {
             if rng.random_ratio(2, TICKS_PER_CONWAY.try_into().unwrap()) {
-                let target_nc = ast.food.neighbor_counts()[pt];
-                let newcell = match target_nc.cmp(&cell.seeds) {
+                let (target_life, target_nc) = ast.food_life_and_neighbors(pt);
+
+                let newcell = match (target_nc as u8).cmp(&cell.seeds) {
                     Less => FoodCell::new(cell.seeds - 1, false),
                     Greater => FoodCell::new(cell.seeds + 1, false),
                     // Once they are equal, defer to the antbox life status:
-                    Equal => FoodCell::new(cell.seeds, ast.food.life()[pt].is_alive()),
+                    Equal => FoodCell::new(cell.seeds, target_life),
                 };
+
                 *cell = newcell;
             }
         }
@@ -46,7 +48,7 @@ where
     }
 }
 
-impl Drawable for &Food {
+impl Drawable for &FoodDecoration {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
         let gl = g.grid_layout;
 

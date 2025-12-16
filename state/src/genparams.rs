@@ -1,12 +1,12 @@
-use antbox_clife::{Cell, ConwaysLife, Generation};
-use antbox_geom::Bounds;
+use antbox_clife::ConwayCell as _;
+use antbox_geom::{Bounds, Grid};
 use clap::Args;
 use derive_more::{From, Into};
 use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::State;
+use crate::{Spot, State};
 
 /// A [Distribution] for generating a [State]
 #[derive(Args, Copy, Clone, Debug, From, Into, new)]
@@ -30,27 +30,24 @@ impl Distribution<State> for GenParams {
     }
 }
 
-impl Distribution<ConwaysLife> for GenParams {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ConwaysLife {
-        let g: Generation = self.sample(rng);
-        ConwaysLife::new(g)
-    }
-}
-
-impl Distribution<Generation> for GenParams {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Generation {
+impl Distribution<Grid<Spot>> for GenParams {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Grid<Spot> {
         let area = self.grid_size.area();
         let mut cells = Vec::with_capacity(area);
         for _ in 0..area {
             cells.push(self.sample(rng));
         }
 
-        Generation::new(self.grid_size, cells)
+        Grid::new(self.grid_size, cells)
     }
 }
 
-impl Distribution<Cell> for GenParams {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Cell {
-        Cell::from(rng.random_bool(self.cell_prob))
+impl Distribution<Spot> for GenParams {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Spot {
+        let mut spot = Spot::default();
+        if rng.random_bool(self.cell_prob) {
+            spot.set_alive(true);
+        }
+        spot
     }
 }

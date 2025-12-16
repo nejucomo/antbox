@@ -1,36 +1,38 @@
-use antbox_clife::ConwaysLife;
-use antbox_geom::Bounds;
+use antbox_clife::ConwayGrid as _;
+use antbox_geom::{BoundPoint, Bounds, Grid};
 use derive_more::{From, Into};
+use derive_new::new;
 use mealy_machine::IntoNext;
 
+use crate::Spot;
+
 /// The `antbox` functional, I/O-free [State]
-#[derive(Debug, From, Into)]
+#[derive(Debug, From, Into, new)]
 pub struct State {
     /// The generation count
-    pub gencnt: usize,
-    /// The grid bounds
-    pub bounds: Bounds,
-    /// The food grid
-    pub food: ConwaysLife,
+    #[new(default)]
+    generation: usize,
+    /// The grid of objects
+    grid: Grid<Spot>,
 }
 
 impl State {
-    /// Initialize the state from a `food` grid
-    pub fn new(food: ConwaysLife) -> Self {
-        State {
-            gencnt: 0,
-            bounds: food.bounds(),
-            food,
-        }
+    /// Get the state's [Bounds]
+    pub fn bounds(&self) -> Bounds {
+        self.grid.bounds()
+    }
+
+    /// Return the food's life and neighbor count for the given pt
+    pub fn food_life_and_neighbors(&self, pt: BoundPoint) -> (bool, usize) {
+        self.grid.life_and_neighbors(pt)
     }
 }
 
 impl IntoNext for State {
     fn into_next(self) -> Self {
         State {
-            gencnt: self.gencnt + 1,
-            bounds: self.bounds,
-            food: self.food.into_next(),
+            generation: self.generation + 1,
+            grid: self.grid.conway_step(),
         }
     }
 }
