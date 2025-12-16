@@ -4,6 +4,7 @@
 mod anim;
 mod colors;
 mod drawable;
+mod drawantbox;
 mod gfxlayout;
 mod gridlayout;
 pub mod layers;

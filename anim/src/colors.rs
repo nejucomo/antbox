@@ -10,7 +10,7 @@ pub(crate) const SEEDPOD: Color = Color::from_rgba(0.25, 0.25, 0.25, 0.75);
 pub(crate) const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
 pub(crate) const RIPE: Color = Color::from_rgb(0.1, 0.5, 0.17);
 pub(crate) const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
-pub(crate) const FOODLIFE: Color = Color::from_rgb(0.5, 0.77, 0.46);
+pub(crate) const FOOD_LIFE: Color = Color::from_rgb(0.5, 0.77, 0.46);
 
 pub(crate) fn food_neighbor_count(c: u8) -> Color {
     assert!(c < 9, "{c:?}");

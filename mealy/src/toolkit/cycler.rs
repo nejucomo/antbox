@@ -1,13 +1,14 @@
-use derive_more::{Deref, DerefMut};
+use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
 
 use crate::IntoNext;
 
 /// Updates an inner state every [Self::interval] updates
-#[derive(Debug, Deref, DerefMut, new)]
+#[derive(Debug, Deref, DerefMut, AsRef, new)]
 pub struct Cycler<T> {
     #[deref]
     #[deref_mut]
+    #[as_ref]
     inner: T,
 
     /// The number of updates before updating the inner state `T`

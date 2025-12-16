@@ -77,7 +77,7 @@ impl Drawable for &FoodDecoration {
                 let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
 
                 if alive {
-                    g.draw_circle(center, crad, colors::FOODLIFE);
+                    g.draw_circle(center, crad, colors::FOOD_LIFE);
                 }
                 g.draw_circle(center, crad * 0.9, colors::SEEDPOD);
                 for berry in 0..seeds {

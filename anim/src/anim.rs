@@ -30,8 +30,9 @@ impl AnimationState {
         let mut gfx = GfxLayout::new(g, gl);
 
         gfx.draw(layers::Background);
-        gfx.draw(&self.foodeco);
         gfx.draw(layers::WireFrame);
+        gfx.draw(&*self.antbox);
+        gfx.draw(&self.foodeco);
     }
 }
 
