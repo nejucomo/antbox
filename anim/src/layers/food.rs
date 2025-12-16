@@ -7,7 +7,7 @@ use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
 use mealy_machine::UpdateInput;
 
-use crate::{Drawable, GfxLayout, TICKS_PER_CONWAY, colors};
+use crate::{Drawable, GfxLayout, RectExt as _, TICKS_PER_CONWAY, colors};
 
 /// The layer of animated food state
 #[derive(Debug)]
@@ -54,9 +54,10 @@ impl Drawable for &FoodDecoration {
 
         let crad = gl.cell_radius * 0.9; // crowded flavor
 
-        for (pt, center) in gl.iter_pts_and_centers() {
+        for (pt, rect) in gl.iter_pts_and_rects() {
             let FoodCell { seeds, alive } = self.0[pt];
             if alive || seeds > 0 {
+                let center = rect.center();
                 let cellrotation = Angle::from(center.magnitude());
                 let berrycolor = colors::food_neighbor_count(seeds);
 
