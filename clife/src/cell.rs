@@ -1,23 +1,17 @@
-use derive_more::{From, Into};
-
-/// A Conway's Life [Cell]
-#[derive(Copy, Clone, Default, From, Into, PartialEq)]
-pub struct Cell(bool);
-
-impl Cell {
-    /// Is this [Cell] alive?
-    pub fn is_alive(self) -> bool {
-        self.0
-    }
-
-    /// Is this [Cell] alive?
-    pub fn set_alive(&mut self, alive: bool) {
-        self.0 = alive;
-    }
+/// A [Grid](antbox_geom::Grid) cell type which provides an `is_alive`/`set_alive` interface for Conway's Life
+pub trait ConwayCell {
+    /// Whether or not the cell is alive according to Conway's Life
+    fn is_alive(&self) -> bool;
+    /// Set the life status according to Conway's Life
+    fn set_alive(&mut self, alive: bool);
 }
 
-impl std::fmt::Debug for Cell {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", if self.0 { '⏺' } else { '•' })
+impl ConwayCell for bool {
+    fn is_alive(&self) -> bool {
+        *self
+    }
+
+    fn set_alive(&mut self, alive: bool) {
+        *self = alive;
     }
 }

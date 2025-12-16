@@ -105,7 +105,7 @@ name = "antbox"
 version = "0.1.0"
 dependencies = [
  "antbox-animation",
- "antbox-cellauto",
+ "antbox-clife",
  "antbox-geom",
  "antbox-state",
  "antbox-tick-timer",
@@ -138,7 +138,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "antbox-cellauto"
+name = "antbox-clife"
 version = "0.1.0"
 dependencies = [
  "antbox-geom",
@@ -160,7 +160,7 @@ dependencies = [
 name = "antbox-state"
 version = "0.1.0"
 dependencies = [
- "antbox-cellauto",
+ "antbox-clife",
  "antbox-geom",
  "clap",
  "derive-new",
