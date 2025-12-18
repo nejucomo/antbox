@@ -22,6 +22,16 @@ impl Bounds {
         self.width * self.height
     }
 
+    /// Bind a point, if it's within our bounds
+    pub fn bind<P: Into<Point>>(self, pt: P) -> Option<BoundPoint> {
+        let pt = pt.into();
+        if pt.x < self.width && pt.y < self.height {
+            Some(BoundPoint::new(pt, self))
+        } else {
+            None
+        }
+    }
+
     /// Iterate over the [BoundPoint]s herein
     pub fn iter_points(self) -> impl Iterator<Item = BoundPoint> {
         (0..self.area()).map(move |ix| self.ix_to_bp(ix))

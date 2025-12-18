@@ -17,3 +17,4 @@ derive-new.workspace = true
 mealy-machine.workspace = true
 rand.workspace = true
 speedy2d.workspace = true
+rand_distr.workspace = true
