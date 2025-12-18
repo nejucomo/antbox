@@ -1,15 +1,14 @@
 use antbox_state::{GenParams, State as AntboxState};
 use mealy_machine::UpdateInput;
-use mealy_machine::toolkit::Cycler;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::{GfxLayout, GridLayout, TICKS_PER_CONWAY, layers};
+use crate::{GfxLayout, GridLayout, layers};
 
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
 pub struct AnimationState {
-    antbox: Cycler<AntboxState>,
+    antbox: AntboxState,
     foodeco: layers::FoodDecoration,
 }
 
@@ -19,7 +18,7 @@ impl AnimationState {
         let antbox = gp.generate_state(rng);
         let bounds = antbox.bounds();
         AnimationState {
-            antbox: Cycler::new(antbox, TICKS_PER_CONWAY),
+            antbox,
             foodeco: layers::FoodDecoration::from(bounds),
         }
     }
@@ -31,8 +30,8 @@ impl AnimationState {
 
         gfx.draw(layers::Background);
         gfx.draw(layers::WireFrame);
-        gfx.draw(&*self.antbox);
         gfx.draw(&self.foodeco);
+        gfx.draw(&self.antbox);
     }
 }
 

@@ -19,6 +19,11 @@ pub struct State {
 }
 
 impl State {
+    /// How many ticks per Conway's Life generation of the food
+    pub fn ticks_per_conway(&self) -> usize {
+        50
+    }
+
     /// Return the directions from `pt` which have the `greatest`/weakest magnitude of `ph`
     pub fn pheromone_gradient(&self, pt: BoundPoint, ph: Pheromone, greatest: bool) -> DirSet {
         let it = Direction::each().map(|d| self[pt + d].pheromone_magnitude(ph));
@@ -62,9 +67,15 @@ where
     R: rand::Rng,
 {
     fn update_input(self, rng: &mut R) -> Self {
+        let generation = self.generation + 1;
+
         State {
-            generation: self.generation + 1,
-            grid: self.grid.conway_step(),
+            generation,
+            grid: if generation.is_multiple_of(self.ticks_per_conway()) {
+                self.grid.conway_step()
+            } else {
+                self.grid
+            },
         }
         .step_ants(rng)
     }

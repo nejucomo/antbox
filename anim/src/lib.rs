@@ -15,5 +15,3 @@ pub use self::drawable::Drawable;
 pub use self::gfxlayout::GfxLayout;
 pub use self::gridlayout::GridLayout;
 pub use self::rectext::RectExt;
-
-const TICKS_PER_CONWAY: usize = 50;
