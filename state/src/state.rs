@@ -1,27 +1,31 @@
-use antbox_clife::ConwayGrid as _;
+use antbox_clife::ConwayMachine;
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
-use derive_new::new;
-use mealy_machine::UpdateInput;
+use mealy_machine::toolkit::Cycler;
+use mealy_machine::{IntoNext as _, UpdateInput};
 
 use crate::randutil::ShuffleIntoVec as _;
 use crate::{Ant, Objectish as _, Pheromone, Spot};
 
+const ANTS_PER_CONWAY_TICK: usize = 50;
+
 /// The `antbox` functional, I/O-free [State]
-#[derive(Debug, From, Into, Deref, new)]
+#[derive(Debug, From, Into, Deref)]
 pub struct State {
     /// The generation count
-    #[new(default)]
     generation: usize,
     /// The grid of objects
     #[deref]
-    grid: Grid<Spot>,
+    grid: Cycler<ConwayMachine<Spot>>,
 }
 
 impl State {
-    /// How many ticks per Conway's Life generation of the food
-    pub fn ticks_per_conway(&self) -> usize {
-        50
+    /// Construct a new state from a [Grid]
+    pub fn new(grid: Grid<Spot>) -> Self {
+        State {
+            generation: 0,
+            grid: Cycler::new(ConwayMachine::new(grid), ANTS_PER_CONWAY_TICK),
+        }
     }
 
     /// Return the directions from `pt` which have the `greatest`/weakest magnitude of `ph`
@@ -71,11 +75,7 @@ where
 
         State {
             generation,
-            grid: if generation.is_multiple_of(self.ticks_per_conway()) {
-                self.grid.conway_step()
-            } else {
-                self.grid
-            },
+            grid: self.grid.into_next(),
         }
         .step_ants(rng)
     }

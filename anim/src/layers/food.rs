@@ -7,6 +7,7 @@ use antbox_state::State as AntboxState;
 use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
 use mealy_machine::UpdateInput;
+use rand::distr::Distribution;
 
 use crate::{Drawable, GfxLayout, RectExt as _, colors};
 
@@ -31,20 +32,18 @@ where
     R: rand::Rng,
 {
     fn update_input(mut self, (rng, ast): (&mut R, &AntboxState)) -> Self {
-        for (pt, cell) in self.0.iter_mut() {
-            if rng.random_ratio(2, ast.ticks_per_conway().try_into().unwrap()) {
-                let (target_life, target_nc) = ast.life_and_neighbors(pt);
+        let pt = self.0.bounds().sample(rng);
+        let cell = &mut self.0[pt];
+        let (target_life, target_nc) = ast.life_and_neighbors(pt);
 
-                let newcell = match (target_nc as u8).cmp(&cell.seeds) {
-                    Less => FoodCell::new(cell.seeds - 1, false),
-                    Greater => FoodCell::new(cell.seeds + 1, false),
-                    // Once they are equal, defer to the antbox life status:
-                    Equal => FoodCell::new(cell.seeds, target_life),
-                };
+        let newcell = match (target_nc as u8).cmp(&cell.seeds) {
+            Less => FoodCell::new(cell.seeds - 1, false),
+            Greater => FoodCell::new(cell.seeds + 1, false),
+            // Once they are equal, defer to the antbox life status:
+            Equal => FoodCell::new(cell.seeds, target_life),
+        };
 
-                *cell = newcell;
-            }
-        }
+        *cell = newcell;
         self
     }
 }
