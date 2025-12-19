@@ -59,7 +59,14 @@ impl Drawable for (AntHole, Rect) {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
         let (_, rect) = self;
         let c = rect.center();
-        g.draw_circle(c, rect.diagonal().magnitude(), colors::ANT_HOLE_IRIS);
-        g.draw_circle(c, rect.width().min(rect.height()), colors::ANT_HOLE);
+
+        // Slightly too big to fit:
+        let rad = g.grid_layout.cell_radius * 1.1;
+
+        let colrads = [(colors::ANT_HOLE_IRIS, rad), (colors::ANT_HOLE, rad * 0.4)];
+
+        for (color, rad) in colrads {
+            g.draw_circle(c, rad, color);
+        }
     }
 }
