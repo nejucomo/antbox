@@ -31,11 +31,15 @@ where
                 Ant::Hungry
             };
 
-            if su.state.move_ant(newant, su.pt + su.rng.random()).is_none() {
-                AntHole {
+            let antpt = su.pt + su.rng.random();
+
+            if su.state.move_ant(newant, antpt).is_none() {
+                let newh = AntHole {
                     lifeforce: self.lifeforce - LIFE_FORCE_SPAWN_ANT,
                     ants: self.ants + 1,
-                }
+                };
+                log::info!("New ant {newant:?} at {antpt:?} from {newh:?}");
+                newh
             } else {
                 self
             }
@@ -56,7 +60,7 @@ impl SteppedUpon for AntHole {
     fn stepped_upon_by(self, ant: Ant) -> Option<Self> {
         use Ant::*;
 
-        Some(AntHole {
+        let newh = AntHole {
             lifeforce: self.lifeforce
                 + LIFE_FORCE_ANT_RETURNS
                 + match ant {
@@ -68,7 +72,11 @@ impl SteppedUpon for AntHole {
                 },
 
             ants: self.ants - 1,
-        })
+        };
+
+        log::info!("Ant {ant:?} stepped on {newh:?}");
+
+        Some(newh)
     }
 }
 
