@@ -1,4 +1,8 @@
 //! Extends `antbox` game state along with animation states
+//!
+//! # TODO
+//!
+//! - Move the stateful `FoodDecoration` into `antbox-state` so that ants interact with it first-class.
 #![deny(unsafe_code, missing_docs)]
 
 mod anim;

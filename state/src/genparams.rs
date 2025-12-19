@@ -6,7 +6,7 @@ use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::{Spot, State};
+use crate::{AntHole, Spot, State};
 
 /// A [Distribution] for generating a [State]
 #[derive(Args, Copy, Clone, Debug, From, Into, new)]
@@ -38,7 +38,12 @@ impl Distribution<Grid<Spot>> for GenParams {
             cells.push(self.sample(rng));
         }
 
-        Grid::new(self.grid_size, cells)
+        let mut g = Grid::new(self.grid_size, cells);
+
+        // Let's add one ant-hole
+        let pt = g.bounds().sample(rng);
+        g[pt] = Spot::from(AntHole::default());
+        g
     }
 }
 

@@ -5,7 +5,7 @@ use mealy_machine::toolkit::Cycler;
 use mealy_machine::{IntoNext as _, UpdateInput};
 
 use crate::randutil::ShuffleIntoVec as _;
-use crate::{Ant, Objectish as _, Pheromone, Spot};
+use crate::{Ant, OptInto as _, Pheromone, Spot, SteppedUpon as _};
 
 const ANTS_PER_CONWAY_TICK: usize = 50;
 
@@ -48,7 +48,7 @@ impl State {
     {
         let ants = self
             .iter()
-            .filter_map(|(pt, spot)| spot.as_ant().map(|ant| (pt, ant)))
+            .filter_map(|(pt, &spot)| spot.opt_into().map(|ant: Ant| (pt, ant)))
             .shuffle_into_vec(rng);
 
         for (pt, ant) in ants {
@@ -59,7 +59,9 @@ impl State {
     }
 
     pub(crate) fn move_ant(&mut self, ant: Ant, src: BoundPoint, dst: BoundPoint) {
-        if self.grid[dst].stepped_upon(ant) {
+        if let Some(dstspot) = self.grid[dst].stepped_upon_by(ant) {
+            self.grid[dst] = dstspot;
+
             let shadow = self.grid[src].take_object();
             assert_eq!(Some(crate::Object::Ant(ant)), shadow);
         }

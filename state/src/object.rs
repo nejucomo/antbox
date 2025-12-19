@@ -1,70 +1,30 @@
-use derive_more::From;
+use derive_more::{From, TryInto};
 
-use crate::Ant;
-
-use self::Object::{AntHole, Food};
+use crate::{Ant, AntHole, Food, Objectish, SteppedUpon};
 
 /// The type of [Object]s which can be in a [Spot](crate::Spot) in the [State](crate::State)
-#[derive(Copy, Clone, Debug, From, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, From, Eq, PartialEq, TryInto)]
 pub enum Object {
     /// A food particle
-    Food,
+    Food(Food),
     /// An ant
     Ant(Ant),
     /// An ant hole
-    AntHole,
+    AntHole(AntHole),
 }
 
-/// Methods shared by [Object] and [Spot](crate::Spot)
-pub trait Objectish: Sized + Copy {
-    /// Is this food?
-    fn is_food(self) -> bool;
+impl Objectish for Object {}
 
-    /// Is this an [Ant]?
-    fn is_ant(self) -> bool {
-        self.as_ant().is_some()
-    }
+impl SteppedUpon for Object {
+    type NewState = Self;
 
-    /// This as an [Ant]
-    fn as_ant(self) -> Option<Ant>;
+    fn stepped_upon_by(self, ant: Ant) -> Option<Self> {
+        use Object::*;
 
-    /// This as an ant hole?
-    fn is_ant_hole(self) -> bool;
-
-    /// Modify this object based on `ant` attempting to step on it
-    ///
-    /// # Return
-    ///
-    /// Return if `ant` successfully stepped here.
-    fn stepped_upon(&mut self, ant: Ant) -> bool;
-}
-
-impl Objectish for Object {
-    fn is_food(self) -> bool {
-        matches!(self, Food)
-    }
-
-    fn as_ant(self) -> Option<Ant> {
         match self {
-            Object::Ant(a) => Some(a),
-            _ => None,
+            Food(food) => food.stepped_upon_by(ant).map(Self::from),
+            Ant(ant) => ant.stepped_upon_by(ant).map(Self::from),
+            AntHole(h) => h.stepped_upon_by(ant).map(Self::from),
         }
-    }
-
-    fn is_ant_hole(self) -> bool {
-        matches!(self, AntHole)
-    }
-
-    fn stepped_upon(&mut self, _: Ant) -> bool {
-        let ons = match self {
-            Food => Some(Ant::WithFood.into()),
-            AntHole => todo!("step on anthole"),
-            _ => None,
-        };
-
-        if let Some(nextself) = ons {
-            *self = nextself;
-        }
-        ons.is_some()
     }
 }

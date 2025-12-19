@@ -2,7 +2,7 @@ use antbox_geom::{BoundPoint, DirSet};
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::{Objectish as _, Pheromone, State};
+use crate::{Food, Objectish as _, Pheromone, State, SteppedUpon};
 
 use self::Ant::*;
 
@@ -29,23 +29,32 @@ impl Ant {
     }
 
     fn sense(self, state: &mut State, pt: BoundPoint) -> DirSet {
-        use Pheromone::*;
+        use Pheromone as Ph;
 
         match self {
             Exploring => state
-                .pheromone_gradient(pt, Food, false)
-                .intersect(state.pheromone_gradient(pt, Home, false)),
+                .pheromone_gradient(pt, Ph::Food, false)
+                .intersect(state.pheromone_gradient(pt, Ph::Home, false)),
             Hungry => {
-                let foodirs = state.directions_where(pt, |spot| spot.is_food());
+                let foodirs = state.directions_where(pt, |spot| spot.contains::<Food>());
                 if foodirs.is_empty() {
                     // If there's no adjacent food, follow pheremones
-                    state.pheromone_gradient(pt, Food, true)
+                    state.pheromone_gradient(pt, Ph::Food, true)
                 } else {
                     // otherwise get the food!
                     foodirs
                 }
             }
-            WithFood => state.pheromone_gradient(pt, Home, true),
+            WithFood => state.pheromone_gradient(pt, Ph::Home, true),
         }
+    }
+}
+
+impl SteppedUpon for Ant {
+    type NewState = Self;
+
+    fn stepped_upon_by(self, _: Ant) -> Option<Self> {
+        // Watch where you're walking, buddy!
+        None
     }
 }
