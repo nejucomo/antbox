@@ -133,6 +133,7 @@ dependencies = [
  "derive-debug",
  "derive-new",
  "derive_more",
+ "log",
  "movestate",
  "rand",
  "rand_distr",

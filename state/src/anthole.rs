@@ -41,6 +41,7 @@ where
                 log::info!("New ant {newant:?} at {antpt:?} from {newh:?}");
                 newh
             } else {
+                log::debug!("Spawning failed for ant {newant:?} as {antpt:?}");
                 self
             }
         } else if WCOIN_LIFE_FORCE_LOSS.sample(su.rng) {
