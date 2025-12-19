@@ -34,7 +34,7 @@ impl AnimationState {
         gfx.draw(layers::Background);
         gfx.draw(layers::WireFrame);
         gfx.draw(&self.foodeco);
-        // gfx.draw(&*self.antbox);
+        gfx.draw(&*self.antbox);
     }
 }
 

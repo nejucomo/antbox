@@ -1,17 +1,65 @@
-use antbox_clife::ConwayGrid as _;
-use antbox_state::State as AntboxState;
+use antbox_state::{Ant, AntHole, Food, Object, Spot, State as AntboxState};
+use speedy2d::color::Color;
+use speedy2d::shape::Rect;
 
-use crate::{Drawable, RectExt as _, colors};
+use crate::colors::Interpolate as _;
+use crate::{Drawable, GfxLayout, RectExt as _, colors};
 
 impl Drawable for &AntboxState {
-    fn draw_on(self, g: &mut crate::GfxLayout<'_>) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
         let gl = g.grid_layout;
-        let rad = gl.cell_radius * 0.9;
         for (pt, rect) in gl.iter_pts_and_rects() {
-            let (life, _) = self.life_and_neighbors(pt);
-            if life {
-                g.draw_circle(rect.center(), rad, colors::SEEDPOD);
-            }
+            (self[pt], rect).draw_on(g);
         }
+    }
+}
+
+impl Drawable for (Spot, Rect) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        let (spot, rect) = self;
+        spot.object().map(|obj| (obj, rect)).draw_on(g);
+    }
+}
+
+impl Drawable for (Object, Rect) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        use Object::*;
+
+        let (obj, rect) = self;
+        match obj {
+            Food(x) => (x, rect).draw_on(g),
+            Ant(x) => (x, rect).draw_on(g),
+            AntHole(x) => (x, rect).draw_on(g),
+        }
+    }
+}
+
+impl Drawable for (Food, Rect) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        let (_, rect) = self;
+        let rad = g.grid_layout.cell_radius * 0.7;
+        g.draw_circle(
+            rect.center(),
+            rad,
+            colors::SEEDPOD.interpolate(Color::from_rgba(1., 1., 1., 0.), 0.6),
+        );
+    }
+}
+
+impl Drawable for (Ant, Rect) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        // TODO: head, throax, abdomen, food pellet
+        let (_, rect) = self;
+        let rad = g.grid_layout.cell_radius * 0.5;
+        g.draw_circle(rect.center(), rad, colors::ANT);
+    }
+}
+
+impl Drawable for (AntHole, Rect) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        let (_, rect) = self;
+        let c = rect.center();
+        g.draw_circle(c, rect.diagonal().magnitude(), colors::ANT_HOLE_IRIS);
+        g.draw_circle(c, rect.width().min(rect.height()), colors::ANT_HOLE);
     }
 }

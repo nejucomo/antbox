@@ -5,11 +5,17 @@ use speedy2d::shape::Rect;
 pub trait RectExt {
     /// The center point of a [Rect]
     fn center(&self) -> Vec2;
+
+    /// The diagonal from top-left to bottom-right
+    fn diagonal(&self) -> Vec2;
 }
 
 impl RectExt for Rect {
     fn center(&self) -> Vec2 {
-        let diag = self.bottom_right() - self.top_left();
-        self.bottom_right() + (diag / 2.0)
+        self.bottom_right() + (self.diagonal() / 2.0)
+    }
+
+    fn diagonal(&self) -> Vec2 {
+        self.bottom_right() - self.top_left()
     }
 }
