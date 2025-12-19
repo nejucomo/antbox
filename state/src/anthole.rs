@@ -1,3 +1,4 @@
+use antbox_geom::Direction;
 use movestate::Transform;
 use rand::distr::Distribution as _;
 
@@ -31,7 +32,7 @@ where
                 Ant::Hungry
             };
 
-            let antpt = su.pt + su.rng.random();
+            let antpt = su.pt + su.rng.random::<Direction>();
 
             if su.state.move_ant(newant, antpt).is_none() {
                 let newh = AntHole {

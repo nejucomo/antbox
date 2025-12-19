@@ -81,7 +81,6 @@ impl Drawable for (Ant, Rect) {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
         // TODO: head, throax, abdomen, food pellet
         let (_, rect) = self;
-        log::debug!("Drawing ant at {rect:?}");
         let rad = g.grid_layout.cell_radius * 0.5;
         g.draw_circle(rect.center(), rad, ANT);
     }

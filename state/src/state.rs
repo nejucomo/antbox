@@ -2,7 +2,7 @@ use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
 use movestate::toolkit::Cycler;
-use movestate::{IntoNext as _, Transform};
+use movestate::{IntoNext as _, Transform, Update as _};
 
 use crate::randutil::ShuffleIntoVec as _;
 use crate::spotupdate::SpotUpdate;
@@ -58,6 +58,7 @@ impl State {
 
     pub(crate) fn move_ant(&mut self, ant: Ant, dst: BoundPoint) -> Option<Ant> {
         if let Some(dstspot) = self.grid[dst].stepped_upon_by(ant) {
+            log::debug!("Move {ant:?} to {dst:?}");
             self.grid[dst] = dstspot;
             None
         } else {
@@ -101,13 +102,10 @@ where
 
     fn transform(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
         // TODO: Performance: this is a full copy of all points! Can we do a cheaper permutation 0..area?
-        let ptspots = self
-            .iter()
-            .map(|(pt, &spot)| (pt, spot))
-            .shuffle_into_vec(rng);
+        let pts = self.bounds().iter_points().shuffle_into_vec(rng);
 
-        for (pt, spot) in ptspots {
-            let newspot = spot.transform(SpotUpdate::new(rng, &mut self, pt));
+        for pt in pts {
+            let newspot = self.grid[pt].update(SpotUpdate::new(rng, &mut self, pt));
             self.grid[pt] = newspot;
         }
 
