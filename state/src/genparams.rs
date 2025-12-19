@@ -1,4 +1,3 @@
-use antbox_clife::ConwayCell as _;
 use antbox_geom::{Bounds, Grid};
 use clap::Args;
 use derive_more::{From, Into};
@@ -26,33 +25,29 @@ impl GenParams {
 
 impl Distribution<State> for GenParams {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> State {
-        State::new(self.sample(rng))
+        State::new(self.sample(rng), self.sample(rng))
     }
 }
 
 impl Distribution<Grid<Spot>> for GenParams {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Grid<Spot> {
-        let area = self.grid_size.area();
-        let mut cells = Vec::with_capacity(area);
-        for _ in 0..area {
-            cells.push(self.sample(rng));
-        }
+        let mut g = Grid::from(self.grid_size);
 
-        let mut g = Grid::new(self.grid_size, cells);
-
-        // Let's add one ant-hole
+        // Add one ant-hole
         let pt = g.bounds().sample(rng);
         g[pt] = Spot::from(AntHole::default());
+
         g
     }
 }
 
-impl Distribution<Spot> for GenParams {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Spot {
-        let mut spot = Spot::default();
-        if rng.random_bool(self.cell_prob) {
-            spot.set_alive(true);
+impl Distribution<Grid<bool>> for GenParams {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Grid<bool> {
+        let area = self.grid_size.area();
+        let mut cells = Vec::with_capacity(area);
+        for _ in 0..area {
+            cells.push(rng.random_bool(self.cell_prob));
         }
-        spot
+        Grid::new(self.grid_size, cells)
     }
 }

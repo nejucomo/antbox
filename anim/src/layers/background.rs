@@ -6,6 +6,6 @@ pub struct Background;
 
 impl Drawable for Background {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
-        g.clear_screen(colors::BACKGROUND);
+        g.clear_screen(colors::DIRT);
     }
 }

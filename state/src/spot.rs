@@ -1,7 +1,12 @@
-use antbox_clife::ConwayCell;
+use antbox_geom::BoundPoint;
 use derive_new::new;
+use mealy_machine::UpdateInput;
+use rand::distr::Distribution as _;
 
-use crate::{Ant, AntHole, Food, Object, Objectish, OptInto, Pheromone, Pheromones, SteppedUpon};
+use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_DISAPPEARS};
+use crate::{
+    Ant, AntHole, Food, Object, Objectish, OptInto, Pheromone, Pheromones, State, SteppedUpon,
+};
 
 /// Every [Spot] in the [State](crate::State) can contain up to one [Object]
 #[derive(Copy, Clone, Debug, Default, new)]
@@ -42,19 +47,33 @@ where
     }
 }
 
-impl ConwayCell for Spot {
-    fn is_alive(&self) -> bool {
-        self.contains::<Food>()
-    }
+impl<R> UpdateInput<(&mut R, &State, BoundPoint)> for Spot
+where
+    R: rand::Rng,
+{
+    fn update_input(self, (rng, state, pt): (&mut R, &State, BoundPoint)) -> Self {
+        let pheromones = self.pheromones.update_input(rng);
+        let fig = state.food_is_growing(pt);
 
-    fn set_alive(&mut self, alive: bool) {
-        if alive && self.is_empty() {
-            // We only set food life for empty spots; if it already contains food, this is a no-op, but if it contains an ant or anthole, those aren't overwritten.
-            self.obj = Some(Food.into());
-        } else if !alive && self.is_alive() {
-            // It was `Food` so set it to nothing:
-            self.obj = None;
-        }
+        let obj = if let Some(prevobj) = self.obj {
+            if !fig
+                && prevobj
+                    .opt_into()
+                    .map(|f: Food| f.is_empty_pod())
+                    .unwrap_or(false)
+                && WCOIN_POD_DISAPPEARS.sample(rng)
+            {
+                None
+            } else {
+                Some(prevobj.update_input((rng, state, pt)))
+            }
+        } else if fig && WCOIN_POD_APPEARS.sample(rng) {
+            Some(Food::default().into())
+        } else {
+            None
+        };
+
+        Spot { obj, pheromones }
     }
 }
 

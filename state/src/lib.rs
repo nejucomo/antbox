@@ -3,6 +3,7 @@
 
 mod ant;
 mod anthole;
+pub(crate) mod consts;
 mod food;
 mod genparams;
 mod object;
@@ -13,6 +14,7 @@ mod randutil;
 mod spot;
 mod state;
 mod steppedupon;
+pub(crate) mod wcoin;
 
 pub use self::ant::Ant;
 pub use self::anthole::AntHole;

@@ -1,13 +1,13 @@
-use antbox_clife::ConwayMachine;
+use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
 use mealy_machine::toolkit::Cycler;
 use mealy_machine::{IntoNext as _, UpdateInput};
 
 use crate::randutil::ShuffleIntoVec as _;
-use crate::{Ant, OptInto as _, Pheromone, Spot, SteppedUpon as _};
+use crate::{Ant, Pheromone, Spot, SteppedUpon as _};
 
-const ANTS_PER_CONWAY_TICK: usize = 50;
+const TICKS_PER_CONWAY: usize = 50;
 
 /// The `antbox` functional, I/O-free [State]
 #[derive(Debug, From, Into, Deref)]
@@ -16,15 +16,18 @@ pub struct State {
     generation: usize,
     /// The grid of objects
     #[deref]
-    grid: Cycler<ConwayMachine<Spot>>,
+    grid: Grid<Spot>,
+    /// The state influencing food growth:
+    clife: Cycler<ConwayMachine<bool>>,
 }
 
 impl State {
     /// Construct a new state from a [Grid]
-    pub fn new(grid: Grid<Spot>) -> Self {
+    pub fn new(grid: Grid<Spot>, clife: Grid<bool>) -> Self {
         State {
             generation: 0,
-            grid: Cycler::new(ConwayMachine::new(grid), ANTS_PER_CONWAY_TICK),
+            grid,
+            clife: Cycler::new(ConwayMachine::new(clife), TICKS_PER_CONWAY),
         }
     }
 
@@ -42,20 +45,12 @@ impl State {
         self.directions_where(pt, |spot| spot.pheromone_magnitude(ph) == best)
     }
 
-    fn step_ants<R>(mut self, rng: &mut R) -> Self
-    where
-        R: rand::Rng,
-    {
-        let ants = self
-            .iter()
-            .filter_map(|(pt, &spot)| spot.opt_into().map(|ant: Ant| (pt, ant)))
-            .shuffle_into_vec(rng);
+    pub fn food_is_growing(&self, pt: BoundPoint) -> bool {
+        self.clife[pt]
+    }
 
-        for (pt, ant) in ants {
-            ant.sense_then_step(&mut self, rng, pt);
-        }
-
-        self
+    pub fn life_and_neighbors(&self, pt: BoundPoint) -> (bool, usize) {
+        self.clife.life_and_neighbors(pt)
     }
 
     pub(crate) fn move_ant(&mut self, ant: Ant, src: BoundPoint, dst: BoundPoint) {
@@ -68,17 +63,44 @@ impl State {
     }
 }
 
+// Janky hack to update in two passes; TODO: API impedance mismatch.
+struct LifePhase;
+struct GridPhase;
+
 impl<R> UpdateInput<&mut R> for State
 where
     R: rand::Rng,
 {
     fn update_input(self, rng: &mut R) -> Self {
-        let generation = self.generation + 1;
+        self.update_input(LifePhase).update_input((GridPhase, rng))
+    }
+}
 
+impl UpdateInput<LifePhase> for State {
+    fn update_input(self, _: LifePhase) -> Self {
         State {
-            generation,
-            grid: self.grid.into_next(),
+            generation: self.generation + 1,
+            grid: self.grid,
+            clife: self.clife.into_next(),
         }
-        .step_ants(rng)
+    }
+}
+
+impl<R> UpdateInput<(GridPhase, &mut R)> for State
+where
+    R: rand::Rng,
+{
+    fn update_input(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
+        // TODO: Performance: this is a full copy of all points! Can we do a cheaper permutation 0..area?
+        let ptspots = self
+            .iter()
+            .map(|(pt, &spot)| (pt, spot))
+            .shuffle_into_vec(rng);
+
+        for (pt, spot) in ptspots {
+            self[pt] = spot.update_input((rng, &self, pt));
+        }
+
+        self
     }
 }

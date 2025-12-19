@@ -1,4 +1,5 @@
 use antbox_geom::{BoundPoint, DirSet};
+use mealy_machine::UpdateInput;
 use rand::Rng;
 use rand::distr::Distribution;
 
@@ -14,7 +15,7 @@ pub enum Ant {
     /// The ant is hungry
     Hungry,
     /// The ant has food
-    WithFood,
+    WithFood(Food),
 }
 
 impl Ant {
@@ -45,8 +46,18 @@ impl Ant {
                     foodirs
                 }
             }
-            WithFood => state.pheromone_gradient(pt, Ph::Home, true),
+            WithFood(_) => state.pheromone_gradient(pt, Ph::Home, true),
         }
+    }
+}
+
+impl<R> UpdateInput<(&mut R, &State, BoundPoint)> for Ant
+where
+    R: rand::Rng,
+{
+    fn update_input(self, (rng, state, pt): (&mut R, &State, BoundPoint)) -> Self {
+        // BUG: we need a way to mutate state, and then disappear if step succeeds
+        self
     }
 }
 

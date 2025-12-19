@@ -2,11 +2,10 @@ use std::f32::consts::{FRAC_1_SQRT_2, TAU};
 
 use antbox_state::{Ant, AntHole, Food, Object, Spot, State as AntboxState};
 use antbox_trig::TrigVec;
-use speedy2d::color::Color;
 use speedy2d::shape::Rect;
 
-use crate::colors::Interpolate as _;
-use crate::{Drawable, GfxLayout, RectExt as _, colors};
+use crate::colors::{ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, interpolate};
+use crate::{Drawable, GfxLayout, RectExt as _};
 
 impl Drawable for &AntboxState {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
@@ -38,14 +37,9 @@ impl Drawable for (Object, Rect) {
 }
 
 impl Drawable for (Food, Rect) {
-    fn draw_on(self, g: &mut GfxLayout<'_>) {
-        let (_, rect) = self;
-        let rad = g.grid_layout.cell_radius * 0.7;
-        g.draw_circle(
-            rect.center(),
-            rad,
-            colors::SEEDPOD.interpolate(Color::from_rgba(1., 1., 1., 0.), 0.6),
-        );
+    fn draw_on(self, _: &mut GfxLayout<'_>) {
+        // Nothing!
+        // TODO: Move food layer into proper `antbox_state`
     }
 }
 
@@ -54,7 +48,7 @@ impl Drawable for (Ant, Rect) {
         // TODO: head, throax, abdomen, food pellet
         let (_, rect) = self;
         let rad = g.grid_layout.cell_radius * 0.5;
-        g.draw_circle(rect.center(), rad, colors::ANT);
+        g.draw_circle(rect.center(), rad, ANT);
     }
 }
 
@@ -76,7 +70,7 @@ impl Drawable for (AntHole, Rect) {
             let fdecay = 0.8f32.powi(i);
             let c = center + spoke.rotate(fdecay * TAU).scale(1.0 - fdecay);
             let rad = fdecay * radbig;
-            let color = colors::ANT_HOLE_IRIS.interpolate(colors::ANT_HOLE, invcirc * i as f32);
+            let color = interpolate(ANT_HOLE_IRIS, ANT_HOLE_ENTRANCE, invcirc * i as f32);
             g.draw_circle(c, rad, color);
         }
     }
