@@ -60,7 +60,7 @@ where
                 let Vec2 { x, y } = hsf + delta;
                 let bounds = self.grid.bounds();
                 let x = x.rem_euclid(bounds.width as f32) as usize;
-                let y = y.rem_euclid(bounds.width as f32) as usize;
+                let y = y.rem_euclid(bounds.height as f32) as usize;
                 self.grid.bounds().bind((x, y)).unwrap()
             };
 
