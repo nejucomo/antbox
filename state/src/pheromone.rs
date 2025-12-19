@@ -22,6 +22,11 @@ pub enum Pheromone {
 }
 
 impl Pheromones {
+    /// If there is no pheromone here
+    pub fn is_empty(self) -> bool {
+        self.food == 0 && self.home == 0
+    }
+
     /// Get the local magnitude of the [Pheromone] type
     pub fn magnitude(self, ph: Pheromone) -> u8 {
         match ph {
@@ -38,8 +43,8 @@ where
     type Next = Self;
 
     fn transform(self, rng: &mut R) -> Self {
-        if rng.random_ratio(1, DECAY_DENOMINATOR) {
-            Pheromones::new(self.food - 2, self.home - 1)
+        if !self.is_empty() && rng.random_ratio(1, DECAY_DENOMINATOR) {
+            Pheromones::new(self.food - 2.min(self.food), self.home - 1.min(self.home))
         } else {
             self
         }
