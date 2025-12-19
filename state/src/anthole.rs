@@ -68,7 +68,7 @@ impl SteppedUpon for AntHole {
                 + match ant {
                     WithFood(food) => {
                         (food.seeds as usize) * LIFE_FORCE_FOOD_SEED
-                            + if food.alive { LIFE_FORCE_FOOD_LIFE } else { 0 }
+                            + if food.ripe { LIFE_FORCE_FOOD_LIFE } else { 0 }
                     }
                     _ => 0,
                 },

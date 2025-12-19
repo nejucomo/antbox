@@ -4,7 +4,7 @@ use rand::distr::Distribution as _;
 
 use crate::consts::WCOIN_POD_APPEARS;
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, AntHole, Food, Object, Objectish, OptInto, Pheromone, Pheromones, SteppedUpon};
+use crate::{Ant, AntHole, SeedPod, Object, Objectish, OptInto, Pheromone, Pheromones, SteppedUpon};
 
 /// Every [Spot] in the [State](crate::State) can contain up to one [Object]
 #[derive(Copy, Clone, Debug, Default, new)]
@@ -58,7 +58,7 @@ where
         let obj = if let Some(prevobj) = self.obj {
             prevobj.opt_update(su)
         } else if fig && WCOIN_POD_APPEARS.sample(su.rng) {
-            Some(Food::default().into())
+            Some(SeedPod::default().into())
         } else {
             None
         };
@@ -84,8 +84,8 @@ impl SteppedUpon for Spot {
     }
 }
 
-impl OptInto<Food> for Spot {
-    fn opt_into(self) -> Option<Food> {
+impl OptInto<SeedPod> for Spot {
+    fn opt_into(self) -> Option<SeedPod> {
         self.obj.and_then(|obj| obj.opt_into())
     }
 }

@@ -7,20 +7,20 @@ use crate::{Ant, SteppedUpon};
 
 /// Yum!
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
-pub struct Food {
+pub struct SeedPod {
     /// How many seeds are in this pod?
     pub seeds: u8,
     /// Is the pod fully developed?
-    pub alive: bool,
+    pub ripe: bool,
 }
 
-impl Food {
+impl SeedPod {
     fn is_empty_pod(self) -> bool {
-        !self.alive && self.seeds == 0
+        !self.ripe && self.seeds == 0
     }
 }
 
-impl<'a, R> Transform<SpotUpdate<'a, R>> for Food
+impl<'a, R> Transform<SpotUpdate<'a, R>> for SeedPod
 where
     R: rand::Rng,
 {
@@ -39,14 +39,14 @@ where
                 0i8
             };
 
-        let next = Food {
+        let next = SeedPod {
             seeds: newseeds as u8,
-            alive: if self.alive == target_life {
-                self.alive
+            ripe: if self.ripe == target_life {
+                self.ripe
             } else if delta == 0 && su.rng.random_ratio(dabs, LIFE_CHANGE_DENOM) {
                 target_life
             } else {
-                self.alive
+                self.ripe
             },
         };
 
@@ -58,7 +58,7 @@ where
     }
 }
 
-impl SteppedUpon for Food {
+impl SteppedUpon for SeedPod {
     type NewState = Ant;
 
     fn stepped_upon_by(self, ant: Ant) -> Option<Ant> {

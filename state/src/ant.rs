@@ -3,7 +3,7 @@ use movestate::Transform;
 use rand::distr::Distribution;
 
 use crate::spotupdate::SpotUpdate;
-use crate::{Food, Objectish as _, Pheromone, State, SteppedUpon};
+use crate::{SeedPod, Objectish as _, Pheromone, State, SteppedUpon};
 
 use self::Ant::*;
 
@@ -15,7 +15,7 @@ pub enum Ant {
     /// The ant is hungry
     Hungry,
     /// The ant has food
-    WithFood(Food),
+    WithFood(SeedPod),
 }
 
 impl Ant {
@@ -27,7 +27,7 @@ impl Ant {
                 .pheromone_gradient(pt, Ph::Food, false)
                 .intersect(state.pheromone_gradient(pt, Ph::Home, false)),
             Hungry => {
-                let foodirs = state.directions_where(pt, |spot| spot.contains::<Food>());
+                let foodirs = state.directions_where(pt, |spot| spot.contains::<SeedPod>());
                 if foodirs.is_empty() {
                     // If there's no adjacent food, follow pheremones
                     state.pheromone_gradient(pt, Ph::Food, true)

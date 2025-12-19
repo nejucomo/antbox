@@ -1,6 +1,6 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
-use antbox_state::{Ant, AntHole, Food, Object, Spot, State as AntboxState};
+use antbox_state::{Ant, AntHole, Object, SeedPod, Spot, State as AntboxState};
 use antbox_trig::{Angle, TrigVec};
 use speedy2d::shape::Rect;
 
@@ -36,7 +36,7 @@ impl Drawable for (Object, Rect) {
     }
 }
 
-impl Drawable for (Food, Rect) {
+impl Drawable for (SeedPod, Rect) {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
         let (food, rect) = self;
         let crad = g.grid_layout.cell_radius * 0.9;
@@ -60,7 +60,7 @@ impl Drawable for (Food, Rect) {
 
         let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
 
-        if food.alive {
+        if food.ripe {
             g.draw_circle(center, crad, colors::FOOD_LIFE);
         }
 
