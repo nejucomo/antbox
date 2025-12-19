@@ -2,9 +2,10 @@ use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
 use movestate::toolkit::Cycler;
-use movestate::{IntoNext as _, UpdateInput};
+use movestate::{IntoNext as _, Transform};
 
 use crate::randutil::ShuffleIntoVec as _;
+use crate::spotupdate::SpotUpdate;
 use crate::{Ant, Pheromone, Spot, SteppedUpon as _};
 
 const TICKS_PER_CONWAY: usize = 50;
@@ -45,20 +46,22 @@ impl State {
         self.directions_where(pt, |spot| spot.pheromone_magnitude(ph) == best)
     }
 
+    /// Whether or not food is growing here
     pub fn food_is_growing(&self, pt: BoundPoint) -> bool {
         self.clife[pt]
     }
 
-    pub fn life_and_neighbors(&self, pt: BoundPoint) -> (bool, usize) {
+    /// The growth status and growth-neighbors here
+    pub fn growth_and_neighbors(&self, pt: BoundPoint) -> (bool, usize) {
         self.clife.life_and_neighbors(pt)
     }
 
-    pub(crate) fn move_ant(&mut self, ant: Ant, src: BoundPoint, dst: BoundPoint) {
+    pub(crate) fn move_ant(&mut self, ant: Ant, dst: BoundPoint) -> Option<Ant> {
         if let Some(dstspot) = self.grid[dst].stepped_upon_by(ant) {
             self.grid[dst] = dstspot;
-
-            let shadow = self.grid[src].take_object();
-            assert_eq!(Some(crate::Object::Ant(ant)), shadow);
+            None
+        } else {
+            Some(ant)
         }
     }
 }
@@ -67,17 +70,21 @@ impl State {
 struct LifePhase;
 struct GridPhase;
 
-impl<R> UpdateInput<&mut R> for State
+impl<R> Transform<&mut R> for State
 where
     R: rand::Rng,
 {
-    fn update_input(self, rng: &mut R) -> Self {
-        self.update_input(LifePhase).update_input((GridPhase, rng))
+    type Next = Self;
+
+    fn transform(self, rng: &mut R) -> Self {
+        self.transform(LifePhase).transform((GridPhase, rng))
     }
 }
 
-impl UpdateInput<LifePhase> for State {
-    fn update_input(self, _: LifePhase) -> Self {
+impl Transform<LifePhase> for State {
+    type Next = Self;
+
+    fn transform(self, _: LifePhase) -> Self {
         State {
             generation: self.generation + 1,
             grid: self.grid,
@@ -86,11 +93,13 @@ impl UpdateInput<LifePhase> for State {
     }
 }
 
-impl<R> UpdateInput<(GridPhase, &mut R)> for State
+impl<R> Transform<(GridPhase, &mut R)> for State
 where
     R: rand::Rng,
 {
-    fn update_input(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
+    type Next = Self;
+
+    fn transform(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
         // TODO: Performance: this is a full copy of all points! Can we do a cheaper permutation 0..area?
         let ptspots = self
             .iter()
@@ -98,7 +107,8 @@ where
             .shuffle_into_vec(rng);
 
         for (pt, spot) in ptspots {
-            self[pt] = spot.update_input((rng, &self, pt));
+            let newspot = spot.transform(SpotUpdate::new(rng, &mut self, pt));
+            self.grid[pt] = newspot;
         }
 
         self

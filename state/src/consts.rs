@@ -12,6 +12,9 @@ pub(crate) const WCOIN_POD_APPEARS: WeightedCoin = WeightedCoin(1, 29);
 /// The chance of a old pod disappearing
 pub(crate) const WCOIN_POD_DISAPPEARS: WeightedCoin = WeightedCoin(1, 7);
 
+/// The chance losing lifeforce
+pub(crate) const WCOIN_LIFE_FORCE_LOSS: WeightedCoin = WeightedCoin(1, 31);
+
 /// The denominator for a seed growth/death given numerator = neighbor_count
 pub(crate) const SEED_CHANGE_DENOM: u32 = 10;
 

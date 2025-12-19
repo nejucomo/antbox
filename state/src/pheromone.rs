@@ -1,5 +1,5 @@
 use derive_new::new;
-use movestate::UpdateInput;
+use movestate::Transform;
 
 use self::Pheromone::*;
 
@@ -31,11 +31,13 @@ impl Pheromones {
     }
 }
 
-impl<R> UpdateInput<&mut R> for Pheromones
+impl<R> Transform<&mut R> for Pheromones
 where
     R: rand::Rng,
 {
-    fn update_input(self, rng: &mut R) -> Self {
+    type Next = Self;
+
+    fn transform(self, rng: &mut R) -> Self {
         if rng.random_ratio(1, DECAY_DENOMINATOR) {
             Pheromones::new(self.food - 2, self.home - 1)
         } else {

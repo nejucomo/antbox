@@ -1,5 +1,5 @@
 use antbox_state::{GenParams, State as AntboxState};
-use movestate::UpdateInput;
+use movestate::Transform;
 use movestate::toolkit::Cycler;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
@@ -38,11 +38,13 @@ impl AnimationState {
     }
 }
 
-impl<R> UpdateInput<&mut R> for AnimationState
+impl<R> Transform<&mut R> for AnimationState
 where
     R: rand::Rng,
 {
-    fn update_input(self, rng: &mut R) -> Self {
+    type Next = Self;
+
+    fn transform(self, rng: &mut R) -> Self {
         let AnimationState {
             antbox,
             foodeco: food,

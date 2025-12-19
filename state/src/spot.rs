@@ -1,12 +1,10 @@
-use antbox_geom::BoundPoint;
 use derive_new::new;
-use movestate::UpdateInput;
+use movestate::{OptUpdate as _, Transform, Update as _};
 use rand::distr::Distribution as _;
 
-use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_DISAPPEARS};
-use crate::{
-    Ant, AntHole, Food, Object, Objectish, OptInto, Pheromone, Pheromones, State, SteppedUpon,
-};
+use crate::consts::WCOIN_POD_APPEARS;
+use crate::spotupdate::SpotUpdate;
+use crate::{Ant, AntHole, Food, Object, Objectish, OptInto, Pheromone, Pheromones, SteppedUpon};
 
 /// Every [Spot] in the [State](crate::State) can contain up to one [Object]
 #[derive(Copy, Clone, Debug, Default, new)]
@@ -47,27 +45,19 @@ where
     }
 }
 
-impl<R> UpdateInput<(&mut R, &State, BoundPoint)> for Spot
+impl<'a, R> Transform<SpotUpdate<'a, R>> for Spot
 where
     R: rand::Rng,
 {
-    fn update_input(self, (rng, state, pt): (&mut R, &State, BoundPoint)) -> Self {
-        let pheromones = self.pheromones.update_input(rng);
-        let fig = state.food_is_growing(pt);
+    type Next = Self;
+
+    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+        let pheromones = self.pheromones.update(su.rng);
+        let fig = su.state.food_is_growing(su.pt);
 
         let obj = if let Some(prevobj) = self.obj {
-            if !fig
-                && prevobj
-                    .opt_into()
-                    .map(|f: Food| f.is_empty_pod())
-                    .unwrap_or(false)
-                && WCOIN_POD_DISAPPEARS.sample(rng)
-            {
-                None
-            } else {
-                Some(prevobj.update_input((rng, state, pt)))
-            }
-        } else if fig && WCOIN_POD_APPEARS.sample(rng) {
+            prevobj.opt_update(su)
+        } else if fig && WCOIN_POD_APPEARS.sample(su.rng) {
             Some(Food::default().into())
         } else {
             None

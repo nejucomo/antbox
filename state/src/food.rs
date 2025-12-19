@@ -1,8 +1,9 @@
-use antbox_geom::BoundPoint;
-use movestate::UpdateInput;
+use movestate::Transform;
+use rand::distr::Distribution as _;
 
-use crate::consts::{LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM};
-use crate::{Ant, State, SteppedUpon};
+use crate::consts::{LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM, WCOIN_POD_DISAPPEARS};
+use crate::spotupdate::SpotUpdate;
+use crate::{Ant, SteppedUpon};
 
 /// Yum!
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
@@ -14,37 +15,45 @@ pub struct Food {
 }
 
 impl Food {
-    pub fn is_empty_pod(self) -> bool {
+    fn is_empty_pod(self) -> bool {
         !self.alive && self.seeds == 0
     }
 }
 
-impl<R> UpdateInput<(&mut R, &State, BoundPoint)> for Food
+impl<'a, R> Transform<SpotUpdate<'a, R>> for Food
 where
     R: rand::Rng,
 {
-    fn update_input(self, (rng, state, pt): (&mut R, &State, BoundPoint)) -> Self {
-        let (target_life, target_nc) = state.life_and_neighbors(pt);
+    type Next = Option<Self>;
+
+    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+        let (target_life, target_nc) = su.state.growth_and_neighbors(su.pt);
 
         let delta = (target_nc as i8) - (self.seeds as i8);
-        let dabs = delta.abs() as u32;
+        let dabs = delta.unsigned_abs() as u32;
 
         let newseeds = (self.seeds as i8)
-            + if delta != 0 && rng.random_ratio(dabs, SEED_CHANGE_DENOM) {
+            + if delta != 0 && su.rng.random_ratio(dabs, SEED_CHANGE_DENOM) {
                 delta.signum()
             } else {
                 0i8
             };
 
-        Food {
+        let next = Food {
             seeds: newseeds as u8,
             alive: if self.alive == target_life {
                 self.alive
-            } else if delta == 0 && rng.random_ratio(dabs, LIFE_CHANGE_DENOM) {
+            } else if delta == 0 && su.rng.random_ratio(dabs, LIFE_CHANGE_DENOM) {
                 target_life
             } else {
                 self.alive
             },
+        };
+
+        if next.is_empty_pod() && WCOIN_POD_DISAPPEARS.sample(su.rng) {
+            None
+        } else {
+            Some(next)
         }
     }
 }

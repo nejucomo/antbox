@@ -1,6 +1,8 @@
 mod iter;
 
 use Direction::*;
+use rand::Rng;
+use rand::distr::{Distribution, StandardUniform};
 
 pub use self::iter::DirIter;
 
@@ -55,5 +57,21 @@ impl Direction {
 
     pub(crate) fn mask(self) -> u8 {
         1 << (self as u8)
+    }
+}
+
+impl Distribution<Direction> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Direction {
+        match rng.random_range(0..8) {
+            0 => North,
+            1 => NorthEast,
+            2 => East,
+            3 => SouthEast,
+            4 => South,
+            5 => SouthWest,
+            6 => West,
+            7 => NorthWest,
+            _ => unreachable!(),
+        }
     }
 }

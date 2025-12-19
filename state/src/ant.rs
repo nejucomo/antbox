@@ -1,8 +1,8 @@
 use antbox_geom::{BoundPoint, DirSet};
-use movestate::UpdateInput;
-use rand::Rng;
+use movestate::Transform;
 use rand::distr::Distribution;
 
+use crate::spotupdate::SpotUpdate;
 use crate::{Food, Objectish as _, Pheromone, State, SteppedUpon};
 
 use self::Ant::*;
@@ -19,16 +19,6 @@ pub enum Ant {
 }
 
 impl Ant {
-    /// Take a step
-    pub fn sense_then_step<R>(self, state: &mut State, rng: &mut R, pt: BoundPoint)
-    where
-        R: Rng,
-    {
-        let dirs = self.sense(state, pt);
-        let dir = dirs.sample(rng).unwrap();
-        state.move_ant(self, pt, pt + dir);
-    }
-
     fn sense(self, state: &mut State, pt: BoundPoint) -> DirSet {
         use Pheromone as Ph;
 
@@ -51,13 +41,16 @@ impl Ant {
     }
 }
 
-impl<R> UpdateInput<(&mut R, &State, BoundPoint)> for Ant
+impl<'a, R> Transform<SpotUpdate<'a, R>> for Ant
 where
     R: rand::Rng,
 {
-    fn update_input(self, (rng, state, pt): (&mut R, &State, BoundPoint)) -> Self {
-        // BUG: we need a way to mutate state, and then disappear if step succeeds
-        self
+    type Next = Option<Self>;
+
+    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+        let dirs = self.sense(su.state, su.pt);
+        let dir = dirs.sample(su.rng).unwrap();
+        su.state.move_ant(self, su.pt + dir)
     }
 }
 

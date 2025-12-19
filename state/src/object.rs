@@ -1,8 +1,8 @@
-use antbox_geom::BoundPoint;
 use derive_more::{From, TryInto};
-use movestate::UpdateInput;
+use movestate::{OptUpdate as _, Transform, Update as _};
 
-use crate::{Ant, AntHole, Food, Objectish, State, SteppedUpon};
+use crate::spotupdate::SpotUpdate;
+use crate::{Ant, AntHole, Food, Objectish, SteppedUpon};
 
 /// The type of [Object]s which can be in a [Spot](crate::Spot) in the [State](crate::State)
 #[derive(Copy, Clone, Debug, From, Eq, PartialEq, TryInto)]
@@ -15,17 +15,19 @@ pub enum Object {
     AntHole(AntHole),
 }
 
-impl<R> UpdateInput<(&mut R, &State, BoundPoint)> for Object
+impl<'a, R> Transform<SpotUpdate<'a, R>> for Object
 where
     R: rand::Rng,
 {
-    fn update_input(self, bundle: (&mut R, &State, BoundPoint)) -> Self {
+    type Next = Option<Object>;
+
+    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use Object::*;
 
         match self {
-            Food(x) => Food(x.update_input(bundle)),
-            Ant(x) => Ant(x.update_input(bundle)),
-            AntHole(x) => AntHole(x.update_input(bundle)),
+            Food(x) => x.opt_update(su).map(Food),
+            Ant(x) => x.opt_update(su).map(Ant),
+            AntHole(x) => Some(AntHole(x.update(su))),
         }
     }
 }

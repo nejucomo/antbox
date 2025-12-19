@@ -12,6 +12,7 @@ mod optinto;
 mod pheromone;
 mod randutil;
 mod spot;
+mod spotupdate;
 mod state;
 mod steppedupon;
 pub(crate) mod wcoin;

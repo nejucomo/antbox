@@ -65,7 +65,7 @@ where
             };
 
             let cell = &mut self.grid[pt];
-            let (target_life, target_nc) = ast.life_and_neighbors(pt);
+            let (target_life, target_nc) = ast.growth_and_neighbors(pt);
 
             let (optseeds, alive) = if let Some(seeds) = cell.seeds {
                 match (target_nc as u8).cmp(&seeds) {
