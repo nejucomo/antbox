@@ -1,6 +1,6 @@
 use antbox_state::{GenParams, State as AntboxState};
-use mealy_machine::UpdateInput;
-use mealy_machine::toolkit::Cycler;
+use movestate::UpdateInput;
+use movestate::toolkit::Cycler;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 

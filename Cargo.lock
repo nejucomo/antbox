@@ -117,7 +117,7 @@ dependencies = [
  "env_logger",
  "log",
  "logging-options",
- "mealy-machine",
+ "movestate",
  "rand",
  "speedy2d",
 ]
@@ -133,7 +133,7 @@ dependencies = [
  "derive-debug",
  "derive-new",
  "derive_more",
- "mealy-machine",
+ "movestate",
  "rand",
  "rand_distr",
  "speedy2d",
@@ -146,7 +146,7 @@ dependencies = [
  "antbox-geom",
  "derive-new",
  "derive_more",
- "mealy-machine",
+ "movestate",
 ]
 
 [[package]]
@@ -169,7 +169,7 @@ dependencies = [
  "derive-new",
  "derive_more",
  "log",
- "mealy-machine",
+ "movestate",
  "rand",
 ]
 
@@ -1004,14 +1004,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mealy-machine"
-version = "0.1.0"
-dependencies = [
- "derive-new",
- "derive_more",
-]
-
-[[package]]
 name = "memchr"
 version = "2.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1073,6 +1065,14 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "movestate"
+version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "derive_more",
 ]
 
 [[package]]

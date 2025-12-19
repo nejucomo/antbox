@@ -1,5 +1,5 @@
 use antbox_geom::{BoundPoint, DirSet};
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 use rand::Rng;
 use rand::distr::Distribution;
 

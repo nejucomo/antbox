@@ -1,7 +1,7 @@
 use antbox_animation::AnimationState;
 use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
-use mealy_machine::Slot;
+use movestate::Slot;
 use rand::rngs::StdRng;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,

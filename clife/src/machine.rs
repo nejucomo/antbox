@@ -1,7 +1,7 @@
 use antbox_geom::Grid;
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use derive_new::new;
-use mealy_machine::IntoNext;
+use movestate::IntoNext;
 
 use crate::{ConwayCell, ConwayGrid};
 

@@ -1,8 +1,8 @@
 use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
-use mealy_machine::toolkit::Cycler;
-use mealy_machine::{IntoNext as _, UpdateInput};
+use movestate::toolkit::Cycler;
+use movestate::{IntoNext as _, UpdateInput};
 
 use crate::randutil::ShuffleIntoVec as _;
 use crate::{Ant, Pheromone, Spot, SteppedUpon as _};

@@ -1,5 +1,5 @@
 use derive_new::new;
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 
 use self::Pheromone::*;
 

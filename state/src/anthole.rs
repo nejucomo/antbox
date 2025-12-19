@@ -1,5 +1,5 @@
 use antbox_geom::BoundPoint;
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 
 use crate::consts::{
     LIFE_FORCE_ANT_RETURNS, LIFE_FORCE_FOOD_LIFE, LIFE_FORCE_FOOD_SEED, LIFE_FORCE_SPAWN_ANT,

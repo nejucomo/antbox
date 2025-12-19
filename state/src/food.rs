@@ -1,5 +1,5 @@
 use antbox_geom::BoundPoint;
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 
 use crate::consts::{LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM};
 use crate::{Ant, State, SteppedUpon};

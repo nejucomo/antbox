@@ -6,7 +6,7 @@ members = [
   "clife",
   "geom",
   "logging-options",
-  "mealy",
+  "movestate",
   "state",
   "tick",
   "trig",
@@ -26,7 +26,7 @@ antbox-state = { version = "0.1.0", path = "state" }
 antbox-tick-timer = { version = "0.1.0", path = "tick" }
 antbox-trig = { version = "0.1.0", path = "trig" }
 logging-options = { version = "0.1.0", path = "logging-options" }
-mealy-machine = { version = "0.1.0", path = "mealy" }
+movestate = { version = "0.1.0", path = "movestate" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"

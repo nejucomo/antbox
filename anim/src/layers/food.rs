@@ -6,7 +6,7 @@ use antbox_geom::{BoundPoint, Bounds, Grid};
 use antbox_state::State as AntboxState;
 use antbox_trig::{Angle, TrigVec};
 use derive_new::new;
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 use rand::distr::Distribution;
 use rand_distr::LogNormal;
 use speedy2d::dimen::Vec2;

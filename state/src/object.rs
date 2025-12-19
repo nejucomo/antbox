@@ -1,6 +1,6 @@
 use antbox_geom::BoundPoint;
 use derive_more::{From, TryInto};
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 
 use crate::{Ant, AntHole, Food, Objectish, State, SteppedUpon};
 

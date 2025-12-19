@@ -1,6 +1,6 @@
 use antbox_geom::BoundPoint;
 use derive_new::new;
-use mealy_machine::UpdateInput;
+use movestate::UpdateInput;
 use rand::distr::Distribution as _;
 
 use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_DISAPPEARS};
