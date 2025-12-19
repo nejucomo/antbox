@@ -1,4 +1,7 @@
+use std::f32::consts::{FRAC_1_SQRT_2, TAU};
+
 use antbox_state::{Ant, AntHole, Food, Object, Spot, State as AntboxState};
+use antbox_trig::TrigVec;
 use speedy2d::color::Color;
 use speedy2d::shape::Rect;
 
@@ -62,13 +65,19 @@ impl Drawable for (AntHole, Rect) {
 
         // Slightly too big to fit:
         let radbig = g.grid_layout.cell_radius * 1.3;
+        let spoke = TrigVec::new(
+            (center.x / center.y).asinh() * TAU,
+            (center.x * center.y).rem_euclid(FRAC_1_SQRT_2).sin().abs() * radbig * 0.7,
+        );
 
-        let circles = 5;
+        let circles = 7;
         let invcirc = 1.0 / circles as f32;
         for i in 0..circles {
-            let rad = 0.8f32.powi(i) * radbig;
+            let fdecay = 0.8f32.powi(i);
+            let c = center + spoke.rotate(fdecay * TAU).scale(1.0 - fdecay);
+            let rad = fdecay * radbig;
             let color = colors::ANT_HOLE_IRIS.interpolate(colors::ANT_HOLE, invcirc * i as f32);
-            g.draw_circle(center, rad, color);
+            g.draw_circle(c, rad, color);
         }
     }
 }
