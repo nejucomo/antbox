@@ -82,7 +82,7 @@ impl AntBoxWindow {
 impl WindowHandler<Tick> for AntBoxWindow {
     fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
         let st = self.ws.unwrap_started_mut();
-        if matches!(st.mode, RunMode::Running) {
+        if matches!(st.mode, Running) {
             st.anim.update(&mut self.rng);
         }
         helper.request_redraw();
@@ -95,7 +95,7 @@ impl WindowHandler<Tick> for AntBoxWindow {
             let gp = ws.unwrap_starting();
 
             WinState::Started(Started {
-                mode: RunMode::Paused,
+                mode: Paused,
                 anim: Slot::from(AnimationState::new(&mut self.rng, gp)),
             })
         });
@@ -114,7 +114,7 @@ impl WindowHandler<Tick> for AntBoxWindow {
         ovkc: Option<VirtualKeyCode>,
         _: KeyScancode,
     ) {
-        use VirtualKeyCode::{Escape, Space};
+        use VirtualKeyCode::{Escape, Return, Space};
 
         match ovkc {
             Some(Escape) => {
@@ -123,6 +123,12 @@ impl WindowHandler<Tick> for AntBoxWindow {
             }
             Some(Space) => {
                 self.ws.unwrap_started_mut().mode.toggle();
+            }
+            Some(Return) => {
+                let st = self.ws.unwrap_started_mut();
+                if matches!(st.mode, Paused) {
+                    st.anim.update(&mut self.rng);
+                }
             }
             _ => {
                 // Ignore
