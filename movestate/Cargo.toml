@@ -1,0 +1,12 @@
+[package]
+name = "movestate"
+description = "A trait family for state evolution with move semantics"
+version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
+edition.workspace = true
+
+[dependencies]
+derive_more = { workspace = true, features = ["as_ref", "deref", "deref_mut"] }
+derive-new.workspace = true
+

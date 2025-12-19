@@ -1,5 +1,5 @@
 [package]
-name = "antbox-cellauto"
+name = "antbox-clife"
 description = "Cellular automaton support for `antbox`."
 version = "0.1.0"
 license.workspace = true
@@ -10,4 +10,4 @@ edition.workspace = true
 antbox-geom.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into", "deref", "deref_mut" ] }
-mealy-machine.workspace = true
+movestate.workspace = true

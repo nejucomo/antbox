@@ -1,5 +1,6 @@
 use antbox_geom::{BoundPoint, Bounds};
 use speedy2d::dimen::Vec2;
+use speedy2d::shape::Rect;
 
 /// A [GridLayout] matches logical [Bounds] to a pixel view coordinates
 #[derive(Copy, Clone, Debug)]
@@ -32,17 +33,19 @@ impl GridLayout {
         }
     }
 
-    /// Iterate over logical [BoundPoint]s and their associated abstract pixel center points
-    pub fn iter_pts_and_centers(&self) -> impl Iterator<Item = (BoundPoint, Vec2)> {
+    /// Iterate over logical [BoundPoint]s and their associated pixel [Rect]s
+    pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (BoundPoint, Rect)> {
         let Vec2 { x: cellw, y: cellh } = self.cell_bounds;
 
         self.bounds.iter_points().map(move |pt| {
+            let left = cellw * pt.x() as f32;
+            let top = cellh * pt.y() as f32;
+            let right = left + cellw;
+            let bottom = top + cellh;
+
             (
                 pt,
-                Vec2::new(
-                    cellw / 2.0 * (1 + 2 * pt.x()) as f32,
-                    cellh / 2.0 * (1 + 2 * pt.y()) as f32,
-                ),
+                Rect::new(Vec2::new(left, top), Vec2::new(right, bottom)),
             )
         })
     }

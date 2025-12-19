@@ -1,7 +1,8 @@
 use antbox_animation::AnimationState;
 use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
-use mealy_machine::Slot;
+use derive_more::{IsVariant, Unwrap};
+use movestate::Slot;
 use rand::rngs::StdRng;
 use speedy2d::window::{
     KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
@@ -11,14 +12,44 @@ use speedy2d::{Graphics2D, Window};
 
 use crate::{Result, Tick};
 
+use self::RunMode::{Paused, Running};
+
 /// # TODO
 ///
 /// - Hide the states privately behind public interface
 #[derive(Debug)]
 pub struct AntBoxWindow {
     rng: StdRng,
-    started: bool,
+    ws: Slot<WinState>,
+}
+
+#[derive(Debug, IsVariant, Unwrap)]
+#[unwrap(ref, ref_mut)]
+enum WinState {
+    Starting(GenParams),
+    Started(Started),
+}
+
+#[derive(Debug)]
+struct Started {
+    mode: RunMode,
     anim: Slot<AnimationState>,
+}
+
+#[derive(Copy, Clone, Debug)]
+enum RunMode {
+    Running,
+    Paused,
+}
+
+impl RunMode {
+    fn toggle(&mut self) {
+        *self = match self {
+            Running => Paused,
+            Paused => Running,
+        };
+        log::info!("{self:?}");
+    }
 }
 
 impl AntBoxWindow {
@@ -27,20 +58,14 @@ impl AntBoxWindow {
             env!("CARGO_PKG_NAME"),
             WindowCreationOptions::new_fullscreen_borderless(),
         )?;
-        w.run_loop(Self::new(rng, gp));
-    }
-
-    fn new(mut rng: StdRng, gp: GenParams) -> Self {
-        let anim = Slot::from(AnimationState::new(&mut rng, gp));
-        AntBoxWindow {
+        w.run_loop(AntBoxWindow {
             rng,
-            started: false,
-            anim,
-        }
+            ws: Slot::from(WinState::Starting(gp)),
+        })
     }
 
     fn launch_tick_timer(&self, helper: &mut WindowHelper<Tick>) {
-        assert!(!self.started);
+        assert!(self.ws.is_starting());
 
         let uev = helper.create_user_event_sender();
         std::thread::spawn(move || {
@@ -56,23 +81,31 @@ impl AntBoxWindow {
 
 impl WindowHandler<Tick> for AntBoxWindow {
     fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
-        self.anim.update_io(&mut self.rng);
+        let st = self.ws.unwrap_started_mut();
+        if matches!(st.mode, Running) {
+            st.anim.update(&mut self.rng);
+        }
         helper.request_redraw();
     }
 
-    fn on_start(&mut self, helper: &mut WindowHelper<Tick>, info: WindowStartupInfo) {
-        let viewsize = *info.viewport_size_pixels();
-        let sfactor = info.scale_factor();
-        log::info!("viewsize: {:?}, scaling factor: {:?}", viewsize, sfactor);
-
-        assert!(!self.started);
+    fn on_start(&mut self, helper: &mut WindowHelper<Tick>, _: WindowStartupInfo) {
         self.launch_tick_timer(helper);
+
+        self.ws.map(|ws| {
+            let gp = ws.unwrap_starting();
+
+            WinState::Started(Started {
+                mode: Paused,
+                anim: Slot::from(AnimationState::new(&mut self.rng, gp)),
+            })
+        });
+
         helper.request_redraw();
     }
 
     fn on_draw(&mut self, helper: &mut WindowHelper<Tick>, graphics: &mut Graphics2D) {
         let winsize = helper.get_size_pixels().into_f32();
-        self.anim.draw(graphics, winsize);
+        self.ws.unwrap_started_ref().anim.draw(graphics, winsize);
     }
 
     fn on_key_down(
@@ -81,12 +114,21 @@ impl WindowHandler<Tick> for AntBoxWindow {
         ovkc: Option<VirtualKeyCode>,
         _: KeyScancode,
     ) {
-        use VirtualKeyCode::Escape;
+        use VirtualKeyCode::{Escape, Return, Space};
 
         match ovkc {
             Some(Escape) => {
                 log::info!("bye!");
                 std::process::exit(0);
+            }
+            Some(Space) => {
+                self.ws.unwrap_started_mut().mode.toggle();
+            }
+            Some(Return) => {
+                let st = self.ws.unwrap_started_mut();
+                if matches!(st.mode, Paused) {
+                    st.anim.update(&mut self.rng);
+                }
             }
             _ => {
                 // Ignore

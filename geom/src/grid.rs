@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{BoundPoint, Bounds, Point};
+use crate::{BoundPoint, Bounds, DirSet, Direction, Point};
 
 /// A 2-D grid of `T` cells
 #[derive(Clone, PartialEq)]
@@ -39,6 +39,16 @@ impl<T> Grid<T> {
             .iter_mut()
             .enumerate()
             .map(|(ix, cptr)| (self.bounds.ix_to_bp(ix), cptr))
+    }
+
+    /// The directions from `pt` where `f` is true
+    pub fn directions_where<F>(&self, pt: BoundPoint, mut f: F) -> DirSet
+    where
+        F: FnMut(&T) -> bool,
+    {
+        Direction::each()
+            .filter(|&d| f(&self[pt + d]))
+            .fold(DirSet::default(), DirSet::with)
     }
 
     /// Map cells

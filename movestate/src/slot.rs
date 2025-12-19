@@ -1,7 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
+use crate::Update;
 use crate::optext::OptionExt as _;
-use crate::{IntoNext, UpdateIO};
 
 /// Hold a state and contain functional transitions within a mutable interface
 //
@@ -17,23 +17,31 @@ impl<T> Slot<T> {
         self.0.unslot()
     }
 
-    /// Transform the state
-    pub fn update_io<Input>(&mut self, input: Input) -> T::Output
+    /// Update the inner state
+    pub fn update<I>(&mut self, input: I)
     where
-        T: UpdateIO<Input>,
+        T: Update<I>,
     {
-        let prevstate = self.0.take().unslot();
-        let (nextstate, output) = prevstate.update_io(input);
-        self.0 = Some(nextstate);
-        output
+        self.map(|t| t.update(input))
     }
 
-    /// Transform the state
-    pub fn update_next(&mut self)
+    /// Map the inner state to a new value
+    pub fn map<F>(&mut self, f: F)
     where
-        T: IntoNext,
+        F: FnOnce(T) -> T,
     {
-        self.update_io(());
+        let next = f(self.0.take().unslot());
+        self.0 = Some(next);
+    }
+
+    /// Map the inner state to a new value and output
+    pub fn map_out<F, O>(&mut self, f: F) -> O
+    where
+        F: FnOnce(T) -> (T, O),
+    {
+        let (next, out) = f(self.0.take().unslot());
+        self.0 = Some(next);
+        out
     }
 }
 

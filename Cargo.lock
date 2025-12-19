@@ -105,7 +105,7 @@ name = "antbox"
 version = "0.1.0"
 dependencies = [
  "antbox-animation",
- "antbox-cellauto",
+ "antbox-clife",
  "antbox-geom",
  "antbox-state",
  "antbox-tick-timer",
@@ -117,7 +117,7 @@ dependencies = [
  "env_logger",
  "log",
  "logging-options",
- "mealy-machine",
+ "movestate",
  "rand",
  "speedy2d",
 ]
@@ -126,25 +126,28 @@ dependencies = [
 name = "antbox-animation"
 version = "0.1.0"
 dependencies = [
+ "antbox-clife",
  "antbox-geom",
  "antbox-state",
  "antbox-trig",
  "derive-debug",
  "derive-new",
  "derive_more",
- "mealy-machine",
+ "log",
+ "movestate",
  "rand",
+ "rand_distr",
  "speedy2d",
 ]
 
 [[package]]
-name = "antbox-cellauto"
+name = "antbox-clife"
 version = "0.1.0"
 dependencies = [
  "antbox-geom",
  "derive-new",
  "derive_more",
- "mealy-machine",
+ "movestate",
 ]
 
 [[package]]
@@ -154,19 +157,20 @@ dependencies = [
  "derive-new",
  "derive_more",
  "itertools",
+ "rand",
 ]
 
 [[package]]
 name = "antbox-state"
 version = "0.1.0"
 dependencies = [
- "antbox-cellauto",
+ "antbox-clife",
  "antbox-geom",
  "clap",
  "derive-new",
  "derive_more",
  "log",
- "mealy-machine",
+ "movestate",
  "rand",
 ]
 
@@ -366,6 +370,15 @@ name = "colorchoice"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
+
+[[package]]
+name = "convert_case"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb402b8d4c85569410425650ce3eddc7d698ed96d39a73f941b08fb63082f1e7"
+dependencies = [
+ "unicode-segmentation",
+]
 
 [[package]]
 name = "core-foundation"
@@ -570,6 +583,7 @@ version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bda628edc44c4bb645fbe0f758797143e4e07926f7ebf4e9bdfbd3d2ce621df3"
 dependencies = [
+ "convert_case",
  "proc-macro2",
  "quote",
  "syn 2.0.111",
@@ -952,6 +966,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "libm"
+version = "0.2.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9fbbcab51052fe104eb5e5d351cf728d30a5be1fe14d9be8a3b097481fb97de"
+
+[[package]]
 name = "lock_api"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -983,10 +1003,6 @@ checksum = "62bb907fe88d54d8d9ce32a3cceab4218ed2f6b7d35617cafe9adf84e43919cb"
 dependencies = [
  "libc",
 ]
-
-[[package]]
-name = "mealy-machine"
-version = "0.1.0"
 
 [[package]]
 name = "memchr"
@@ -1050,6 +1066,14 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "movestate"
+version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "derive_more",
 ]
 
 [[package]]
@@ -1168,6 +1192,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
+ "libm",
 ]
 
 [[package]]
@@ -1373,6 +1398,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99d9a13982dcf210057a8a78572b2217b667c3beacbf3a0d8b454f6f82837d38"
 dependencies = [
  "getrandom",
+]
+
+[[package]]
+name = "rand_distr"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a8615d50dcf34fa31f7ab52692afec947c4dd0ab803cc87cb3b0b4570ff7463"
+dependencies = [
+ "num-traits",
+ "rand",
 ]
 
 [[package]]
@@ -1686,6 +1721,12 @@ checksum = "5fd4f6878c9cb28d874b009da9e8d183b5abc80117c40bbd187a1fde336be6e8"
 dependencies = [
  "tinyvec",
 ]
+
+[[package]]
+name = "unicode-segmentation"
+version = "1.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6ccf251212114b54433ec949fd6a7841275f9ada20dddd2f29e9ceea4501493"
 
 [[package]]
 name = "utf8parse"

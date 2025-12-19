@@ -7,11 +7,11 @@ homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
-antbox-cellauto.workspace = true
+antbox-clife.workspace = true
 antbox-geom.workspace = true
 clap = { workspace = true, features = ["derive"] }
 derive-new.workspace = true
-derive_more = { workspace = true, features = [ "from", "into" ] }
+derive_more = { workspace = true, features = [ "from", "into", "try_unwrap" ] }
 log.workspace = true
-mealy-machine.workspace = true
+movestate.workspace = true
 rand.workspace = true

@@ -1,49 +1,46 @@
 use antbox_state::{GenParams, State as AntboxState};
-use mealy_machine::{IntoNext, UpdateInput};
+use movestate::toolkit::Cycler;
+use movestate::{Transform, Update as _};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::{GfxLayout, GridLayout, TICKS_PER_CONWAY, UpdateCycler, layers};
+use crate::{GfxLayout, GridLayout, layers};
+
+const ANIMS_PER_STATE_TICK: usize = 13;
 
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
 pub struct AnimationState {
-    antbox: UpdateCycler<AntboxState>,
-    food: layers::Food,
+    antbox: Cycler<AntboxState>,
 }
 
 impl AnimationState {
     /// Initialize
     pub fn new<R: rand::Rng>(rng: &mut R, gp: GenParams) -> Self {
-        let antbox = gp.generate_state(rng);
-        let bounds = antbox.bounds;
-        AnimationState {
-            antbox: UpdateCycler::new(antbox, TICKS_PER_CONWAY),
-            food: layers::Food::from(bounds),
-        }
+        let antbox = Cycler::new(gp.generate_state(rng), ANIMS_PER_STATE_TICK);
+        AnimationState { antbox }
     }
 
     /// Draw `self` onto `gfx`
     pub fn draw(&self, g: &mut Graphics2D, view_size: Vec2) {
-        let gl = GridLayout::new(self.antbox.bounds, view_size);
+        let gl = GridLayout::new(self.antbox.bounds(), view_size);
         let mut gfx = GfxLayout::new(g, gl);
 
         gfx.draw(layers::Background);
-        gfx.draw(&self.food);
         gfx.draw(layers::WireFrame);
+        gfx.draw(&*self.antbox);
     }
 }
 
-impl<R> UpdateInput<&mut R> for AnimationState
+impl<R> Transform<&mut R> for AnimationState
 where
     R: rand::Rng,
 {
-    fn update_input(self, r: &mut R) -> Self {
-        let AnimationState { antbox, food } = self;
+    type Next = Self;
 
-        let antbox = antbox.into_next();
-        let food = food.update_input((r, &antbox));
-
-        AnimationState { antbox, food }
+    fn transform(self, rng: &mut R) -> Self {
+        AnimationState {
+            antbox: self.antbox.update(rng),
+        }
     }
 }

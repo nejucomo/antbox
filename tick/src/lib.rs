@@ -6,7 +6,7 @@ use std::time::{Duration, Instant};
 use either::Either::{self, Left, Right};
 
 /// The default frame rate for `antbox`
-pub const DEFAULT_FRAME_RATE: f64 = 10.0;
+pub const DEFAULT_FRAME_RATE: f64 = 50.0;
 
 /// Track the next target instant to achieve a given framerate
 #[derive(Copy, Clone, Debug)]
@@ -48,7 +48,7 @@ impl TickTimer {
                 true
             }
             Left(lateness) => {
-                log::debug!("tick late: {lateness:?}");
+                log::warn!("tick late: {lateness:?}");
                 self.target = now + self.interval;
                 false
             }

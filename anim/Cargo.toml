@@ -7,12 +7,15 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+antbox-clife.workspace = true
 antbox-geom.workspace = true
 antbox-state.workspace = true
 antbox-trig.workspace = true
 derive-debug.workspace = true
-derive_more = { workspace = true, features = ["deref", "deref_mut"] }
 derive-new.workspace = true
-mealy-machine.workspace = true
+derive_more = { workspace = true, features = ["deref", "deref_mut"] }
+log.workspace = true
+movestate.workspace = true
 rand.workspace = true
+rand_distr.workspace = true
 speedy2d.workspace = true
