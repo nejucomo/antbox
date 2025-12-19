@@ -1,10 +1,10 @@
-use std::f32::consts::{FRAC_1_SQRT_2, TAU};
+use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
 use antbox_state::{Ant, AntHole, Food, Object, Spot, State as AntboxState};
-use antbox_trig::TrigVec;
+use antbox_trig::{Angle, TrigVec};
 use speedy2d::shape::Rect;
 
-use crate::colors::{ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, interpolate};
+use crate::colors::{self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, interpolate};
 use crate::{Drawable, GfxLayout, RectExt as _};
 
 impl Drawable for &AntboxState {
@@ -37,9 +37,43 @@ impl Drawable for (Object, Rect) {
 }
 
 impl Drawable for (Food, Rect) {
-    fn draw_on(self, _: &mut GfxLayout<'_>) {
-        // Nothing!
-        // TODO: Move food layer into proper `antbox_state`
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        let (food, rect) = self;
+        let crad = g.grid_layout.cell_radius * 0.9;
+
+        let center = rect.center();
+        let cellrotation = Angle::from(center.magnitude());
+        let berrycolor = colors::food_neighbor_count(food.seeds);
+
+        let c = food.seeds as f32;
+        let theta = PI / c;
+
+        let berryrad = {
+            let magic_sauce = (theta * 0.71).sin();
+            let seedf = if food.seeds == 1 {
+                center.magnitude_squared().rem_euclid(1.0).powf(0.3)
+            } else {
+                1.0
+            };
+            crad * seedf * (magic_sauce / (1.1 + magic_sauce))
+        };
+
+        let spoke = TrigVec::new(PI / c, 0.8 * crad - berryrad);
+
+        if food.alive {
+            g.draw_circle(center, crad, colors::FOOD_LIFE);
+        }
+
+        g.draw_circle(center, crad * 0.9, colors::SEEDPOD);
+        for berry in 0..food.seeds {
+            let mut bspoke = spoke.rotate(cellrotation + 2.0 * theta * berry as f32);
+
+            if food.seeds == 1 {
+                bspoke = bspoke.scale(center.magnitude().rem_euclid(1.0));
+            }
+
+            g.draw_circle(center + bspoke.into_vec2(), berryrad, berrycolor);
+        }
     }
 }
 

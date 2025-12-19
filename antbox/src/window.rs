@@ -56,7 +56,7 @@ impl AntBoxWindow {
 
 impl WindowHandler<Tick> for AntBoxWindow {
     fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
-        self.anim.update_io(&mut self.rng);
+        self.anim.update(&mut self.rng);
         helper.request_redraw();
     }
 

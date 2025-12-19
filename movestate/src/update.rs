@@ -2,7 +2,7 @@ use crate::Transform;
 
 /// Any [Transform] with [Transform::Next] as `Self` is an [Update] for the same input `I`
 pub trait Update<I>: Transform<I, Next = Self> {
-    /// A synonym for [Self::transform]
+    /// A synonym for [Transform::transform]
     fn update(self, input: I) -> Self {
         self.transform(input)
     }

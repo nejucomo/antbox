@@ -5,7 +5,7 @@ use movestate::Transform;
 
 use crate::{ConwayCell, ConwayGrid};
 
-/// A wrapped [ConwayGrid] which implements [IntoNext] for Conway iterations
+/// A wrapped [ConwayGrid] which implements [IntoNext](movestate::IntoNext) for Conway iterations
 #[derive(Debug, Deref, DerefMut, AsRef, From, Into, new)]
 pub struct ConwayMachine<C>(Grid<C>)
 where
