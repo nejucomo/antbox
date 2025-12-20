@@ -120,13 +120,14 @@ impl Drawable<(Rect, &mut WyRand)> for Pheromones {
         const ALPHA: f32 = 0.7;
 
         let center = rect.center();
+        let crad = rect.cell_radius();
         for (ph, color) in [
             (Food, FOOD_LIFE.with_alpha(ALPHA)),
             (Home, ANT_HOLE_IRIS.with_alpha(ALPHA)),
         ] {
             for _ in 0..self.magnitude(ph) {
-                let spoke = wyr.random::<TrigVec>().scale(rect.cell_radius());
-                let rad = wyr.random_range(0.1..0.2);
+                let spoke = wyr.random::<TrigVec>().scale(crad);
+                let rad = wyr.random_range(0.1..0.2) * crad;
                 gfx.draw_circle(center + spoke.into_vec2(), rad, color);
             }
         }
