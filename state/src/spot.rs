@@ -82,7 +82,11 @@ impl SteppedUpon for Spot {
         }
         .map(|obj| Spot {
             obj: Some(obj),
-            ..self
+            pheromones: self.pheromones
+                + obj
+                    .opt_into()
+                    .map(|ant: Ant| ant.pheromone_deposit())
+                    .unwrap_or_default(),
         })
     }
 }
