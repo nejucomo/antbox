@@ -95,7 +95,7 @@ impl WindowHandler<Tick> for AntBoxWindow {
             let gp = ws.unwrap_starting();
 
             WinState::Started(Started {
-                mode: Paused,
+                mode: Running,
                 anim: Slot::from(AnimationState::new(&mut self.rng, gp)),
             })
         });

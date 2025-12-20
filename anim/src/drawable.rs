@@ -1,18 +1,18 @@
-use crate::gfxlayout::GfxLayout;
+use speedy2d::Graphics2D;
 
-/// An object which can be drawn onto a [GfxLayout]
-pub trait Drawable {
-    /// Draw `self` onto a [GfxLayout]
-    fn draw_on(self, g: &mut GfxLayout<'_>);
+/// An object which can be drawn onto a [Graphics2D]
+pub trait Drawable<T> {
+    /// Draw `self` onto `g`
+    fn draw_on(self, gfx: &mut Graphics2D, arg: T);
 }
 
-impl<T> Drawable for Option<T>
+impl<B, T> Drawable<T> for Option<B>
 where
-    T: Drawable,
+    B: Drawable<T>,
 {
-    fn draw_on(self, g: &mut GfxLayout<'_>) {
+    fn draw_on(self, gfx: &mut Graphics2D, arg: T) {
         if let Some(v) = self {
-            v.draw_on(g);
+            v.draw_on(gfx, arg);
         }
     }
 }

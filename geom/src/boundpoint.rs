@@ -66,7 +66,6 @@ impl Add<Direction> for BoundPoint {
             bounds: Bounds { width, height },
         } = self;
 
-        // TODO: The lesson is to hardcode `isize` or `usize`, not `usize` in the geometry types.
         let (dx, dy) = dir.wrap_around_deltas(width, height);
         let nx = (x + dx) % width;
         let ny = (y + dy) % height;

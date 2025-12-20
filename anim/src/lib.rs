@@ -9,13 +9,11 @@ mod anim;
 mod colors;
 mod drawable;
 mod drawantbox;
-mod gfxlayout;
 mod gridlayout;
 pub mod layers;
 mod rectext;
 
 pub use self::anim::AnimationState;
 pub use self::drawable::Drawable;
-pub use self::gfxlayout::GfxLayout;
 pub use self::gridlayout::GridLayout;
 pub use self::rectext::RectExt;

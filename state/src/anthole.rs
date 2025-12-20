@@ -38,9 +38,9 @@ where
 
         if self.lifeforce > LIFE_FORCE_SPAWN_ANT && su.rng.random_ratio(1, 1 + self.ants) {
             let newant = if self.lifeforce > 2 * LIFE_FORCE_SPAWN_ANT {
-                Ant::new(Exploring, Pheromones::new(0, 29))
+                Ant::new(Exploring, Pheromones::new(0, 201))
             } else {
-                Ant::new(Hungry, Pheromones::new(0, 7))
+                Ant::new(Hungry, Pheromones::new(0, 49))
             };
 
             let antpt = su.pt + su.rng.random::<Direction>();

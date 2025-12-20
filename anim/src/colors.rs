@@ -5,7 +5,7 @@ use speedy2d::color::Color;
 pub(crate) const DIRT: Color = interpolate(
     Color::from_rgb(118. / 255., 80. / 255., 51.3 / 255.),
     Color::BLACK,
-    0.5,
+    0.6,
 );
 
 pub(crate) const WIRE_FRAME: Color = Color::from_rgb(0.1, 0.12, 0.16);
