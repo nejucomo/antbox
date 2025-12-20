@@ -18,6 +18,15 @@ pub struct AntHole {
     ants: u32,
 }
 
+impl Default for AntHole {
+    fn default() -> Self {
+        Self {
+            lifeforce: 15,
+            ants: 0,
+        }
+    }
+}
+
 impl<'a, R> Transform<SpotUpdate<'a, R>> for AntHole
 where
     R: rand::Rng,
@@ -79,14 +88,5 @@ impl SteppedUpon for AntHole {
         log::info!("Ant {ant:?} stepped on {newh:?}");
 
         Some(newh)
-    }
-}
-
-impl Default for AntHole {
-    fn default() -> Self {
-        Self {
-            lifeforce: 30,
-            ants: 0,
-        }
     }
 }

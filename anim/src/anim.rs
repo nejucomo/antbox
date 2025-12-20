@@ -1,23 +1,24 @@
 use antbox_state::{GenParams, State as AntboxState};
-use movestate::toolkit::Cycler;
+use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::{Transform, Update as _};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
 use crate::{GfxLayout, GridLayout, layers};
 
-const ANIMS_PER_STATE_TICK: usize = 13;
+const ANTBOX_FRAME_RATE: f64 = 1.0;
 
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
 pub struct AnimationState {
-    antbox: Cycler<AntboxState>,
+    antbox: RateLimiter<AntboxState>,
 }
 
 impl AnimationState {
     /// Initialize
     pub fn new<R: rand::Rng>(rng: &mut R, gp: GenParams) -> Self {
-        let antbox = Cycler::new(gp.generate_state(rng), ANIMS_PER_STATE_TICK);
+        let antbox = gp.generate_state(rng);
+        let antbox = RateLimiter::new(antbox, TickTimer::with_frame_rate(ANTBOX_FRAME_RATE));
         AnimationState { antbox }
     }
 

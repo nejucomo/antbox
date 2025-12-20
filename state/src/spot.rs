@@ -2,9 +2,11 @@ use derive_new::new;
 use movestate::{OptUpdate as _, Transform, Update as _};
 use rand::distr::Distribution as _;
 
-use crate::consts::WCOIN_POD_APPEARS;
+use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, AntHole, SeedPod, Object, Objectish, OptInto, Pheromone, Pheromones, SteppedUpon};
+use crate::{
+    Ant, AntHole, Object, Objectish, OptInto, Pheromone, Pheromones, SeedPod, SteppedUpon,
+};
 
 /// Every [Spot] in the [State](crate::State) can contain up to one [Object]
 #[derive(Copy, Clone, Debug, Default, new)]
@@ -57,7 +59,7 @@ where
 
         let obj = if let Some(prevobj) = self.obj {
             prevobj.opt_update(su)
-        } else if fig && WCOIN_POD_APPEARS.sample(su.rng) {
+        } else if fig && WCOIN_POD_UPDATES.sample(su.rng) && WCOIN_POD_APPEARS.sample(su.rng) {
             Some(SeedPod::default().into())
         } else {
             None

@@ -10,6 +10,8 @@ use speedy2d::window::WindowCreationError;
 
 pub type Result<T> = std::result::Result<T, BacktraceError<WindowCreationError>>;
 
+const TARGET_FRAME_RATE: f64 = 50.0;
+
 /// A unit newtype for readability of framerate ticks(rather than `()`)
 #[derive(Copy, Clone, Debug)]
 struct Tick;

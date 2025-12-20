@@ -6,8 +6,11 @@
 
 use crate::wcoin::WeightedCoin;
 
+/// The top-level chance of a pod updating
+pub(crate) const WCOIN_POD_UPDATES: WeightedCoin = WeightedCoin(1, 97);
+
 /// The chance of a new pod appearing
-pub(crate) const WCOIN_POD_APPEARS: WeightedCoin = WeightedCoin(1, 29);
+pub(crate) const WCOIN_POD_APPEARS: WeightedCoin = WeightedCoin(1, 11);
 
 /// The chance of a old pod disappearing
 pub(crate) const WCOIN_POD_DISAPPEARS: WeightedCoin = WeightedCoin(1, 7);

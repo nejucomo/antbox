@@ -1,7 +1,9 @@
-use movestate::Transform;
+use movestate::{OptUpdate as _, Transform};
 use rand::distr::Distribution as _;
 
-use crate::consts::{LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM, WCOIN_POD_DISAPPEARS};
+use crate::consts::{
+    LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM, WCOIN_POD_DISAPPEARS, WCOIN_POD_UPDATES,
+};
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, SteppedUpon};
 
@@ -20,6 +22,8 @@ impl SeedPod {
     }
 }
 
+struct DoUpdate;
+
 impl<'a, R> Transform<SpotUpdate<'a, R>> for SeedPod
 where
     R: rand::Rng,
@@ -27,6 +31,21 @@ where
     type Next = Option<Self>;
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+        if WCOIN_POD_UPDATES.sample(su.rng) {
+            self.opt_update((DoUpdate, su))
+        } else {
+            Some(self)
+        }
+    }
+}
+
+impl<'a, R> Transform<(DoUpdate, SpotUpdate<'a, R>)> for SeedPod
+where
+    R: rand::Rng,
+{
+    type Next = Option<Self>;
+
+    fn transform(self, (_, su): (DoUpdate, SpotUpdate<'a, R>)) -> Self::Next {
         let (target_life, target_nc) = su.state.growth_and_neighbors(su.pt);
 
         let delta = (target_nc as i8) - (self.seeds as i8);
