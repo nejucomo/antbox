@@ -17,6 +17,6 @@ impl Rect {
 
     /// The cell radius for the [Rect]
     fn cell_radius(&self) -> f32 {
-        self.width().min(self.height())
+        self.width().min(self.height()) * 0.5
     }
 }

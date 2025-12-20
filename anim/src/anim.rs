@@ -8,7 +8,7 @@ use wyrand::WyRand;
 
 use crate::{Drawable as _, GridLayout, layers};
 
-const ANTBOX_FRAME_RATE: f64 = 1.0;
+const ANTBOX_FRAME_RATE: f64 = 5.0;
 
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
