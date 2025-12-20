@@ -10,7 +10,9 @@ use speedy2d::Graphics2D;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
-use crate::colors::{self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, ColorExt as _, interpolate};
+use crate::colors::{
+    self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, ColorExt as _, DIRT, interpolate,
+};
 use crate::{Drawable, GridLayout, RectExt as _};
 
 impl Drawable<(GridLayout, &Grid<WyRand>)> for &AntboxState {
@@ -94,19 +96,29 @@ impl Drawable<(Rect, &mut WyRand)> for AntHole {
         let center = rect.center();
 
         // Slightly too big to fit:
-        let radbig = rect.cell_radius() * 1.3;
+        let radbig = rect.cell_radius() * 1.7;
         let spoke = TrigVec::new(
             (center.x / center.y).asinh() * TAU,
             (center.x * center.y).rem_euclid(FRAC_1_SQRT_2).sin().abs() * radbig * 0.7,
         );
 
         let circles = 7;
-        let invcirc = 1.0 / circles as f32;
+        let rimcircle = 3;
         for i in 0..circles {
             let fdecay = 0.8f32.powi(i);
-            let c = center + spoke.rotate(fdecay * TAU).scale(1.0 - fdecay);
+            let c = center + spoke.rotate(fdecay * TAU).scale((1.0 - fdecay).powi(3));
             let rad = fdecay * radbig;
-            let color = interpolate(ANT_HOLE_IRIS, ANT_HOLE_ENTRANCE, invcirc * i as f32);
+            let color = if i <= rimcircle {
+                interpolate(DIRT, ANT_HOLE_IRIS, i as f32 / rimcircle as f32)
+            } else {
+                let j = i - rimcircle;
+                let innercircles = circles - rimcircle;
+                interpolate(
+                    ANT_HOLE_IRIS,
+                    ANT_HOLE_ENTRANCE,
+                    j as f32 / innercircles as f32,
+                )
+            };
             gfx.draw_circle(c, rad, color);
         }
     }
