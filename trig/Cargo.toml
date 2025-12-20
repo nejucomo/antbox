@@ -9,4 +9,5 @@ edition.workspace = true
 [dependencies]
 derive-new.workspace = true
 derive_more = { workspace = true, features = ["from", "into"] }
+rand.workspace = true
 speedy2d.workspace = true

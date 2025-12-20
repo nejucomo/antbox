@@ -5,9 +5,7 @@ use rand::distr::Distribution as _;
 
 use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
 use crate::spotupdate::SpotUpdate;
-use crate::{
-    Ant, AntHole, Object, Objectish, OptInto, Pheromone, Pheromones, SeedPod, SteppedUpon,
-};
+use crate::{Ant, AntHole, Object, Objectish, OptInto, Pheromones, SeedPod, SteppedUpon};
 
 /// Every [Spot] in the [State](crate::State) can contain up to one [Object]
 #[derive(Copy, Clone, Debug, Default, new)]
@@ -28,9 +26,9 @@ impl Spot {
         self.obj
     }
 
-    /// The magnitude of the [Pheromone] at this [Spot]
-    pub fn pheromone_magnitude(self, ph: Pheromone) -> u8 {
-        self.pheromones.magnitude(ph)
+    /// The [Pheromones] in this [Spot]
+    pub fn pheromones(self) -> Pheromones {
+        self.pheromones
     }
 
     /// Take the [Object]
@@ -82,7 +80,11 @@ impl SteppedUpon for Spot {
         }
         .map(|obj| Spot {
             obj: Some(obj),
-            ..self
+            pheromones: self.pheromones
+                + obj
+                    .opt_into()
+                    .map(|ant: Ant| ant.pheromone_deposit())
+                    .unwrap_or_default(),
         })
     }
 }

@@ -15,6 +15,7 @@ antbox-trig.workspace = true
 derive-debug.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = ["deref", "deref_mut"] }
+extension-traits.workspace = true
 log.workspace = true
 movestate.workspace = true
 rand.workspace = true

@@ -134,6 +134,7 @@ dependencies = [
  "derive-debug",
  "derive-new",
  "derive_more",
+ "extension-traits",
  "log",
  "movestate",
  "rand",
@@ -193,6 +194,7 @@ version = "0.1.0"
 dependencies = [
  "derive-new",
  "derive_more",
+ "rand",
  "speedy2d",
 ]
 

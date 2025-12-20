@@ -7,7 +7,7 @@ use crate::consts::{
     WCOIN_LIFE_FORCE_LOSS,
 };
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, SteppedUpon};
+use crate::{Ant, Pheromones, SteppedUpon};
 
 /// An [AntHole] collects food for its lifeforce and uses that to spawn ants
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -34,11 +34,13 @@ where
     type Next = (AntHole, Option<BoundPoint>);
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+        use crate::AntMode::{Exploring, Hungry};
+
         if self.lifeforce > LIFE_FORCE_SPAWN_ANT && su.rng.random_ratio(1, 1 + self.ants) {
             let newant = if self.lifeforce > 2 * LIFE_FORCE_SPAWN_ANT {
-                Ant::Exploring
+                Ant::new(Exploring, Pheromones::new(0, 29))
             } else {
-                Ant::Hungry
+                Ant::new(Hungry, Pheromones::new(0, 7))
             };
 
             let antpt = su.pt + su.rng.random::<Direction>();
@@ -72,19 +74,15 @@ impl SteppedUpon for AntHole {
     type NewState = Self;
 
     fn stepped_upon_by(self, ant: Ant) -> Option<Self> {
-        use Ant::*;
-
         let newh = AntHole {
             lifeforce: self.lifeforce
                 + LIFE_FORCE_ANT_RETURNS
-                + match ant {
-                    WithFood(food) => {
-                        (food.seeds as usize) * LIFE_FORCE_FOOD_SEED
-                            + if food.ripe { LIFE_FORCE_FOOD_LIFE } else { 0 }
-                    }
-                    _ => 0,
+                + if let Some(pod) = ant.seed_pod() {
+                    (pod.seeds as usize) * LIFE_FORCE_FOOD_SEED
+                        + if pod.ripe { LIFE_FORCE_FOOD_LIFE } else { 0 }
+                } else {
+                    0
                 },
-
             ants: self.ants - 1,
         };
 

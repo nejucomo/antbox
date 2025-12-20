@@ -17,7 +17,7 @@ mod state;
 mod steppedupon;
 pub(crate) mod wcoin;
 
-pub use self::ant::Ant;
+pub use self::ant::{Ant, AntMode};
 pub use self::anthole::AntHole;
 pub use self::genparams::GenParams;
 pub use self::object::Object;
