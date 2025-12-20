@@ -10,7 +10,7 @@ use speedy2d::window::{
 };
 use speedy2d::{Graphics2D, Window};
 
-use crate::{Result, Tick};
+use crate::{Result, TARGET_FRAME_RATE, Tick};
 
 use self::RunMode::{Paused, Running};
 
@@ -69,10 +69,10 @@ impl AntBoxWindow {
 
         let uev = helper.create_user_event_sender();
         std::thread::spawn(move || {
-            let mut tt = TickTimer::default();
+            let mut tt = TickTimer::with_frame_rate(TARGET_FRAME_RATE);
 
             loop {
-                tt.sleep_check();
+                tt.sleep_update();
                 uev.send_event(Tick).unwrap();
             }
         });

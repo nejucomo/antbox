@@ -7,5 +7,9 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+derive_more = { workspace = true, features = ["is_variant"] }
+derive-new.workspace = true
 either.workspace = true
+extension-traits.workspace = true
 log.workspace = true
+movestate.workspace = true

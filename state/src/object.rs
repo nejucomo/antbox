@@ -2,13 +2,13 @@ use derive_more::{From, TryInto};
 use movestate::{OptUpdate as _, Transform, Update as _};
 
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, AntHole, Food, Objectish, SteppedUpon};
+use crate::{Ant, AntHole, Objectish, SeedPod, SteppedUpon};
 
 /// The type of [Object]s which can be in a [Spot](crate::Spot) in the [State](crate::State)
 #[derive(Copy, Clone, Debug, From, Eq, PartialEq, TryInto)]
 pub enum Object {
     /// A food particle
-    Food(Food),
+    Food(SeedPod),
     /// An ant
     Ant(Ant),
     /// An ant hole

@@ -1,32 +1,51 @@
-use movestate::Transform;
+use movestate::{OptUpdate as _, Transform};
 use rand::distr::Distribution as _;
 
-use crate::consts::{LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM, WCOIN_POD_DISAPPEARS};
+use crate::consts::{
+    LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM, WCOIN_POD_DISAPPEARS, WCOIN_POD_UPDATES,
+};
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, SteppedUpon};
 
 /// Yum!
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
-pub struct Food {
+pub struct SeedPod {
     /// How many seeds are in this pod?
     pub seeds: u8,
     /// Is the pod fully developed?
-    pub alive: bool,
+    pub ripe: bool,
 }
 
-impl Food {
+impl SeedPod {
     fn is_empty_pod(self) -> bool {
-        !self.alive && self.seeds == 0
+        !self.ripe && self.seeds == 0
     }
 }
 
-impl<'a, R> Transform<SpotUpdate<'a, R>> for Food
+struct DoUpdate;
+
+impl<'a, R> Transform<SpotUpdate<'a, R>> for SeedPod
 where
     R: rand::Rng,
 {
     type Next = Option<Self>;
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+        if WCOIN_POD_UPDATES.sample(su.rng) {
+            self.opt_update((DoUpdate, su))
+        } else {
+            Some(self)
+        }
+    }
+}
+
+impl<'a, R> Transform<(DoUpdate, SpotUpdate<'a, R>)> for SeedPod
+where
+    R: rand::Rng,
+{
+    type Next = Option<Self>;
+
+    fn transform(self, (_, su): (DoUpdate, SpotUpdate<'a, R>)) -> Self::Next {
         let (target_life, target_nc) = su.state.growth_and_neighbors(su.pt);
 
         let delta = (target_nc as i8) - (self.seeds as i8);
@@ -39,14 +58,14 @@ where
                 0i8
             };
 
-        let next = Food {
+        let next = SeedPod {
             seeds: newseeds as u8,
-            alive: if self.alive == target_life {
-                self.alive
+            ripe: if self.ripe == target_life {
+                self.ripe
             } else if delta == 0 && su.rng.random_ratio(dabs, LIFE_CHANGE_DENOM) {
                 target_life
             } else {
-                self.alive
+                self.ripe
             },
         };
 
@@ -58,7 +77,7 @@ where
     }
 }
 
-impl SteppedUpon for Food {
+impl SteppedUpon for SeedPod {
     type NewState = Ant;
 
     fn stepped_upon_by(self, ant: Ant) -> Option<Ant> {
