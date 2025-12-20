@@ -4,7 +4,7 @@ use movestate::{Transform, Update as _};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 
-use crate::{GfxLayout, GridLayout, layers};
+use crate::{Drawable as _, GridLayout, layers};
 
 const ANTBOX_FRAME_RATE: f64 = 1.0;
 
@@ -23,13 +23,11 @@ impl AnimationState {
     }
 
     /// Draw `self` onto `gfx`
-    pub fn draw(&self, g: &mut Graphics2D, view_size: Vec2) {
-        let gl = GridLayout::new(self.antbox.bounds(), view_size);
-        let mut gfx = GfxLayout::new(g, gl);
-
-        gfx.draw(layers::Background);
-        gfx.draw(layers::WireFrame);
-        gfx.draw(&*self.antbox);
+    pub fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
+        let layout = GridLayout::new(self.antbox.bounds(), view_size);
+        layers::Background.draw_on(gfx, ());
+        layers::WireFrame.draw_on(gfx, layout);
+        self.antbox.draw_on(gfx, layout);
     }
 }
 
