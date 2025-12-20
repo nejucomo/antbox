@@ -140,6 +140,7 @@ dependencies = [
  "rand",
  "rand_distr",
  "speedy2d",
+ "wyrand",
 ]
 
 [[package]]
@@ -2079,6 +2080,15 @@ name = "wit-bindgen"
 version = "0.46.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f17a85883d4e6d00e8a97c586de764dabcc06133f7f1d55dce5cdc070ad7fe59"
+
+[[package]]
+name = "wyrand"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15e0359b0b8d9cdef235a1fd4a8c5d02e4c9204e9fac861c14c229a8e803d1a6"
+dependencies = [
+ "rand_core",
+]
 
 [[package]]
 name = "x11-dl"

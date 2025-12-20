@@ -1,44 +1,48 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
+use antbox_geom::Grid;
 use antbox_state::{
     Ant, AntHole, Object, Pheromone, Pheromones, SeedPod, Spot, State as AntboxState,
 };
 use antbox_trig::{Angle, TrigVec};
+use rand::Rng as _;
 use speedy2d::Graphics2D;
 use speedy2d::shape::Rect;
+use wyrand::WyRand;
 
 use crate::colors::{self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, ColorExt as _, interpolate};
 use crate::{Drawable, GridLayout, RectExt as _};
 
-impl Drawable<GridLayout> for &AntboxState {
-    fn draw_on(self, gfx: &mut Graphics2D, layout: GridLayout) {
+impl Drawable<(GridLayout, &Grid<WyRand>)> for &AntboxState {
+    fn draw_on(self, gfx: &mut Graphics2D, (layout, wyrgrid): (GridLayout, &Grid<WyRand>)) {
         for (pt, rect) in layout.iter_pts_and_rects() {
-            self[pt].draw_on(gfx, rect);
+            let mut wyr = wyrgrid[pt].clone();
+            self[pt].draw_on(gfx, (rect, &mut wyr));
         }
     }
 }
 
-impl Drawable<Rect> for Spot {
-    fn draw_on(self, gfx: &mut Graphics2D, rect: Rect) {
-        self.object().draw_on(gfx, rect.clone());
-        self.pheromones().draw_on(gfx, rect);
+impl Drawable<(Rect, &mut WyRand)> for Spot {
+    fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
+        self.object().draw_on(gfx, (rect.clone(), wyr));
+        self.pheromones().draw_on(gfx, (rect, wyr));
     }
 }
 
-impl Drawable<Rect> for Object {
-    fn draw_on(self, gfx: &mut Graphics2D, rect: Rect) {
+impl Drawable<(Rect, &mut WyRand)> for Object {
+    fn draw_on(self, gfx: &mut Graphics2D, tup: (Rect, &mut WyRand)) {
         use Object::*;
 
         match self {
-            Food(x) => x.draw_on(gfx, rect),
-            Ant(x) => x.draw_on(gfx, rect),
-            AntHole(x) => x.draw_on(gfx, rect),
+            Food(x) => x.draw_on(gfx, tup),
+            Ant(x) => x.draw_on(gfx, tup),
+            AntHole(x) => x.draw_on(gfx, tup),
         }
     }
 }
 
-impl Drawable<Rect> for SeedPod {
-    fn draw_on(self, gfx: &mut Graphics2D, rect: Rect) {
+impl Drawable<(Rect, &mut WyRand)> for SeedPod {
+    fn draw_on(self, gfx: &mut Graphics2D, (rect, _wyr): (Rect, &mut WyRand)) {
         let crad = rect.cell_radius() * 0.9;
 
         let center = rect.center();
@@ -77,16 +81,16 @@ impl Drawable<Rect> for SeedPod {
     }
 }
 
-impl Drawable<Rect> for Ant {
-    fn draw_on(self, gfx: &mut Graphics2D, rect: Rect) {
+impl Drawable<(Rect, &mut WyRand)> for Ant {
+    fn draw_on(self, gfx: &mut Graphics2D, (rect, _wyr): (Rect, &mut WyRand)) {
         // TODO: head, throax, abdomen, food pellet
         let rad = rect.cell_radius() * 0.5;
         gfx.draw_circle(rect.center(), rad, ANT);
     }
 }
 
-impl Drawable<Rect> for AntHole {
-    fn draw_on(self, gfx: &mut Graphics2D, rect: Rect) {
+impl Drawable<(Rect, &mut WyRand)> for AntHole {
+    fn draw_on(self, gfx: &mut Graphics2D, (rect, _wyr): (Rect, &mut WyRand)) {
         let center = rect.center();
 
         // Slightly too big to fit:
@@ -108,27 +112,22 @@ impl Drawable<Rect> for AntHole {
     }
 }
 
-impl Drawable<Rect> for Pheromones {
-    fn draw_on(self, gfx: &mut Graphics2D, rect: Rect) {
+impl Drawable<(Rect, &mut WyRand)> for Pheromones {
+    fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
         use Pheromone::{Food, Home};
+        use colors::{ANT_HOLE_IRIS, FOOD_LIFE};
 
-        let crad = rect.cell_radius();
+        const ALPHA: f32 = 0.7;
+
         let center = rect.center();
-        let spoke = TrigVec::new(0f32, crad * 0.2);
-        for ph in [Food, Home] {
-            let mag = self.magnitude(ph);
-            if mag > 0 {
-                let magfactor = (mag.saturating_add(50) as f32 / u8::MAX as f32).sqrt();
-
-                let rad = 0.8 * crad * magfactor;
-                let (color, phang) = match ph {
-                    Food => (colors::FOOD_LIFE, 0.),
-                    Home => (colors::ANT_HOLE_IRIS, TAU / 3.),
-                };
-
-                let c = center + spoke.rotate(phang + magfactor * TAU);
-
-                gfx.draw_circle(c, rad, color.with_alpha(magfactor));
+        for (ph, color) in [
+            (Food, FOOD_LIFE.with_alpha(ALPHA)),
+            (Home, ANT_HOLE_IRIS.with_alpha(ALPHA)),
+        ] {
+            for _ in 0..self.magnitude(ph) {
+                let spoke = wyr.random::<TrigVec>().scale(rect.cell_radius());
+                let rad = wyr.random_range(0.1..0.2);
+                gfx.draw_circle(center + spoke.into_vec2(), rad, color);
             }
         }
     }
