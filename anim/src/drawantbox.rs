@@ -1,10 +1,12 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
-use antbox_state::{Ant, AntHole, Object, SeedPod, Spot, State as AntboxState};
+use antbox_state::{
+    Ant, AntHole, Object, Pheromone, Pheromones, SeedPod, Spot, State as AntboxState,
+};
 use antbox_trig::{Angle, TrigVec};
 use speedy2d::shape::Rect;
 
-use crate::colors::{self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, interpolate};
+use crate::colors::{self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, ColorExt as _, interpolate};
 use crate::{Drawable, GfxLayout, RectExt as _};
 
 impl Drawable for &AntboxState {
@@ -19,7 +21,8 @@ impl Drawable for &AntboxState {
 impl Drawable for (Spot, Rect) {
     fn draw_on(self, g: &mut GfxLayout<'_>) {
         let (spot, rect) = self;
-        spot.object().map(|obj| (obj, rect)).draw_on(g);
+        spot.object().map(|obj| (obj, rect.clone())).draw_on(g);
+        (spot.pheromones(), rect).draw_on(g);
     }
 }
 
@@ -106,6 +109,33 @@ impl Drawable for (AntHole, Rect) {
             let rad = fdecay * radbig;
             let color = interpolate(ANT_HOLE_IRIS, ANT_HOLE_ENTRANCE, invcirc * i as f32);
             g.draw_circle(c, rad, color);
+        }
+    }
+}
+
+impl Drawable for (Pheromones, Rect) {
+    fn draw_on(self, g: &mut GfxLayout<'_>) {
+        use Pheromone::{Food, Home};
+
+        let (phs, rect) = self;
+        let crad = g.grid_layout.cell_radius;
+        let center = rect.center();
+        let spoke = TrigVec::new(0f32, crad * 0.2);
+        for ph in [Food, Home] {
+            let mag = phs.magnitude(ph);
+            if mag > 0 {
+                let magfactor = (mag.saturating_add(50) as f32 / u8::MAX as f32).sqrt();
+
+                let rad = 0.8 * crad * magfactor;
+                let (color, phang) = match ph {
+                    Food => (colors::FOOD_LIFE, 0.),
+                    Home => (colors::ANT_HOLE_IRIS, TAU / 3.),
+                };
+
+                let c = center + spoke.rotate(phang + magfactor * TAU);
+
+                g.draw_circle(c, rad, color.with_alpha(magfactor));
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+use extension_traits::extension;
 use speedy2d::color::Color;
 
 /// The background color
@@ -41,4 +42,11 @@ pub const fn interpolate(from: Color, to: Color, factor: f32) -> Color {
 
 const fn interpolate_f32(from: f32, to: f32, factor: f32) -> f32 {
     factor * (to - from) + from
+}
+
+#[extension(pub(crate) trait ColorExt)]
+impl Color {
+    fn with_alpha(self, a: f32) -> Color {
+        Color::from_rgba(self.r(), self.g(), self.b(), a)
+    }
 }

@@ -36,7 +36,7 @@ impl State {
 
     /// Return the directions from `pt` which have the `greatest`/weakest magnitude of `ph`
     pub fn pheromone_gradient(&self, pt: BoundPoint, ph: Pheromone, greatest: bool) -> DirSet {
-        let it = Direction::each().map(|d| self[pt + d].pheromone_magnitude(ph));
+        let it = Direction::each().map(|d| self[pt + d].pheromones().magnitude(ph));
 
         let best = if greatest {
             it.max()
@@ -45,7 +45,7 @@ impl State {
         }
         .unwrap();
 
-        self.directions_where(pt, |spot| spot.pheromone_magnitude(ph) == best)
+        self.directions_where(pt, |spot| spot.pheromones().magnitude(ph) == best)
     }
 
     /// Whether or not food is growing here

@@ -2,6 +2,8 @@ use std::f32::consts::TAU;
 use std::ops::Add;
 
 use derive_more::Into;
+use rand::Rng;
+use rand::distr::{Distribution, StandardUniform};
 
 /// An angle in radians
 #[derive(Copy, Clone, Into)]
@@ -37,5 +39,11 @@ impl<A: Into<Angle>> Add<A> for Angle {
 impl std::fmt::Debug for Angle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "∡{:.3}𝛕", self.0 / TAU)
+    }
+}
+
+impl Distribution<Angle> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Angle {
+        Angle(rng.random_range(0f32..TAU))
     }
 }

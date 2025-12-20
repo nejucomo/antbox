@@ -1,5 +1,7 @@
 use derive_more::{From, Into};
 use derive_new::new;
+use rand::Rng;
+use rand::distr::{Distribution, StandardUniform};
 use speedy2d::dimen::Vec2;
 
 use crate::angle::Angle;
@@ -44,5 +46,11 @@ impl TrigVec {
 impl From<TrigVec> for Vec2 {
     fn from(tv: TrigVec) -> Vec2 {
         Vec2::new(tv.x(), tv.y())
+    }
+}
+
+impl Distribution<TrigVec> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> TrigVec {
+        TrigVec::new(rng.random::<Angle>(), rng.random_range(0f32..1f32))
     }
 }
