@@ -8,7 +8,7 @@ use rand::distr::Distribution;
 use crate::{BoundPoint, Point};
 
 /// Two-dimensional area bounds
-#[derive(Copy, Clone, Debug, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Bounds {
     /// The width
     pub width: usize,
@@ -57,6 +57,13 @@ impl FromStr for Bounds {
         let w = w.parse().map_err(|_| "parse error in width")?;
         let h = h.parse().map_err(|_| "parse error in height")?;
         Ok(Bounds::new(w, h))
+    }
+}
+
+impl std::fmt::Debug for Bounds {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let Bounds { width, height } = self;
+        write!(f, "[W{width} H{height}]")
     }
 }
 

@@ -6,7 +6,7 @@ use derive_new::new;
 use crate::{Bounds, Direction, Point};
 
 /// A [Point] in the context
-#[derive(Copy, Clone, Debug, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
 pub struct BoundPoint {
     #[new(into)]
     pt: Point,
@@ -71,5 +71,12 @@ impl Add<Direction> for BoundPoint {
         let ny = (y + dy) % height;
 
         BoundPoint::new((nx, ny), self.bounds)
+    }
+}
+
+impl std::fmt::Debug for BoundPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let BoundPoint { pt, bounds } = self;
+        write!(f, "{pt:?} {bounds:?}")
     }
 }
