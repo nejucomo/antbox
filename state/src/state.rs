@@ -1,8 +1,10 @@
+use std::collections::BTreeSet;
+
 use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
 use movestate::toolkit::Cycler;
-use movestate::{IntoNext as _, Transform, Update as _};
+use movestate::{IntoNext as _, Transform};
 
 use crate::randutil::ShuffleIntoVec as _;
 use crate::spotupdate::SpotUpdate;
@@ -56,13 +58,13 @@ impl State {
         self.clife.life_and_neighbors(pt)
     }
 
-    pub(crate) fn move_ant(&mut self, ant: Ant, dst: BoundPoint) -> Option<Ant> {
+    pub(crate) fn move_ant(&mut self, ant: Ant, dst: BoundPoint) -> bool {
         if let Some(dstspot) = self.grid[dst].stepped_upon_by(ant) {
             log::debug!("Move {ant:?} to {dst:?}");
             self.grid[dst] = dstspot;
-            None
+            true
         } else {
-            Some(ant)
+            false
         }
     }
 }
@@ -103,10 +105,17 @@ where
     fn transform(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
         // TODO: Performance: this is a full copy of all points! Can we do a cheaper permutation 0..area?
         let pts = self.bounds().iter_points().shuffle_into_vec(rng);
+        let mut steppedonto = BTreeSet::default();
 
         for pt in pts {
-            let newspot = self.grid[pt].update(SpotUpdate::new(rng, &mut self, pt));
-            self.grid[pt] = newspot;
+            if !steppedonto.remove(&pt) {
+                let (newspot, optstep) =
+                    self.grid[pt].transform(SpotUpdate::new(rng, &mut self, pt));
+                self.grid[pt] = newspot;
+                if let Some(dst) = optstep {
+                    assert!(steppedonto.insert(dst));
+                }
+            }
         }
 
         self

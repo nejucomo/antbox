@@ -1,5 +1,6 @@
+use antbox_geom::BoundPoint;
 use derive_more::{From, TryInto};
-use movestate::{OptUpdate as _, Transform, Update as _};
+use movestate::{OptUpdate as _, Transform};
 
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, AntHole, Objectish, SeedPod, SteppedUpon};
@@ -19,15 +20,21 @@ impl<'a, R> Transform<SpotUpdate<'a, R>> for Object
 where
     R: rand::Rng,
 {
-    type Next = Option<Object>;
+    type Next = (Option<Object>, Option<BoundPoint>);
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use Object::*;
 
         match self {
-            Food(x) => x.opt_update(su).map(Food),
-            Ant(x) => x.opt_update(su).map(Ant),
-            AntHole(x) => Some(AntHole(x.update(su))),
+            Food(x) => (x.opt_update(su).map(Food), None),
+            Ant(ant) => {
+                let (optant, optdst) = ant.transform(su);
+                (optant.map(Ant), optdst)
+            }
+            AntHole(ah) => {
+                let (ah, optdst) = ah.transform(su);
+                (Some(AntHole(ah)), optdst)
+            }
         }
     }
 }
