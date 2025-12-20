@@ -1,5 +1,6 @@
+use antbox_geom::BoundPoint;
 use derive_new::new;
-use movestate::{OptUpdate as _, Transform, Update as _};
+use movestate::{Transform, Update as _};
 use rand::distr::Distribution as _;
 
 use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
@@ -51,21 +52,21 @@ impl<'a, R> Transform<SpotUpdate<'a, R>> for Spot
 where
     R: rand::Rng,
 {
-    type Next = Self;
+    type Next = (Self, Option<BoundPoint>);
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
         let pheromones = self.pheromones.update(su.rng);
         let fig = su.state.food_is_growing(su.pt);
 
-        let obj = if let Some(prevobj) = self.obj {
-            prevobj.opt_update(su)
+        let (obj, stepdst) = if let Some(prevobj) = self.obj {
+            prevobj.transform(su)
         } else if fig && WCOIN_POD_UPDATES.sample(su.rng) && WCOIN_POD_APPEARS.sample(su.rng) {
-            Some(SeedPod::default().into())
+            (Some(SeedPod::default().into()), None)
         } else {
-            None
+            (None, None)
         };
 
-        Spot { obj, pheromones }
+        (Spot { obj, pheromones }, stepdst)
     }
 }
 

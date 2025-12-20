@@ -3,7 +3,7 @@ use movestate::Transform;
 use rand::distr::Distribution;
 
 use crate::spotupdate::SpotUpdate;
-use crate::{SeedPod, Objectish as _, Pheromone, State, SteppedUpon};
+use crate::{Objectish as _, Pheromone, SeedPod, State, SteppedUpon};
 
 use self::Ant::*;
 
@@ -45,12 +45,17 @@ impl<'a, R> Transform<SpotUpdate<'a, R>> for Ant
 where
     R: rand::Rng,
 {
-    type Next = Option<Self>;
+    type Next = (Option<Self>, Option<BoundPoint>);
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
         let dirs = self.sense(su.state, su.pt);
         let dir = dirs.sample(su.rng).unwrap();
-        su.state.move_ant(self, su.pt + dir)
+        let dst = su.pt + dir;
+        if su.state.move_ant(self, dst) {
+            (None, Some(dst))
+        } else {
+            (Some(self), None)
+        }
     }
 }
 

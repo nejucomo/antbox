@@ -6,7 +6,7 @@ use derive_new::new;
 use crate::{Bounds, Direction, Point};
 
 /// A [Point] in the context
-#[derive(Copy, Clone, Debug, From, Into, new)]
+#[derive(Copy, Clone, Debug, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
 pub struct BoundPoint {
     #[new(into)]
     pt: Point,

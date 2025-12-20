@@ -1,4 +1,4 @@
-use antbox_geom::Direction;
+use antbox_geom::{BoundPoint, Direction};
 use movestate::Transform;
 use rand::distr::Distribution as _;
 
@@ -31,7 +31,7 @@ impl<'a, R> Transform<SpotUpdate<'a, R>> for AntHole
 where
     R: rand::Rng,
 {
-    type Next = AntHole;
+    type Next = (AntHole, Option<BoundPoint>);
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
         if self.lifeforce > LIFE_FORCE_SPAWN_ANT && su.rng.random_ratio(1, 1 + self.ants) {
@@ -43,24 +43,27 @@ where
 
             let antpt = su.pt + su.rng.random::<Direction>();
 
-            if su.state.move_ant(newant, antpt).is_none() {
+            if su.state.move_ant(newant, antpt) {
                 let newh = AntHole {
                     lifeforce: self.lifeforce - LIFE_FORCE_SPAWN_ANT,
                     ants: self.ants + 1,
                 };
                 log::info!("New ant {newant:?} at {antpt:?} from {newh:?}");
-                newh
+                (newh, Some(antpt))
             } else {
                 log::debug!("Spawning failed for ant {newant:?} as {antpt:?}");
-                self
+                (self, None)
             }
         } else if WCOIN_LIFE_FORCE_LOSS.sample(su.rng) {
-            AntHole {
-                lifeforce: self.lifeforce - 1,
-                ..self
-            }
+            (
+                AntHole {
+                    lifeforce: self.lifeforce - 1,
+                    ..self
+                },
+                None,
+            )
         } else {
-            self
+            (self, None)
         }
     }
 }

@@ -8,7 +8,7 @@ use rand::distr::Distribution;
 use crate::{BoundPoint, Point};
 
 /// Two-dimensional area bounds
-#[derive(Copy, Clone, Debug, From, Into, new, PartialEq)]
+#[derive(Copy, Clone, Debug, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Bounds {
     /// The width
     pub width: usize,
