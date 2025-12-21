@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::ops::{Add, Sub};
 
 use derive_new::new;
 use movestate::Transform;
@@ -29,28 +29,28 @@ impl Pheromones {
         self.food == 0 && self.home == 0
     }
 
-    /// Subtract a deposit
-    pub fn decay(self) -> Self {
-        let dep = self.deposit();
-        Pheromones {
-            food: self.food - dep.food,
-            home: self.home - dep.home,
-        }
-    }
-
-    /// Get a single step deposit from a pheromone store
-    pub fn deposit(self) -> Pheromones {
-        Pheromones {
-            food: if self.food > 0 { 1 } else { 0 },
-            home: if self.home > 0 { 1 } else { 0 },
-        }
-    }
-
     /// Get the local magnitude of the [Pheromone] type
     pub fn magnitude(self, ph: Pheromone) -> u8 {
         match ph {
             Food => self.food,
             Home => self.home,
+        }
+    }
+
+    /// Clamp each magnitude to 1
+    pub fn clamp(self) -> Self {
+        Pheromones {
+            food: self.food.clamp(0, 1),
+            home: self.home.clamp(0, 1),
+        }
+    }
+}
+
+impl From<Pheromone> for Pheromones {
+    fn from(ph: Pheromone) -> Self {
+        match ph {
+            Food => Pheromones { food: 1, home: 0 },
+            Home => Pheromones { food: 0, home: 1 },
         }
     }
 }
@@ -77,6 +77,17 @@ impl Add for Pheromones {
         Pheromones {
             food: self.food.saturating_add(other.food),
             home: self.home.saturating_add(other.home),
+        }
+    }
+}
+
+impl Sub for Pheromones {
+    type Output = Pheromones;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Pheromones {
+            food: self.food.saturating_sub(other.food),
+            home: self.home.saturating_sub(other.home),
         }
     }
 }

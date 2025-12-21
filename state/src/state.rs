@@ -60,7 +60,6 @@ impl State {
 
     pub(crate) fn move_ant(&mut self, ant: Ant, dst: BoundPoint) -> bool {
         if let Some(dstspot) = self.grid[dst].stepped_upon_by(ant) {
-            log::debug!("Move {ant:?} to {dst:?}");
             self.grid[dst] = dstspot;
             true
         } else {

@@ -1,9 +1,7 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
 use antbox_geom::Grid;
-use antbox_state::{
-    Ant, AntHole, Object, Pheromone, Pheromones, SeedPod, Spot, State as AntboxState,
-};
+use antbox_state::{Ant, AntHole, Pheromone, Pheromones, SeedPod, Spot, State as AntboxState};
 use antbox_trig::{Angle, TrigVec};
 use rand::Rng as _;
 use speedy2d::Graphics2D;
@@ -25,20 +23,14 @@ impl Drawable<(GridLayout, &Grid<WyRand>)> for &AntboxState {
 }
 
 impl Drawable<(Rect, &mut WyRand)> for Spot {
-    fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
-        self.object().draw_on(gfx, (rect.clone(), wyr));
-        self.pheromones().draw_on(gfx, (rect, wyr));
-    }
-}
-
-impl Drawable<(Rect, &mut WyRand)> for Object {
-    fn draw_on(self, gfx: &mut Graphics2D, tup: (Rect, &mut WyRand)) {
-        use Object::*;
+    fn draw_on(self, gfx: &mut Graphics2D, params: (Rect, &mut WyRand)) {
+        use Spot::*;
 
         match self {
-            Food(x) => x.draw_on(gfx, tup),
-            Ant(x) => x.draw_on(gfx, tup),
-            AntHole(x) => x.draw_on(gfx, tup),
+            Empty(x) => x.draw_on(gfx, params),
+            Food(x) => x.draw_on(gfx, params),
+            Ant(x) => x.draw_on(gfx, params),
+            AntHole(x) => x.draw_on(gfx, params),
         }
     }
 }
@@ -84,7 +76,10 @@ impl Drawable<(Rect, &mut WyRand)> for SeedPod {
 }
 
 impl Drawable<(Rect, &mut WyRand)> for Ant {
-    fn draw_on(self, gfx: &mut Graphics2D, (rect, _wyr): (Rect, &mut WyRand)) {
+    fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
+        self.pheromones_underneath()
+            .draw_on(gfx, (rect.clone(), wyr));
+
         // TODO: head, throax, abdomen, food pellet
         let rad = rect.cell_radius() * 0.5;
         gfx.draw_circle(rect.center(), rad, ANT);

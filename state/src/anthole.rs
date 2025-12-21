@@ -4,10 +4,10 @@ use rand::distr::Distribution as _;
 
 use crate::consts::{
     LIFE_FORCE_ANT_RETURNS, LIFE_FORCE_FOOD_LIFE, LIFE_FORCE_FOOD_SEED, LIFE_FORCE_SPAWN_ANT,
-    WCOIN_LIFE_FORCE_LOSS,
+    WCOIN_FREE_ANT, WCOIN_LIFE_FORCE_LOSS,
 };
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, Pheromones, SteppedUpon};
+use crate::{Ant, SteppedUpon};
 
 /// An [AntHole] collects food for its lifeforce and uses that to spawn ants
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -36,18 +36,21 @@ where
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use crate::AntMode::{Exploring, Hungry};
 
-        if self.lifeforce > LIFE_FORCE_SPAWN_ANT && su.rng.random_ratio(1, 1 + self.ants) {
+        let freeant = WCOIN_FREE_ANT.sample(su.rng);
+
+        if freeant || self.lifeforce > LIFE_FORCE_SPAWN_ANT && su.rng.random_ratio(1, 1 + self.ants)
+        {
             let newant = if self.lifeforce > 2 * LIFE_FORCE_SPAWN_ANT {
-                Ant::new(Exploring, Pheromones::new(0, 201))
+                Ant::new_from_ant_hole(Exploring)
             } else {
-                Ant::new(Hungry, Pheromones::new(0, 49))
+                Ant::new_from_ant_hole(Hungry)
             };
 
             let antpt = su.pt + su.rng.random::<Direction>();
 
             if su.state.move_ant(newant, antpt) {
                 let newh = AntHole {
-                    lifeforce: self.lifeforce - LIFE_FORCE_SPAWN_ANT,
+                    lifeforce: self.lifeforce - if freeant { 0 } else { LIFE_FORCE_SPAWN_ANT },
                     ants: self.ants + 1,
                 };
                 log::info!("New ant {newant:?} at {antpt:?} from {newh:?}");

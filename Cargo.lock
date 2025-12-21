@@ -173,6 +173,7 @@ dependencies = [
  "clap",
  "derive-new",
  "derive_more",
+ "either",
  "log",
  "movestate",
  "rand",
