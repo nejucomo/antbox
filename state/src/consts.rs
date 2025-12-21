@@ -6,6 +6,9 @@
 
 use crate::wcoin::WeightedCoin;
 
+/// The chance of an anthole generating an ant for free
+pub(crate) const WCOIN_FREE_ANT: WeightedCoin = WeightedCoin(1, 97);
+
 /// The top-level chance of a pod updating
 pub(crate) const WCOIN_POD_UPDATES: WeightedCoin = WeightedCoin(1, 97);
 
