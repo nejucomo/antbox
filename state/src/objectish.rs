@@ -1,6 +1,6 @@
 use crate::{Ant, AntHole, OptInto, SteppedUpon};
 
-/// Methods shared by [Object](crate::Object) and [Spot](crate::Spot)
+/// TODO: Remove this
 pub trait Objectish:
     Sized + Copy + OptInto<Ant> + OptInto<Ant> + OptInto<AntHole> + SteppedUpon
 {

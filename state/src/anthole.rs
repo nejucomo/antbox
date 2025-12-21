@@ -7,7 +7,7 @@ use crate::consts::{
     WCOIN_LIFE_FORCE_LOSS,
 };
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, Pheromones, SteppedUpon};
+use crate::{Ant, SteppedUpon};
 
 /// An [AntHole] collects food for its lifeforce and uses that to spawn ants
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -38,9 +38,9 @@ where
 
         if self.lifeforce > LIFE_FORCE_SPAWN_ANT && su.rng.random_ratio(1, 1 + self.ants) {
             let newant = if self.lifeforce > 2 * LIFE_FORCE_SPAWN_ANT {
-                Ant::new(Exploring, Pheromones::new(0, 201))
+                Ant::new_from_ant_hole(Exploring)
             } else {
-                Ant::new(Hungry, Pheromones::new(0, 49))
+                Ant::new_from_ant_hole(Hungry)
             };
 
             let antpt = su.pt + su.rng.random::<Direction>();

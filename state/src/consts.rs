@@ -35,3 +35,6 @@ pub(crate) const LIFE_FORCE_FOOD_LIFE: usize = 10;
 
 /// How much life force is gained when food is returned
 pub(crate) const LIFE_FORCE_FOOD_SEED: usize = 1;
+
+/// How much base life force for any seed pod
+pub(crate) const PHEROMONE_SEED_POD_DIES: u8 = 10;

@@ -1,48 +1,40 @@
 use antbox_geom::BoundPoint;
-use derive_new::new;
-use movestate::{Transform, Update as _};
+use derive_more::{From, IsVariant, TryInto};
+use movestate::Transform;
 use rand::distr::Distribution as _;
 
-use crate::consts::{WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
+use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, AntHole, Object, Objectish, OptInto, Pheromones, SeedPod, SteppedUpon};
+use crate::{Ant, AntHole, Objectish, Pheromones, SeedPod, SteppedUpon};
 
-/// Every [Spot] in the [State](crate::State) can contain up to one [Object]
-#[derive(Copy, Clone, Debug, Default, new)]
-pub struct Spot {
-    obj: Option<Object>,
-    #[new(default)]
-    pheromones: Pheromones,
+/// A [Spot] in the [State](crate::State)
+#[derive(Copy, Clone, Debug, From, TryInto, IsVariant)]
+pub enum Spot {
+    /// Nothing is here except pheromones
+    Empty(Pheromones),
+    /// A [SeedPod]
+    Food(SeedPod),
+    /// An [Ant]
+    Ant(Ant),
+    /// An [AntHole]
+    AntHole(AntHole),
 }
 
 impl Spot {
-    /// If this spot is unoccupied
-    pub fn is_empty(self) -> bool {
-        self.obj.is_none()
-    }
+    pub(crate) fn pheromones(self) -> Pheromones {
+        use Spot::*;
 
-    /// The [Object] in this [Spot]
-    pub fn object(self) -> Option<Object> {
-        self.obj
-    }
-
-    /// The [Pheromones] in this [Spot]
-    pub fn pheromones(self) -> Pheromones {
-        self.pheromones
-    }
-
-    /// Take the [Object]
-    pub fn take_object(&mut self) -> Option<Object> {
-        self.obj.take()
+        match self {
+            Empty(ph) => ph,
+            Ant(ant) => ant.pheromones_underneath(),
+            _ => Pheromones::default(),
+        }
     }
 }
 
-impl<T> From<T> for Spot
-where
-    Object: From<T>,
-{
-    fn from(obj: T) -> Self {
-        Self::new(Some(Object::from(obj)))
+impl Default for Spot {
+    fn default() -> Self {
+        Pheromones::default().into()
     }
 }
 
@@ -53,18 +45,35 @@ where
     type Next = (Self, Option<BoundPoint>);
 
     fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
-        let pheromones = self.pheromones.update(su.rng);
-        let fig = su.state.food_is_growing(su.pt);
+        use Spot::*;
 
-        let (obj, stepdst) = if let Some(prevobj) = self.obj {
-            prevobj.transform(su)
-        } else if fig && WCOIN_POD_UPDATES.sample(su.rng) && WCOIN_POD_APPEARS.sample(su.rng) {
-            (Some(SeedPod::default().into()), None)
-        } else {
-            (None, None)
-        };
-
-        (Spot { obj, pheromones }, stepdst)
+        match self {
+            Empty(ph) => {
+                if su.state.food_is_growing(su.pt)
+                    && WCOIN_POD_UPDATES.sample(su.rng)
+                    && WCOIN_POD_APPEARS.sample(su.rng)
+                {
+                    (Food(SeedPod::default()), None)
+                } else {
+                    (Empty(ph.transform(su.rng)), None)
+                }
+            }
+            Food(pod) => {
+                if let Some(pod) = pod.transform(su) {
+                    (Food(pod), None)
+                } else {
+                    (Empty(Pheromones::new(PHEROMONE_SEED_POD_DIES, 0)), None)
+                }
+            }
+            Ant(ant) => {
+                let (antorph, optbp) = ant.transform(su);
+                (antorph.either(Ant, Empty), optbp)
+            }
+            AntHole(ah) => {
+                let (ah, optbp) = ah.transform(su);
+                (AntHole(ah), optbp)
+            }
+        }
     }
 }
 
@@ -74,35 +83,13 @@ impl SteppedUpon for Spot {
     type NewState = Self;
 
     fn stepped_upon_by(self, ant: Ant) -> Option<Self> {
-        match self.obj {
-            Some(obj) => obj.stepped_upon_by(ant),
-            None => Some(ant.into()),
+        use Spot::*;
+
+        match self {
+            Empty(ph) => Some(Ant(ant.stepped_on_empty(ph))),
+            Food(pod) => pod.stepped_upon_by(ant).map(Ant),
+            Ant(incumbent) => incumbent.stepped_upon_by(ant).map(Ant),
+            AntHole(ah) => ah.stepped_upon_by(ant).map(AntHole),
         }
-        .map(|obj| Spot {
-            obj: Some(obj),
-            pheromones: self.pheromones
-                + obj
-                    .opt_into()
-                    .map(|ant: Ant| ant.pheromone_deposit())
-                    .unwrap_or_default(),
-        })
-    }
-}
-
-impl OptInto<SeedPod> for Spot {
-    fn opt_into(self) -> Option<SeedPod> {
-        self.obj.and_then(|obj| obj.opt_into())
-    }
-}
-
-impl OptInto<Ant> for Spot {
-    fn opt_into(self) -> Option<Ant> {
-        self.obj.and_then(|obj| obj.opt_into())
-    }
-}
-
-impl OptInto<AntHole> for Spot {
-    fn opt_into(self) -> Option<AntHole> {
-        self.obj.and_then(|obj| obj.opt_into())
     }
 }
