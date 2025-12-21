@@ -38,8 +38,8 @@ impl GridLayout {
         let Vec2 { x: cellw, y: cellh } = self.cell_bounds;
 
         self.bounds.iter_points().map(move |pt| {
-            let left = cellw * pt.x() as f32;
-            let top = cellh * pt.y() as f32;
+            let left = cellw * (pt.x() as f32);
+            let top = cellh * (pt.y() as f32);
             let right = left + cellw;
             let bottom = top + cellh;
 
@@ -49,4 +49,32 @@ impl GridLayout {
             )
         })
     }
+}
+
+#[test]
+fn verify_pts_and_rects() {
+    let bounds = Bounds::new(2, 2);
+    let gl = GridLayout::new(bounds, Vec2::new(24., 18.));
+    let bprs: Vec<(BoundPoint, Rect)> = gl.iter_pts_and_rects().collect();
+    assert_eq!(
+        bprs,
+        &[
+            (
+                bounds.bind((0, 0)).unwrap(),
+                Rect::from_tuples((0., 0.), (12., 9.))
+            ),
+            (
+                bounds.bind((1, 0)).unwrap(),
+                Rect::from_tuples((12., 0.), (24., 9.))
+            ),
+            (
+                bounds.bind((0, 1)).unwrap(),
+                Rect::from_tuples((0., 9.), (12., 18.))
+            ),
+            (
+                bounds.bind((1, 1)).unwrap(),
+                Rect::from_tuples((12., 9.), (24., 18.))
+            ),
+        ]
+    );
 }

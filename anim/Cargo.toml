@@ -14,7 +14,7 @@ antbox-tick-timer.workspace = true
 antbox-trig.workspace = true
 derive-debug.workspace = true
 derive-new.workspace = true
-derive_more = { workspace = true, features = ["deref", "deref_mut"] }
+derive_more = { workspace = true, features = ["deref", "deref_mut", "try_into"] }
 extension-traits.workspace = true
 log.workspace = true
 movestate.workspace = true
