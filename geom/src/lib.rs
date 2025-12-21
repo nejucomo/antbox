@@ -14,3 +14,6 @@ pub use crate::direction::{DirIter, Direction};
 pub use crate::dirset::{DirSet, DirSetIter};
 pub use crate::grid::Grid;
 pub use crate::point::Point;
+
+#[cfg(test)]
+mod tests;
