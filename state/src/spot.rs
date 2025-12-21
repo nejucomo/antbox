@@ -5,7 +5,7 @@ use rand::distr::Distribution as _;
 
 use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
 use crate::spotupdate::SpotUpdate;
-use crate::{Ant, AntHole, Objectish, Pheromones, SeedPod, SteppedUpon};
+use crate::{Ant, AntHole, OptInto, Pheromones, SeedPod, SteppedUpon};
 
 /// A [Spot] in the [State](crate::State)
 #[derive(Copy, Clone, Debug, From, TryInto, IsVariant)]
@@ -21,6 +21,13 @@ pub enum Spot {
 }
 
 impl Spot {
+    pub(crate) fn contains<T>(self) -> bool
+    where
+        Self: OptInto<T>,
+    {
+        self.opt_into().is_some()
+    }
+
     pub(crate) fn pheromones(self) -> Pheromones {
         use Spot::*;
 
@@ -76,8 +83,6 @@ where
         }
     }
 }
-
-impl Objectish for Spot {}
 
 impl SteppedUpon for Spot {
     type NewState = Self;

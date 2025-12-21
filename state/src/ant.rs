@@ -5,7 +5,7 @@ use movestate::Transform;
 use rand::distr::Distribution;
 
 use crate::spotupdate::SpotUpdate;
-use crate::{Objectish as _, OptInto as _, Pheromone, Pheromones, SeedPod, State, SteppedUpon};
+use crate::{OptInto as _, Pheromone, Pheromones, SeedPod, State, SteppedUpon};
 
 use self::AntMode::*;
 
