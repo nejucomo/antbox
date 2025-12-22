@@ -1,4 +1,4 @@
-//! Event-related API
+//! Events to be handled
 
 use std::fmt::Debug;
 
@@ -19,47 +19,62 @@ pub struct WinEvent<'a, U: 'static> {
     pub info: Info<'a, U>,
 }
 
+/// Top-level event info, aside from the [WindowHelper]
 #[derive(Dbg, From)]
-#[allow(missing_docs)]
 pub enum Info<'a, U> {
+    /// An application-specified user event
     #[from(skip)]
     User(#[dbg(placeholder = "...")] U),
-    OnDraw(#[dbg(placeholder = "...")] &'a mut Graphics2D),
+    /// A request to draw the window from the framework
+    DrawRequest(#[dbg(placeholder = "...")] &'a mut Graphics2D),
+    /// Input event information
     Input(Input),
 }
 
+/// A pure input event
 #[derive(Debug)]
-#[allow(missing_docs)]
 pub enum Input {
+    /// The window was resized
     Resize(UVec2),
+    /// The window's fullscreen status changed
     FullscreenStatusChanged(bool),
+    /// The window's scale factor changed
     ScaleFactorChanged(f64),
-    Mouse(MouseEvent),
-    Key(KeyEvent),
+    /// A mouse input event
+    Mouse(MouseInput),
+    /// A key input event
+    Key(KeyInput),
+    /// A unicode character input event
     Unicode(char),
 }
 
-/// A mouse event
+/// A mouse input event
 #[derive(Debug)]
-#[allow(missing_docs)]
-pub enum MouseEvent {
+pub enum MouseInput {
+    /// The mouse cursor was (un-)grabbed
     Grabbed(bool),
+    /// The mouse moved
     Move(Vec2),
+    /// A mouse button changed position
     Button(MouseButton, ButtonPosition),
+    /// A mouse scroll wheel changed position
     WheelScroll(MouseScrollDistance),
 }
 
+/// A key input event
 #[derive(Debug, From)]
-#[allow(missing_docs)]
-pub enum KeyEvent {
+pub enum KeyInput {
+    /// A key represented by a [VirtualKeyCode] changed position
     Virtual(ButtonPosition, VirtualKeyCode),
+    /// A key represented by a [KeyScancode] (and unrepresentable by a [VirtualKeyCode]) changed position
     Scancode(ButtonPosition, KeyScancode),
+    /// Key modifiers changed state
     ModifiersChanged(ModifiersState),
 }
 
-impl From<(Option<VirtualKeyCode>, KeyScancode, ButtonPosition)> for KeyEvent {
+impl From<(Option<VirtualKeyCode>, KeyScancode, ButtonPosition)> for KeyInput {
     fn from((ovkc, ksc, pos): (Option<VirtualKeyCode>, KeyScancode, ButtonPosition)) -> Self {
-        use KeyEvent::{Scancode, Virtual};
+        use KeyInput::{Scancode, Virtual};
 
         ovkc.map(|vkc| Virtual(pos, vkc))
             .unwrap_or(Scancode(pos, ksc))
@@ -68,8 +83,9 @@ impl From<(Option<VirtualKeyCode>, KeyScancode, ButtonPosition)> for KeyEvent {
 
 /// A button or key position
 #[derive(Copy, Clone, Debug, IsVariant)]
-#[allow(missing_docs)]
 pub enum ButtonPosition {
+    /// The button/key changed position to up
     Up,
+    /// The button/key changed position to down
     Down,
 }

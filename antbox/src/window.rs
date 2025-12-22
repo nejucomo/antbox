@@ -101,9 +101,9 @@ where
     fn transform(self, WinEvent { helper, info }: WinEvent<'a, Tick>) -> Self::Next {
         use antbox_s2win::event::{
             ButtonPosition::Down,
-            Info::{Input, OnDraw, User},
+            Info::{DrawRequest, Input, User},
             Input::Key,
-            KeyEvent::Virtual,
+            KeyInput::Virtual,
         };
         use speedy2d::window::VirtualKeyCode::{Escape, Return, Space};
 
@@ -125,7 +125,7 @@ where
                 WinHandler { rng, mode, anim }
             }
 
-            OnDraw(gfx) => {
+            DrawRequest(gfx) => {
                 let winsize = helper.get_size_pixels().into_f32();
                 self.anim.draw(gfx, winsize);
                 self

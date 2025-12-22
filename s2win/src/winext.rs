@@ -6,6 +6,7 @@ use speedy2d::Window;
 use crate::WindowEventHandler;
 use crate::adapter::HandlerAdapter;
 
+/// Extend [Window] to run a loop passing only pre-start parameters
 #[extension(pub trait WindowExt)]
 impl<U> Window<U>
 where

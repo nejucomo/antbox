@@ -12,7 +12,7 @@ use crate::event::ButtonPosition::{Down, Up};
 use crate::event::Input::{
     FullscreenStatusChanged, Key, Mouse, Resize, ScaleFactorChanged, Unicode,
 };
-use crate::event::MouseEvent::{Button, Grabbed, Move, WheelScroll};
+use crate::event::MouseInput::{Button, Grabbed, Move, WheelScroll};
 use crate::event::{Info, WinEvent};
 use crate::inner::AdapterInner;
 
