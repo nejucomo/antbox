@@ -10,11 +10,13 @@ edition.workspace = true
 antbox-animation.workspace = true
 antbox-clife.workspace = true
 antbox-geom.workspace = true
+antbox-s2win.workspace = true
 antbox-state.workspace = true
 antbox-tick-timer.workspace = true
 antbox-trig.workspace = true
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
+derive-debug.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = ["is_variant", "try_into", "unwrap"] }
 env_logger.workspace = true

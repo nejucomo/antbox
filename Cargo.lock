@@ -107,11 +107,13 @@ dependencies = [
  "antbox-animation",
  "antbox-clife",
  "antbox-geom",
+ "antbox-s2win",
  "antbox-state",
  "antbox-tick-timer",
  "antbox-trig",
  "anyhow",
  "clap",
+ "derive-debug",
  "derive-new",
  "derive_more",
  "env_logger",
@@ -162,6 +164,16 @@ dependencies = [
  "itertools",
  "rand",
  "test-case",
+]
+
+[[package]]
+name = "antbox-s2win"
+version = "0.1.0"
+dependencies = [
+ "derive_more",
+ "extension-traits",
+ "movestate",
+ "speedy2d",
 ]
 
 [[package]]

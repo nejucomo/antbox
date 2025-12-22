@@ -1,5 +1,5 @@
 mod cliopts;
-mod window;
+pub mod window;
 
 use clap::Parser as _;
 use logging_options::Backend as _;
@@ -17,7 +17,6 @@ const TARGET_FRAME_RATE: f64 = 50.0;
 struct Tick;
 
 pub use self::cliopts::Options;
-pub use self::window::AntBoxWindow;
 
 pub fn run() -> Result<()> {
     let opts = Options::parse();
@@ -26,5 +25,5 @@ pub fn run() -> Result<()> {
     log::debug!("Initializing RNG from seed {}.", opts.seed);
     let rng = StdRng::seed_from_u64(opts.seed);
 
-    AntBoxWindow::run(rng, opts.genparams)
+    window::run(rng, opts.genparams)
 }
