@@ -1,4 +1,4 @@
-use movestate::into::{IntoNextWith, IntoOptUpdate as _};
+use movestate::into::{IntoNextWith, IntoOptUpdateWith as _};
 use rand::distr::Distribution as _;
 
 use crate::consts::{
