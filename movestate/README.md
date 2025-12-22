@@ -9,7 +9,7 @@ The goal is to enable judicious consumers to express precise types to prevent un
 | Trait | Shorthand | Comment |
 |---|---|---|
 | [IntoNext](into::IntoNext)                         | `S -> N`             | |
-| [IntoNextWith](into::IntoNextWith)                 | `(S, I) -> N`        | Providers implement this; most general |
+| [TakeIntoNext](into::TakeIntoNext)                 | `(S, I) -> N`        | Providers implement this; most general |
 | [IntoOptUpdateWith](into::IntoOptUpdateWith)       | `(S, I) -> <(S, O)>` | |
 | [IntoUpdateWith](into::IntoUpdateWith)             | `(S, I) -> S`        | |
 | [IntoUpdateWithOutput](into::IntoUpdateWithOutput) | `(S, I) -> (S, O)`   | |
@@ -19,6 +19,6 @@ The goal is to enable judicious consumers to express precise types to prevent un
 The traits in the [into] family follow a consistent naming convention:
 
 - If it takes an input it begins with a `TakeInto-` prefix, otherwise it begins with a `Into-` prefix.
-- If it may produce a `Self` value (anywhere within the [Next](into::IntoNextWith::Next) type, it has an `-Update-` infix.
+- If it may produce a `Self` value (anywhere within the [Next](into::TakeIntoNext::Next) type, it has an `-Update-` infix.
 - If it may also produce an output along with a `Self`, it has an `-Out` suffix.
 - If it does not produce a `Self` specifically, it has a `-Next` suffix.

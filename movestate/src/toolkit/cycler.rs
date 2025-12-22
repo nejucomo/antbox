@@ -1,7 +1,7 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
 
-use crate::into::{IntoNextWith, IntoUpdateWith};
+use crate::into::{TakeIntoNext, IntoUpdateWith};
 
 /// Updates an inner state every [Self::interval] updates
 #[derive(Debug, Deref, DerefMut, AsRef, new)]
@@ -19,7 +19,7 @@ pub struct Cycler<T> {
     pub generation: usize,
 }
 
-impl<T, I> IntoNextWith<I> for Cycler<T>
+impl<T, I> TakeIntoNext<I> for Cycler<T>
 where
     T: IntoUpdateWith<I>,
 {

@@ -1,11 +1,11 @@
-use crate::into::IntoNextWith;
+use crate::into::TakeIntoNext;
 
-/// Any [IntoNextWith] with [Next](IntoNextWith::Next) as `Option<Self>`
-pub trait IntoOptUpdateWith<I>: IntoNextWith<I, Next = Option<Self>> {
-    /// A synonym for [IntoNextWith::into_next_with]
+/// Any [TakeIntoNext] with [Next](TakeIntoNext::Next) as `Option<Self>`
+pub trait IntoOptUpdateWith<I>: TakeIntoNext<I, Next = Option<Self>> {
+    /// A synonym for [TakeIntoNext::into_next_with]
     fn into_opt_update(self, input: I) -> Option<Self> {
         self.into_next_with(input)
     }
 }
 
-impl<B, I> IntoOptUpdateWith<I> for B where B: IntoNextWith<I, Next = Option<Self>> {}
+impl<B, I> IntoOptUpdateWith<I> for B where B: TakeIntoNext<I, Next = Option<Self>> {}

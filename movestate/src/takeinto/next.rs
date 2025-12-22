@@ -1,5 +1,5 @@
 /// A state which can incorporate an `I` into [Self::Next]
-pub trait IntoNextWith<I>: Sized {
+pub trait TakeIntoNext<I>: Sized {
     /// The type after transforming with the input
     type Next;
 
