@@ -1,4 +1,4 @@
-//! Traits and types for common [Next](crate::into::IntoNextWith::Next) uses
+//! Traits and types for [Next](crate::into::IntoNextWith::Next) types which define the [into](crate::into) trait family
 
 mod stout;
 

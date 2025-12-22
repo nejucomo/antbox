@@ -1,8 +1,4 @@
-//! Building blocks for state evolution using move semantics; e.x. `(S, I) -> (S, O)`
-//!
-//! # TODO
-//!
-//! Write a motivation section with examples
+#![doc = include_str!("../README.md")]
 #![deny(unsafe_code, missing_docs)]
 
 mod optext;

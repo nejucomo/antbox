@@ -1,4 +1,4 @@
-//! Types which move _into_ a next type
+//! A trait family for types which move `self` _into_ a [Next](IntoNextWith::Next) type, built around [IntoNextWith]
 
 mod next;
 mod nextwith;
