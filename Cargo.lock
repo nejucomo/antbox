@@ -170,6 +170,8 @@ dependencies = [
 name = "antbox-s2win"
 version = "0.1.0"
 dependencies = [
+ "derive-debug",
+ "derive-new",
  "derive_more",
  "extension-traits",
  "movestate",
