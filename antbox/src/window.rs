@@ -1,13 +1,13 @@
 use antbox_animation::AnimationState;
-use antbox_s2win::event::ButtonPosition;
-use antbox_s2win::{WindowExt as _, WindowHandlerParams, WindowHandlerSimplified};
+use antbox_s2win::event::WinEvent;
+use antbox_s2win::{WindowEventHandler, WindowExt as _};
 use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
-use movestate::Slot;
-use speedy2d::window::{VirtualKeyCode, WindowCreationOptions, WindowHelper, WindowStartupInfo};
-use speedy2d::{Graphics2D, Window};
+use movestate::{Transform, Update as _};
+use speedy2d::Window;
+use speedy2d::window::{WindowCreationOptions, WindowHelper, WindowStartupInfo};
 
 use crate::{Result, TARGET_FRAME_RATE, Tick};
 
@@ -22,28 +22,18 @@ where
         WindowCreationOptions::new_fullscreen_borderless(),
     )?;
 
-    w.run_loop_simplified(Params { rng, gp })
+    w.run_loop_simplified::<WinHandler<R>>((rng, gp))
 }
 
 #[derive(Dbg)]
-struct Params<R>
-where
-    R: rand::Rng,
-{
-    #[dbg(placeholder = "...")]
-    rng: R,
-    gp: GenParams,
-}
-
-#[derive(Dbg)]
-struct Started<R>
+struct WinHandler<R>
 where
     R: rand::Rng,
 {
     #[dbg(placeholder = "...")]
     rng: R,
     mode: RunMode,
-    anim: Slot<AnimationState>,
+    anim: AnimationState,
 }
 
 #[derive(Copy, Clone, Debug, IsVariant)]
@@ -53,35 +43,16 @@ enum RunMode {
 }
 
 impl RunMode {
-    fn toggle(&mut self) {
-        *self = match self {
+    fn toggled(self) -> Self {
+        let next = match self {
             Running => Paused,
             Paused => Running,
         };
-        log::info!("{self:?}");
+        log::info!("{next:?}");
+        next
     }
 }
-
-impl<R> WindowHandlerParams<Tick> for Params<R>
-where
-    R: rand::Rng,
-{
-    type WHS = Started<R>;
-
-    fn start_handler(mut self, helper: &mut WindowHelper<Tick>, _: WindowStartupInfo) -> Self::WHS {
-        let anim = Slot::from(AnimationState::new(&mut self.rng, self.gp));
-        let winst = Started {
-            rng: self.rng,
-            mode: Running,
-            anim,
-        };
-        winst.launch_tick_timer(helper);
-        helper.request_redraw();
-        winst
-    }
-}
-
-impl<R> Started<R>
+impl<R> WinHandler<R>
 where
     R: rand::Rng,
 {
@@ -98,42 +69,100 @@ where
     }
 }
 
-impl<R> WindowHandlerSimplified<Tick> for Started<R>
+impl<R> WindowEventHandler<Tick> for WinHandler<R>
 where
     R: rand::Rng,
 {
-    fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
-        if matches!(self.mode, Running) {
-            self.anim.update(&mut self.rng);
-        }
+    type Params = (R, GenParams);
+
+    fn start(
+        (mut rng, gp): (R, GenParams),
+        helper: &mut WindowHelper<Tick>,
+        _: WindowStartupInfo,
+    ) -> Self {
+        let anim = AnimationState::new(&mut rng, gp);
+        let winst = WinHandler {
+            rng,
+            mode: Running,
+            anim,
+        };
+        winst.launch_tick_timer(helper);
         helper.request_redraw();
+        winst
     }
+}
 
-    fn on_draw(&mut self, helper: &mut WindowHelper<Tick>, graphics: &mut Graphics2D) {
-        let winsize = helper.get_size_pixels().into_f32();
-        self.anim.draw(graphics, winsize);
-    }
+impl<'a, R> Transform<WinEvent<'a, Tick>> for WinHandler<R>
+where
+    R: rand::Rng,
+{
+    type Next = Self;
 
-    fn on_key(&mut self, _: &mut WindowHelper<Tick>, vkc: VirtualKeyCode, kpos: ButtonPosition) {
-        use VirtualKeyCode::{Escape, Return, Space};
+    fn transform(self, WinEvent { helper, info }: WinEvent<'a, Tick>) -> Self::Next {
+        use antbox_s2win::event::{
+            ButtonPosition::Down,
+            Info::{DrawRequest, Input, User},
+            Input::Key,
+            KeyInput::Virtual,
+        };
+        use speedy2d::window::VirtualKeyCode::{Escape, Return, Space};
 
-        if kpos.is_up() {
-            match vkc {
-                Escape => {
-                    log::info!("bye!");
-                    std::process::exit(0);
-                }
-                Space => {
-                    self.mode.toggle();
-                }
-                Return => {
-                    if self.mode.is_paused() {
-                        self.anim.update(&mut self.rng);
-                    }
-                }
-                _ => {
-                    // Ignore
-                }
+        match info {
+            User(Tick) => {
+                let WinHandler {
+                    mut rng,
+                    mode,
+                    anim,
+                } = self;
+
+                let anim = match mode {
+                    Running => anim.update(&mut rng),
+                    Paused => anim,
+                };
+
+                helper.request_redraw();
+
+                WinHandler { rng, mode, anim }
+            }
+
+            DrawRequest(gfx) => {
+                let winsize = helper.get_size_pixels().into_f32();
+                self.anim.draw(gfx, winsize);
+                self
+            }
+
+            Input(Key(Virtual(Down, Escape))) => {
+                log::info!("bye!");
+                std::process::exit(0);
+            }
+            Input(Key(Virtual(Down, Space))) => WinHandler {
+                mode: self.mode.toggled(),
+                ..self
+            },
+            Input(Key(Virtual(Down, Return))) => {
+                let WinHandler {
+                    mut rng,
+                    mode,
+                    anim,
+                } = self;
+
+                let anim = if mode.is_paused() {
+                    anim.update(&mut rng)
+                } else {
+                    anim
+                };
+
+                WinHandler { rng, mode, anim }
+            }
+
+            // Input(Resize(vector2)) => todo!(),
+            // Input(FullscreenStatusChanged(_)) => todo!(),
+            // Input(ScaleFactorChanged(_)) => todo!(),
+            // Input(Mouse(mouse_event)) => todo!(),
+            // Input(Unicode(_)) => todo!(),
+            _ => {
+                // Ignored
+                self
             }
         }
     }

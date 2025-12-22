@@ -6,6 +6,8 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+derive-debug.workspace = true
+derive-new.workspace = true
 derive_more = { workspace = true, features = ["deref", "deref_mut", "unwrap"] }
 extension-traits.workspace = true
 movestate.workspace = true
