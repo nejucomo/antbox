@@ -6,6 +6,7 @@ use crate::adapter::HandlerAdapter;
 
 #[extension(pub trait WindowExt)]
 impl<U> Window<U> {
+    /// Run the window loop with the given [WindowHandlerParams]
     fn run_loop_simplified<P>(self, param: P) -> !
     where
         P: WindowHandlerParams<U> + 'static,
