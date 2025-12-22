@@ -8,8 +8,8 @@ The goal is to enable judicious consumers to express precise types to prevent un
 
 | Trait | Shorthand | Comment |
 |---|---|---|
-| [IntoNextWith](into::IntoNextWith)                 | `(S, I) -> N`        | Providers implement this; most general |
 | [IntoNext](into::IntoNext)                         | `S -> N`             | |
+| [IntoNextWith](into::IntoNextWith)                 | `(S, I) -> N`        | Providers implement this; most general |
 | [IntoOptUpdateWith](into::IntoOptUpdateWith)       | `(S, I) -> <(S, O)>` | |
 | [IntoUpdateWith](into::IntoUpdateWith)             | `(S, I) -> S`        | |
 | [IntoUpdateWithOutput](into::IntoUpdateWithOutput) | `(S, I) -> (S, O)`   | |
