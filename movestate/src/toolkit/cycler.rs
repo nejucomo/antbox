@@ -1,7 +1,7 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
 
-use crate::{Transform, Update};
+use crate::into::{IntoNextWith, IntoUpdate};
 
 /// Updates an inner state every [Self::interval] updates
 #[derive(Debug, Deref, DerefMut, AsRef, new)]
@@ -19,16 +19,16 @@ pub struct Cycler<T> {
     pub generation: usize,
 }
 
-impl<T, I> Transform<I> for Cycler<T>
+impl<T, I> IntoNextWith<I> for Cycler<T>
 where
-    T: Update<I>,
+    T: IntoUpdate<I>,
 {
     type Next = Self;
 
-    fn transform(mut self, input: I) -> Self {
+    fn into_next_with(mut self, input: I) -> Self {
         self.generation += 1;
         if self.generation.is_multiple_of(self.interval) {
-            self.inner = self.inner.transform(input);
+            self.inner = self.inner.into_next_with(input);
         }
         self
     }

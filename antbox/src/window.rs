@@ -5,7 +5,7 @@ use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
-use movestate::{Transform, Update as _};
+use movestate::into::{IntoNextWith, IntoUpdate as _};
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowHelper, WindowStartupInfo};
 
@@ -92,13 +92,13 @@ where
     }
 }
 
-impl<'a, R> Transform<WinEvent<'a, Tick>> for WinHandler<R>
+impl<'a, R> IntoNextWith<WinEvent<'a, Tick>> for WinHandler<R>
 where
     R: rand::Rng,
 {
     type Next = Self;
 
-    fn transform(self, WinEvent { helper, info }: WinEvent<'a, Tick>) -> Self::Next {
+    fn into_next_with(self, WinEvent { helper, info }: WinEvent<'a, Tick>) -> Self::Next {
         use antbox_s2win::event::{
             ButtonPosition::Down,
             Info::{DrawRequest, Input, User},
@@ -116,7 +116,7 @@ where
                 } = self;
 
                 let anim = match mode {
-                    Running => anim.update(&mut rng),
+                    Running => anim.into_update(&mut rng),
                     Paused => anim,
                 };
 
@@ -147,7 +147,7 @@ where
                 } = self;
 
                 let anim = if mode.is_paused() {
-                    anim.update(&mut rng)
+                    anim.into_update(&mut rng)
                 } else {
                     anim
                 };

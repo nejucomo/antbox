@@ -1,7 +1,7 @@
 use antbox_geom::{BoundPoint, DirSet};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
-use movestate::Transform;
+use movestate::into::IntoNextWith;
 use rand::distr::Distribution;
 
 use crate::spotupdate::SpotUpdate;
@@ -87,13 +87,13 @@ impl AntMode {
     }
 }
 
-impl<'a, R> Transform<SpotUpdate<'a, R>> for Ant
+impl<'a, R> IntoNextWith<SpotUpdate<'a, R>> for Ant
 where
     R: rand::Rng,
 {
     type Next = (Either<Self, Pheromones>, Option<BoundPoint>);
 
-    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn into_next_with(self, su: SpotUpdate<'a, R>) -> Self::Next {
         let dirs = self.mode.sense(su.state, su.pt);
         let dir = dirs.sample(su.rng).unwrap();
         let dst = su.pt + dir;

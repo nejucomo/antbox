@@ -1,5 +1,5 @@
 use antbox_geom::{BoundPoint, Direction};
-use movestate::Transform;
+use movestate::into::IntoNextWith;
 use rand::distr::Distribution as _;
 
 use crate::consts::{
@@ -27,13 +27,13 @@ impl Default for AntHole {
     }
 }
 
-impl<'a, R> Transform<SpotUpdate<'a, R>> for AntHole
+impl<'a, R> IntoNextWith<SpotUpdate<'a, R>> for AntHole
 where
     R: rand::Rng,
 {
     type Next = (AntHole, Option<BoundPoint>);
 
-    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn into_next_with(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use crate::AntMode::{Exploring, Hungry};
 
         let freeant = WCOIN_FREE_ANT.sample(su.rng);

@@ -1,10 +1,10 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
-use movestate::{Transform, Update};
+use movestate::into::{IntoNextWith, IntoUpdate};
 
 use crate::TickTimer;
 
-/// Limits [Transform] updates to an inner state by a [TickTimer]
+/// Limits [IntoNextWith] updates to an inner state by a [TickTimer]
 ///
 /// Note: all inputs after the first within a given interval are simply dropped.
 #[derive(Debug, Deref, DerefMut, AsRef, new)]
@@ -17,15 +17,15 @@ pub struct RateLimiter<T> {
     tt: TickTimer,
 }
 
-impl<T, I> Transform<I> for RateLimiter<T>
+impl<T, I> IntoNextWith<I> for RateLimiter<T>
 where
-    T: Update<I>,
+    T: IntoUpdate<I>,
 {
     type Next = Self;
 
-    fn transform(mut self, input: I) -> Self {
+    fn into_next_with(mut self, input: I) -> Self {
         if self.tt.delta_update().is_late() {
-            self.inner = self.inner.transform(input);
+            self.inner = self.inner.into_next_with(input);
         }
         self
     }
