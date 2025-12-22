@@ -10,12 +10,12 @@ use speedy2d::window::{
 use crate::event::ButtonPosition;
 
 pub trait WindowHandlerParams<U>: Sized + Debug {
-    type WHS: WindowHandlerSimplified<Self, U>;
+    type WHS: WindowHandlerSimplified<U>;
 
     fn start_handler(self, helper: &mut WindowHelper<U>, info: WindowStartupInfo) -> Self::WHS;
 }
 
-pub trait WindowHandlerSimplified<S, U>: Debug {
+pub trait WindowHandlerSimplified<U>: Debug {
     fn on_user_event(&mut self, helper: &mut WindowHelper<U>, user_event: U);
 
     fn on_resize(&mut self, helper: &mut WindowHelper<U>, size_pixels: UVec2) {

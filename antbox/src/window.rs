@@ -1,42 +1,52 @@
 use antbox_animation::AnimationState;
+use antbox_s2win::event::ButtonPosition;
+use antbox_s2win::{WindowExt as _, WindowHandlerParams, WindowHandlerSimplified};
 use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
-use derive_more::{IsVariant, Unwrap};
+use derive_debug::Dbg;
+use derive_more::IsVariant;
 use movestate::Slot;
-use rand::rngs::StdRng;
-use speedy2d::window::{
-    KeyScancode, VirtualKeyCode, WindowCreationOptions, WindowHandler, WindowHelper,
-    WindowStartupInfo,
-};
+use speedy2d::window::{VirtualKeyCode, WindowCreationOptions, WindowHelper, WindowStartupInfo};
 use speedy2d::{Graphics2D, Window};
 
 use crate::{Result, TARGET_FRAME_RATE, Tick};
 
 use self::RunMode::{Paused, Running};
 
-/// # TODO
-///
-/// - Hide the states privately behind public interface
-#[derive(Debug)]
-pub struct AntBoxWindow {
-    rng: StdRng,
-    ws: Slot<WinState>,
+pub fn run<R>(rng: R, gp: GenParams) -> Result<()>
+where
+    R: rand::Rng + 'static,
+{
+    let w = Window::new_with_user_events(
+        env!("CARGO_PKG_NAME"),
+        WindowCreationOptions::new_fullscreen_borderless(),
+    )?;
+
+    w.run_loop_simplified(Params { rng, gp })
 }
 
-#[derive(Debug, IsVariant, Unwrap)]
-#[unwrap(ref, ref_mut)]
-enum WinState {
-    Starting(GenParams),
-    Started(Started),
+#[derive(Dbg)]
+struct Params<R>
+where
+    R: rand::Rng,
+{
+    #[dbg(placeholder = "...")]
+    rng: R,
+    gp: GenParams,
 }
 
-#[derive(Debug)]
-struct Started {
+#[derive(Dbg)]
+struct Started<R>
+where
+    R: rand::Rng,
+{
+    #[dbg(placeholder = "...")]
+    rng: R,
     mode: RunMode,
     anim: Slot<AnimationState>,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, IsVariant)]
 enum RunMode {
     Running,
     Paused,
@@ -52,21 +62,30 @@ impl RunMode {
     }
 }
 
-impl AntBoxWindow {
-    pub fn run(rng: StdRng, gp: GenParams) -> Result<()> {
-        let w = Window::new_with_user_events(
-            env!("CARGO_PKG_NAME"),
-            WindowCreationOptions::new_fullscreen_borderless(),
-        )?;
-        w.run_loop(AntBoxWindow {
-            rng,
-            ws: Slot::from(WinState::Starting(gp)),
-        })
+impl<R> WindowHandlerParams<Tick> for Params<R>
+where
+    R: rand::Rng,
+{
+    type WHS = Started<R>;
+
+    fn start_handler(mut self, helper: &mut WindowHelper<Tick>, _: WindowStartupInfo) -> Self::WHS {
+        let anim = Slot::from(AnimationState::new(&mut self.rng, self.gp));
+        let winst = Started {
+            rng: self.rng,
+            mode: Running,
+            anim,
+        };
+        winst.launch_tick_timer(helper);
+        helper.request_redraw();
+        winst
     }
+}
 
+impl<R> Started<R>
+where
+    R: rand::Rng,
+{
     fn launch_tick_timer(&self, helper: &mut WindowHelper<Tick>) {
-        assert!(self.ws.is_starting());
-
         let uev = helper.create_user_event_sender();
         std::thread::spawn(move || {
             let mut tt = TickTimer::with_frame_rate(TARGET_FRAME_RATE);
@@ -79,59 +98,42 @@ impl AntBoxWindow {
     }
 }
 
-impl WindowHandler<Tick> for AntBoxWindow {
+impl<R> WindowHandlerSimplified<Tick> for Started<R>
+where
+    R: rand::Rng,
+{
     fn on_user_event(&mut self, helper: &mut WindowHelper<Tick>, _: Tick) {
-        let st = self.ws.unwrap_started_mut();
-        if matches!(st.mode, Running) {
-            st.anim.update(&mut self.rng);
+        if matches!(self.mode, Running) {
+            self.anim.update(&mut self.rng);
         }
-        helper.request_redraw();
-    }
-
-    fn on_start(&mut self, helper: &mut WindowHelper<Tick>, _: WindowStartupInfo) {
-        self.launch_tick_timer(helper);
-
-        self.ws.map(|ws| {
-            let gp = ws.unwrap_starting();
-
-            WinState::Started(Started {
-                mode: Running,
-                anim: Slot::from(AnimationState::new(&mut self.rng, gp)),
-            })
-        });
-
         helper.request_redraw();
     }
 
     fn on_draw(&mut self, helper: &mut WindowHelper<Tick>, graphics: &mut Graphics2D) {
         let winsize = helper.get_size_pixels().into_f32();
-        self.ws.unwrap_started_ref().anim.draw(graphics, winsize);
+        self.anim.draw(graphics, winsize);
     }
 
-    fn on_key_down(
-        &mut self,
-        _: &mut WindowHelper<Tick>,
-        ovkc: Option<VirtualKeyCode>,
-        _: KeyScancode,
-    ) {
+    fn on_key(&mut self, _: &mut WindowHelper<Tick>, vkc: VirtualKeyCode, kpos: ButtonPosition) {
         use VirtualKeyCode::{Escape, Return, Space};
 
-        match ovkc {
-            Some(Escape) => {
-                log::info!("bye!");
-                std::process::exit(0);
-            }
-            Some(Space) => {
-                self.ws.unwrap_started_mut().mode.toggle();
-            }
-            Some(Return) => {
-                let st = self.ws.unwrap_started_mut();
-                if matches!(st.mode, Paused) {
-                    st.anim.update(&mut self.rng);
+        if kpos.is_up() {
+            match vkc {
+                Escape => {
+                    log::info!("bye!");
+                    std::process::exit(0);
                 }
-            }
-            _ => {
-                // Ignore
+                Space => {
+                    self.mode.toggle();
+                }
+                Return => {
+                    if self.mode.is_paused() {
+                        self.anim.update(&mut self.rng);
+                    }
+                }
+                _ => {
+                    // Ignore
+                }
             }
         }
     }

@@ -139,7 +139,6 @@ where
 
     fn on_keyboard_char(&mut self, helper: &mut WindowHelper<U>, unicode_codepoint: char) {
         let _ = (helper, unicode_codepoint);
-        todo!()
     }
 
     fn on_keyboard_modifiers_changed(
@@ -148,18 +147,17 @@ where
         state: ModifiersState,
     ) {
         let _ = (helper, state);
-        todo!()
     }
 }
 
-fn on_key<S, P, U>(
+fn on_key<S, U>(
     st: &mut S,
     helper: &mut WindowHelper<U>,
     virtual_key_code: Option<VirtualKeyCode>,
     scancode: KeyScancode,
     kpos: ButtonPosition,
 ) where
-    S: WindowHandlerSimplified<P, U>,
+    S: WindowHandlerSimplified<U>,
 {
     if let Some(vkc) = virtual_key_code {
         st.on_key(helper, vkc, kpos);
