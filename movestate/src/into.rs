@@ -1,11 +1,10 @@
-//! A trait family for types which move `self` _into_ a [Next](TakeIntoNext::Next) type, built around [TakeIntoNext]
+//! A trait family for types which move `self` without input _into_ a [Next](crate::takeinto::TakeIntoNext::Next) type
 
 mod next;
 mod optupdatewith;
 mod updatewith;
 mod upout;
 
-pub mod take;
 pub use self::next::IntoNext;
 pub use self::optupdatewith::IntoOptUpdateWith;
 pub use self::updatewith::IntoUpdateWith;

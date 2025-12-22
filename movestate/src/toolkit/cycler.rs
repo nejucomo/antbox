@@ -1,7 +1,8 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
 
-use crate::into::{TakeIntoNext, IntoUpdateWith};
+use crate::into::IntoUpdateWith;
+use crate::takeinto::TakeIntoNext;
 
 /// Updates an inner state every [Self::interval] updates
 #[derive(Debug, Deref, DerefMut, AsRef, new)]

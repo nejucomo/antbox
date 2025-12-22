@@ -1,4 +1,4 @@
-use crate::into::TakeIntoNext;
+use crate::takeinto::TakeIntoNext;
 
 /// A transitional state which leads to
 pub trait IntoNext: Sized + TakeIntoNext<()> {

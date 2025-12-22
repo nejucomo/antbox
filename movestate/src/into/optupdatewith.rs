@@ -1,4 +1,4 @@
-use crate::into::TakeIntoNext;
+use crate::takeinto::TakeIntoNext;
 
 /// Any [TakeIntoNext] with [Next](TakeIntoNext::Next) as `Option<Self>`
 pub trait IntoOptUpdateWith<I>: TakeIntoNext<I, Next = Option<Self>> {

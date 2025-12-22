@@ -1,4 +1,4 @@
-use crate::into::TakeIntoNext;
+use crate::takeinto::TakeIntoNext;
 use crate::next::Stout;
 
 /// Any [TakeIntoNext] whose [Next](TakeIntoNext::Next) can convert into a `Stout<Self, O>`an [IntoUpdateWithOutput]: `(S, I) -> (S, O)`

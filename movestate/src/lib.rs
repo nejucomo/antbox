@@ -6,6 +6,7 @@ mod slot;
 
 pub mod into;
 pub mod next;
+pub mod takeinto;
 pub mod toolkit;
 pub mod update;
 pub use self::slot::Slot;
