@@ -7,6 +7,6 @@ homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
-derive_more = { workspace = true, features = ["as_ref", "deref", "deref_mut"] }
+derive_more = { workspace = true, features = ["from", "into", "as_ref", "deref", "deref_mut"] }
 derive-new.workspace = true
 

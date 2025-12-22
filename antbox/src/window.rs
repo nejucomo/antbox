@@ -5,7 +5,7 @@ use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
-use movestate::into::{IntoNextWith, IntoUpdate as _};
+use movestate::into::{IntoNextWith, IntoUpdateWithOutput as _};
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowHelper, WindowStartupInfo};
 
@@ -116,7 +116,7 @@ where
                 } = self;
 
                 let anim = match mode {
-                    Running => anim.into_update(&mut rng),
+                    Running => anim.into_update_out(&mut rng),
                     Paused => anim,
                 };
 
@@ -147,7 +147,7 @@ where
                 } = self;
 
                 let anim = if mode.is_paused() {
-                    anim.into_update(&mut rng)
+                    anim.into_update_out(&mut rng)
                 } else {
                     anim
                 };

@@ -3,9 +3,11 @@
 mod next;
 mod nextwith;
 mod optupdate;
-mod update;
+mod updatewith;
+mod upout;
 
 pub use self::next::IntoNext;
 pub use self::nextwith::IntoNextWith;
 pub use self::optupdate::IntoOptUpdate;
-pub use self::update::IntoUpdate;
+pub use self::updatewith::IntoUpdateWith;
+pub use self::upout::IntoUpdateWithOutput;

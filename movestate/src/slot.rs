@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::into::IntoUpdate;
+use crate::into::IntoUpdateWith;
 use crate::optext::OptionExt as _;
 
 /// Hold a state and contain functional transitions within a mutable interface
@@ -20,9 +20,9 @@ impl<T> Slot<T> {
     /// Update the inner state
     pub fn update<I>(&mut self, input: I)
     where
-        T: IntoUpdate<I>,
+        T: IntoUpdateWith<I>,
     {
-        self.map(|t| t.into_update(input))
+        self.map(|t| t.into_update_with(input))
     }
 
     /// Map the inner state to a new value

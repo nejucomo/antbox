@@ -1,6 +1,6 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
-use movestate::into::{IntoNextWith, IntoUpdate};
+use movestate::into::{IntoNextWith, IntoUpdateWithOutput};
 
 use crate::TickTimer;
 
@@ -19,7 +19,7 @@ pub struct RateLimiter<T> {
 
 impl<T, I> IntoNextWith<I> for RateLimiter<T>
 where
-    T: IntoUpdate<I>,
+    T: IntoUpdateWithOutput<I>,
 {
     type Next = Self;
 

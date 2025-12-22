@@ -55,6 +55,6 @@ where
 
     fn into_next_with(self, ev: WinEvent<'a, U>) -> Self::Next {
         let s = self.unwrap_started();
-        Started(s.into_update(ev))
+        Started(s.into_update_out(ev))
     }
 }
