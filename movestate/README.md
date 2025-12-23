@@ -21,7 +21,7 @@ A summary of the [movestate](crate) Trait Family:
 
 ### Implementing
 
-Implementors always implement [TakeIntoNext](take_into::TakeIntoNext), while blanket extension `impl`s allow consumers to select any trait in the family:
+Providers implement [TakeIntoNext](take_into::TakeIntoNext), while blanket extension `impl`s allow consumers to select any trait in the family:
 
 | Consumer | Implementor |
 |---|---|
