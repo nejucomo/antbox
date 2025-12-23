@@ -5,7 +5,7 @@ use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
-use movestate::{Transform, Update as _};
+use movestate::mutable::{Slot, Update};
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowHelper, WindowStartupInfo};
 
@@ -33,7 +33,7 @@ where
     #[dbg(placeholder = "...")]
     rng: R,
     mode: RunMode,
-    anim: AnimationState,
+    anim: Slot<AnimationState>,
 }
 
 #[derive(Copy, Clone, Debug, IsVariant)]
@@ -43,13 +43,12 @@ enum RunMode {
 }
 
 impl RunMode {
-    fn toggled(self) -> Self {
-        let next = match self {
+    fn toggle(&mut self) {
+        *self = match self {
             Running => Paused,
             Paused => Running,
         };
-        log::info!("{next:?}");
-        next
+        log::info!("{self:?}");
     }
 }
 impl<R> WinHandler<R>
@@ -80,7 +79,7 @@ where
         helper: &mut WindowHelper<Tick>,
         _: WindowStartupInfo,
     ) -> Self {
-        let anim = AnimationState::new(&mut rng, gp);
+        let anim = Slot::from(AnimationState::new(&mut rng, gp));
         let winst = WinHandler {
             rng,
             mode: Running,
@@ -92,13 +91,11 @@ where
     }
 }
 
-impl<'a, R> Transform<WinEvent<'a, Tick>> for WinHandler<R>
+impl<'a, R> Update<WinEvent<'a, Tick>, ()> for WinHandler<R>
 where
     R: rand::Rng,
 {
-    type Next = Self;
-
-    fn transform(self, WinEvent { helper, info }: WinEvent<'a, Tick>) -> Self::Next {
+    fn update(&mut self, WinEvent { helper, info }: WinEvent<'a, Tick>) {
         use antbox_s2win::event::{
             ButtonPosition::Down,
             Info::{DrawRequest, Input, User},
@@ -109,50 +106,29 @@ where
 
         match info {
             User(Tick) => {
-                let WinHandler {
-                    mut rng,
-                    mode,
-                    anim,
-                } = self;
-
-                let anim = match mode {
-                    Running => anim.update(&mut rng),
-                    Paused => anim,
-                };
-
+                self.anim.update(&mut self.rng);
                 helper.request_redraw();
-
-                WinHandler { rng, mode, anim }
             }
 
             DrawRequest(gfx) => {
                 let winsize = helper.get_size_pixels().into_f32();
                 self.anim.draw(gfx, winsize);
-                self
             }
 
             Input(Key(Virtual(Down, Escape))) => {
                 log::info!("bye!");
                 std::process::exit(0);
             }
-            Input(Key(Virtual(Down, Space))) => WinHandler {
-                mode: self.mode.toggled(),
-                ..self
-            },
+
+            Input(Key(Virtual(Down, Space))) => {
+                self.mode.toggle();
+            }
+
             Input(Key(Virtual(Down, Return))) => {
-                let WinHandler {
-                    mut rng,
-                    mode,
-                    anim,
-                } = self;
-
-                let anim = if mode.is_paused() {
-                    anim.update(&mut rng)
-                } else {
-                    anim
+                // TODO: Apply mode to only game state, allow animations to continue.
+                if self.mode.is_paused() {
+                    self.anim.update(&mut self.rng);
                 };
-
-                WinHandler { rng, mode, anim }
             }
 
             // Input(Resize(vector2)) => todo!(),
@@ -162,7 +138,6 @@ where
             // Input(Unicode(_)) => todo!(),
             _ => {
                 // Ignored
-                self
             }
         }
     }

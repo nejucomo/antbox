@@ -1,4 +1,4 @@
-use movestate::{OptUpdate as _, Transform};
+use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{
@@ -24,29 +24,29 @@ impl SeedPod {
 
 struct DoUpdate;
 
-impl<'a, R> Transform<SpotUpdate<'a, R>> for SeedPod
+impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for SeedPod
 where
     R: rand::Rng,
 {
     type Next = Option<Self>;
 
-    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         if WCOIN_POD_UPDATES.sample(su.rng) {
-            self.opt_update((DoUpdate, su))
+            self.take_into_next((DoUpdate, su))
         } else {
             Some(self)
         }
     }
 }
 
-impl<'a, R> Transform<(DoUpdate, SpotUpdate<'a, R>)> for SeedPod
+impl<'a, R> TakeIntoNext<(DoUpdate, SpotUpdate<'a, R>)> for SeedPod
 where
     R: rand::Rng,
 {
     type Next = Option<Self>;
 
-    fn transform(self, (_, su): (DoUpdate, SpotUpdate<'a, R>)) -> Self::Next {
-        let (target_life, target_nc) = su.state.growth_and_neighbors(su.pt);
+    fn take_into_next(self, (_, su): (DoUpdate, SpotUpdate<'a, R>)) -> Self::Next {
+        let (target_life, target_nc) = su.field.growth_and_neighbors(su.pt);
 
         let delta = (target_nc as i8) - (self.seeds as i8);
         let dabs = delta.unsigned_abs() as u32;

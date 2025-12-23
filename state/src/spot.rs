@@ -1,6 +1,6 @@
 use antbox_geom::BoundPoint;
 use derive_more::{From, IsVariant, TryInto};
-use movestate::Transform;
+use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
@@ -45,39 +45,39 @@ impl Default for Spot {
     }
 }
 
-impl<'a, R> Transform<SpotUpdate<'a, R>> for Spot
+impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for Spot
 where
     R: rand::Rng,
 {
     type Next = (Self, Option<BoundPoint>);
 
-    fn transform(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use Spot::*;
 
         match self {
             Empty(ph) => {
-                if su.state.food_is_growing(su.pt)
+                if su.field.food_is_growing(su.pt)
                     && WCOIN_POD_UPDATES.sample(su.rng)
                     && WCOIN_POD_APPEARS.sample(su.rng)
                 {
                     (Food(SeedPod::default()), None)
                 } else {
-                    (Empty(ph.transform(su.rng)), None)
+                    (Empty(ph.take_into_next(su.rng)), None)
                 }
             }
             Food(pod) => {
-                if let Some(pod) = pod.transform(su) {
+                if let Some(pod) = pod.take_into_next(su) {
                     (Food(pod), None)
                 } else {
                     (Empty(Pheromones::new(PHEROMONE_SEED_POD_DIES, 0)), None)
                 }
             }
             Ant(ant) => {
-                let (antorph, optbp) = ant.transform(su);
+                let (antorph, optbp) = ant.take_into_next(su);
                 (antorph.either(Ant, Empty), optbp)
             }
             AntHole(ah) => {
-                let (ah, optbp) = ah.transform(su);
+                let (ah, optbp) = ah.take_into_next(su);
                 (AntHole(ah), optbp)
             }
         }

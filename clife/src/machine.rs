@@ -1,7 +1,7 @@
 use antbox_geom::Grid;
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use derive_new::new;
-use movestate::Transform;
+use movestate::TakeIntoNext;
 
 use crate::{ConwayCell, ConwayGrid};
 
@@ -11,13 +11,13 @@ pub struct ConwayMachine<C>(Grid<C>)
 where
     C: ConwayCell;
 
-impl<C> Transform<()> for ConwayMachine<C>
+impl<C> TakeIntoNext<()> for ConwayMachine<C>
 where
     C: ConwayCell,
 {
     type Next = Self;
 
-    fn transform(self, (): ()) -> Self::Next {
+    fn take_into_next(self, (): ()) -> Self::Next {
         ConwayMachine(self.0.conway_step())
     }
 }

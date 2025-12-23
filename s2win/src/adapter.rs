@@ -1,5 +1,4 @@
-use movestate::Slot;
-
+use movestate::mutable::{Slot, Update as _};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::{UVec2, Vec2};
 use speedy2d::window::{

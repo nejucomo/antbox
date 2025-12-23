@@ -1,20 +1,10 @@
-//! Building blocks for state evolution using move semantics; e.x. `(S, I) -> (S, O)`
-//!
-//! # TODO
-//!
-//! Write a motivation section with examples
+#![doc = include_str!("../README.md")]
 #![deny(unsafe_code, missing_docs)]
 
-mod intonext;
-mod optext;
-mod optupdate;
-mod slot;
-pub mod toolkit;
-mod transform;
-mod update;
+mod into_next;
+mod take_into_next;
 
-pub use self::intonext::IntoNext;
-pub use self::optupdate::OptUpdate;
-pub use self::slot::Slot;
-pub use self::transform::Transform;
-pub use self::update::Update;
+pub use self::into_next::IntoNext;
+pub use self::take_into_next::TakeIntoNext;
+pub mod mutable;
+pub mod starg;

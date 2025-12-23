@@ -5,7 +5,7 @@ use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::{AntHole, Spot, State};
+use crate::{AntHole, Field, Spot, State};
 
 /// A [Distribution] for generating a [State]
 #[derive(Args, Copy, Clone, Debug, From, Into, new)]
@@ -25,7 +25,7 @@ impl GenParams {
 
 impl Distribution<State> for GenParams {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> State {
-        State::new(self.sample(rng), self.sample(rng))
+        State::new(Field::new(self.sample(rng), self.sample(rng)))
     }
 }
 
