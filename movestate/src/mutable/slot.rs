@@ -1,7 +1,8 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::optext::OptionExt as _;
-use crate::take_into::TakeIntoUpdate;
+use crate::mutable::Update;
+use crate::mutable::optext::OptionExt as _;
+use crate::take_into::TakeIntoStarg;
 
 /// Hold a state and contain functional transitions within a mutable interface
 //
@@ -16,32 +17,14 @@ impl<T> Slot<T> {
     pub fn into_inner(self) -> T {
         self.0.unslot()
     }
+}
 
-    /// Update the inner state
-    pub fn update<I>(&mut self, input: I)
-    where
-        T: TakeIntoUpdate<I>,
-    {
-        self.map(|t| t.take_into_update(input))
-    }
-
-    /// Map the inner state to a new value
-    pub fn map<F>(&mut self, f: F)
-    where
-        F: FnOnce(T) -> T,
-    {
-        let next = f(self.0.take().unslot());
-        self.0 = Some(next);
-    }
-
-    /// Map the inner state to a new value and output
-    pub fn map_out<F, O>(&mut self, f: F) -> O
-    where
-        F: FnOnce(T) -> (T, O),
-    {
-        let (next, out) = f(self.0.take().unslot());
-        self.0 = Some(next);
-        out
+impl<T, I, O> Update<I, O> for Slot<T>
+where
+    T: TakeIntoStarg<I, O>,
+{
+    fn update(&mut self, input: I) -> O {
+        self.0.mealy_map(|s| s.take_into_starg(input).into())
     }
 }
 

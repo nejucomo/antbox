@@ -1,11 +1,11 @@
 use crate::mutable::Update;
 
-/// Mutably produce a sequence of [Output](Update::Output)s
-pub trait NextOutput: Update<()> {
-    /// Mutably produce the next [Output](Update::Output)
-    fn next_output(&mut self) -> Self::Output {
+/// Mutably produce a sequence of output `O` values
+pub trait NextOutput<O>: Update<(), O> {
+    /// Mutably produce the next `O`
+    fn next_output(&mut self) -> O {
         self.update(())
     }
 }
 
-impl<B> NextOutput for B where B: Update<()> {}
+impl<B, O> NextOutput<O> for B where B: Update<(), O> {}

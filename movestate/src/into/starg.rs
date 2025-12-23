@@ -1,5 +1,5 @@
-use crate::Starg;
 use crate::into::IntoNext;
+use crate::starg::Starg;
 use crate::take_into::TakeIntoStarg;
 
 /// `S -> (S, O)`: Transition `self` into a next state and value via [Starg], aka an _endless sequence_

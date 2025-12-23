@@ -1,4 +1,4 @@
-use crate::Starg;
+use crate::starg::Starg;
 
 /// Either a `Starg<S, A>` or a terminal value `T`
 #[derive(Debug)]

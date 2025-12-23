@@ -1,5 +1,5 @@
-use crate::TermStarg;
 use crate::into::IntoNext;
+use crate::starg::TermStarg;
 use crate::take_into::TakeIntoTermStarg;
 
 /// `S -> Either<(S, O), T>`: Transition `self` into a new state/output `(S, O)` or else a terminal `T` value
