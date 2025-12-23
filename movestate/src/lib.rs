@@ -1,17 +1,17 @@
 #![doc = include_str!("../README.md")]
 #![deny(unsafe_code, missing_docs)]
 
-mod intonext;
+mod into_next;
 mod optext;
 mod slot;
 mod starg;
-mod takeintonext;
-mod takeintoupdate;
-mod termstarg;
+mod take_into_next;
+mod take_into_update;
+mod term_starg;
 
-pub use self::intonext::IntoNext;
+pub use self::into_next::IntoNext;
 pub use self::slot::Slot;
 pub use self::starg::Starg;
-pub use self::takeintonext::TakeIntoNext;
-pub use self::takeintoupdate::TakeIntoUpdate;
-pub use self::termstarg::TermStarg;
+pub use self::take_into_next::TakeIntoNext;
+pub use self::take_into_update::TakeIntoUpdate;
+pub use self::term_starg::TermStarg;
