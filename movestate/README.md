@@ -10,12 +10,14 @@ A summary of the [movestate](crate) Trait Family:
 
 | Trait | Shorthand | Comment |
 |---|---|---|
-| [IntoNext]       | `S -> N`           | most general input-less transition                 |
-| [IntoUpdate]     | `S -> S`           | a.k.a _state transition function_ / _endomorphism_ |
-| [IntoStarg]      | `S -> (S, O)`      | a.k.a _endless sequence_                           |
-| [TakeIntoNext]   | `(S, I) -> N`      | most general trait; impl base trait                |
-| [TakeIntoUpdate] | `(S, I) -> S`      | a.k.a _Moore machine_                              |
-| [TakeIntoStarg]  | `(S, I) -> (S, O)` | a.k.a _Mealy machine_                              |
+| [IntoNext]          | `S -> N`               | most general input-less transition                 |
+| [IntoUpdate]        | `S -> S`               | a.k.a _state transition function_ / _endomorphism_ |
+| [IntoStarg]         | `S -> (S, O)`          | a.k.a _endless sequence_                           |
+| [IntoTermStarg]     | `S -> (S, O) / T`      | a.k.a _terminating sequence_                       |
+| [TakeIntoNext]      | `(S, I) -> N`          | most general trait; impl base trait                |
+| [TakeIntoUpdate]    | `(S, I) -> S`          | a.k.a _Moore machine_                              |
+| [TakeIntoStarg]     | `(S, I) -> (S, O)`     | a.k.a _Mealy machine_                              |
+| [TakeIntoTermStarg] | `(S, I) -> (S, O) / T` | a.k.a _terminating Mealy machine_                  |
 
 ### Implementing
 
@@ -23,12 +25,14 @@ Implementors always implement [TakeIntoNext], while blanket extension `impl`s al
 
 | Consumer | Implementor |
 |---|---|
-| [IntoNext]       | `TakeIntoNext<()>`                          |
-| [IntoUpdate]     | `TakeIntoNext<(), Next: Into<Self>>`        |
-| [IntoStarg]      | `TakeIntoNext<(), Next: Into<Starg<S, O>>>` |
-| [TakeIntoNext]   | [TakeIntoNext]                              |
-| [TakeIntoUpdate] | `TakeIntoNext<I, Next: Into<Self>>`         |
-| [TakeIntoStarg]  | `TakeIntoNext<I, Next: Into<Starg<S, O>>>`  |
+| [IntoNext]           | `TakeIntoNext<()>`                              |
+| [IntoUpdate]         | `TakeIntoNext<(), Next: Into<Self>>`            |
+| [IntoStarg]          | `TakeIntoNext<(), Next: Into<Starg<S, O>>>`     |
+| [IntoTermStarg]      | `TakeIntoNext<(), Next: Into<TermStarg<S, O>>>` |
+| [TakeIntoNext]       | [TakeIntoNext]                                  |
+| [TakeIntoUpdate]     | `TakeIntoNext<I, Next: Into<Self>>`             |
+| [TakeIntoStarg]      | `TakeIntoNext<I, Next: Into<Starg<S, O>>>`      |
+| [TakeIntoTermStarg]  | `TakeIntoNext<I, Next: Into<TermStarg<S, O>>>`  |
 
 ## Design Notes
 
