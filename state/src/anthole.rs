@@ -61,8 +61,9 @@ where
             }
         } else if WCOIN_LIFE_FORCE_LOSS.sample(su.rng) {
             (
+                // TODO: anthole death
                 AntHole {
-                    lifeforce: self.lifeforce - 1,
+                    lifeforce: self.lifeforce.saturating_sub(1),
                     ..self
                 },
                 None,
