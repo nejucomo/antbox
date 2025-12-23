@@ -6,14 +6,29 @@ The goal is to enable judicious consumers to express precise types to prevent un
 
 ## The [movestate](crate) Trait Family
 
-| Trait | Shorthand | [Next](TakeIntoNext::Next): `Into<_>` constraints | Comment |
-|---|---|---|---|
-| [IntoNext]   | `S -> N`      | _any_         | most general input-less transition |
-| [IntoUpdate] | `S -> S`      | `Self`        | a.k.a _state transition function_ / _endomorphism_ |
-| [IntoStarg]  | `S -> (S, O)` | `Starg<S, O>` | a.k.a _endless sequence_ |
-| [TakeIntoNext]   | `(S, I) -> N`      | _any_         | most general trait; impl base trait |
-| [TakeIntoUpdate] | `(S, I) -> S`      | `Self`        | a.k.a _Moore machine_ |
-| [TakeIntoStarg]  | `(S, I) -> (S, O)` | `Starg<S, O>` | a.k.a _Mealy machine_ |
+A summary of the [movestate](crate) Trait Family:
+
+| Trait | Shorthand | Comment |
+|---|---|---|
+| [IntoNext]       | `S -> N`           | most general input-less transition                 |
+| [IntoUpdate]     | `S -> S`           | a.k.a _state transition function_ / _endomorphism_ |
+| [IntoStarg]      | `S -> (S, O)`      | a.k.a _endless sequence_                           |
+| [TakeIntoNext]   | `(S, I) -> N`      | most general trait; impl base trait                |
+| [TakeIntoUpdate] | `(S, I) -> S`      | a.k.a _Moore machine_                              |
+| [TakeIntoStarg]  | `(S, I) -> (S, O)` | a.k.a _Mealy machine_                              |
+
+### Implementing
+
+Implementors always implement [TakeIntoNext], while blanket extension `impl`s allow consumers to select any trait in the family:
+
+| Consumer | Implementor |
+|---|---|
+| [IntoNext]       | `TakeIntoNext<()>`                          |
+| [IntoUpdate]     | `TakeIntoNext<(), Next: Into<Self>>`        |
+| [IntoStarg]      | `TakeIntoNext<(), Next: Into<Starg<S, O>>>` |
+| [TakeIntoNext]   | [TakeIntoNext]                              |
+| [TakeIntoUpdate] | `TakeIntoNext<I, Next: Into<Self>>`         |
+| [TakeIntoStarg]  | `TakeIntoNext<I, Next: Into<Starg<S, O>>>`  |
 
 ## Design Notes
 
