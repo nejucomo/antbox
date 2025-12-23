@@ -1,4 +1,5 @@
-use crate::{Starg, TakeIntoNext};
+use crate::Starg;
+use crate::take_into::TakeIntoNext;
 
 /// `(S, I) -> (S, O)`: Take an input into a new state and output, aka a _Mealy Machine_
 pub trait TakeIntoStarg<I, O>: Sized + TakeIntoNext<I, Next: Into<Starg<Self, O>>> {

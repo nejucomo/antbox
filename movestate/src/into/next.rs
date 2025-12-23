@@ -1,4 +1,4 @@
-use crate::TakeIntoNext;
+use crate::take_into::TakeIntoNext;
 
 /// `S -> N`: Transition `self` into a [Next](TakeIntoNext::Next) value
 pub trait IntoNext: Sized + TakeIntoNext<()> {

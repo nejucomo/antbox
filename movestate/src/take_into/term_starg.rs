@@ -1,4 +1,5 @@
-use crate::{TakeIntoNext, TermStarg};
+use crate::TermStarg;
+use crate::take_into::TakeIntoNext;
 
 /// `(S, I) -> Either<(S, O), T>`: Take an input into a new state/output `(S, O)` or else a terminal `T` value
 pub trait TakeIntoTermStarg<I, O, T>:

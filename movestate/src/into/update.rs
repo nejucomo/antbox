@@ -1,4 +1,5 @@
-use crate::{IntoNext, TakeIntoUpdate};
+use crate::into::IntoNext;
+use crate::take_into::TakeIntoUpdate;
 
 /// `S -> S`: Transition `self` into a next `Self` value, aka an _endomorphism_
 pub trait IntoUpdate: IntoNext + TakeIntoUpdate<()> {

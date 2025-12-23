@@ -1,7 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::TakeIntoUpdate;
 use crate::optext::OptionExt as _;
+use crate::take_into::TakeIntoUpdate;
 
 /// Hold a state and contain functional transitions within a mutable interface
 //

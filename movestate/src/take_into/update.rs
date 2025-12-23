@@ -1,4 +1,4 @@
-use crate::TakeIntoNext;
+use crate::take_into::TakeIntoNext;
 
 /// `(S, I) -> S`: Produce a new `Self` state from an input; aka a _Moore Machine_
 ///

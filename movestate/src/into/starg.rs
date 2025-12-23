@@ -1,4 +1,6 @@
-use crate::{IntoNext, Starg, TakeIntoStarg};
+use crate::Starg;
+use crate::into::IntoNext;
+use crate::take_into::TakeIntoStarg;
 
 /// `S -> (S, O)`: Transition `self` into a next state and value via [Starg], aka an _endless sequence_
 pub trait IntoStarg<O>: IntoNext + TakeIntoStarg<(), O> {
