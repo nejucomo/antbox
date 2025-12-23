@@ -23,7 +23,7 @@ Each trait in the [TakeIntoNext](takeinto::TakeIntoNext) family follow a consist
 
 | Trait | Shorthand | Comment |
 |---|---|---|
-| [TakeIntoNext](takeinto::TakeIntoNext)                 | `(S, I) -> N`        | Providers for any [into]/[takeinto] consumer implement this most general "base" trait |
-| [IntoOptUpdateWith](into::IntoOptUpdateWith)       | `(S, I) -> <(S, O)>` | |
-| [IntoUpdateWith](into::IntoUpdateWith)             | `(S, I) -> S`        | |
-| [IntoUpdateWithOutput](into::IntoUpdateWithOutput) | `(S, I) -> (S, O)`   | |
+| [TakeIntoNext](takeinto::TakeIntoNext)           | `(S, I) -> N`        | All providers implement this most general "base" trait |
+| [TakeIntoUpdate](takeinto::TakeIntoUpdate)       | `(S, I) -> S`        | |
+| [TakeIntoUpdateOut](takeinto::TakeIntoUpdateOut) | `(S, I) -> (S, O)`   | |
+| [TakeIntoOptUpdate](takeinto::TakeIntoOptUpdate) | `(S, I) -> <(S, O)>` | |
