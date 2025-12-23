@@ -22,10 +22,12 @@ The [TakeIntoNext] trait is the "root" trait, from which the others in the famil
 The possibilities for the [TakeIntoNext::Next] type provide the richness of the family, and all of the extension traits (so far) are based on [Next](TakeIntoNext::Next) types parameterized over `Self`:
 
 - [TakeIntoUpdate] produces `Self` itself, codifying `(S, I) -> S` aka _Moore Machines_.
+- [TakeIntoStarg] codifies `(S, I) -> (S, O)` aka _Mealy Machines_, using the [Starg] container.
 
-For each `TakeInto-` trait in the Next Axis, there is an associated `Into-` extension trait which takes no input:
+For each `TakeInto-` trait in the Next Axis, there is an associated `Into-` extension trait which takes no input, and each of these extension traits is also an [IntoNext] extension:
 
-- [TakeIntoUpdate] without input is [IntoUpdate]
+- [IntoUpdate] = [TakeIntoUpdate] + [IntoNext]: `S -> S` aka an _endomorphism_
+- [IntoStarg] = [TakeIntoStarg] + [IntoNext]: `S -> (S, O)` aka and _endless sequence_
 
 ## Design Notes
 
