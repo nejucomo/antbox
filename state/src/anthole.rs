@@ -1,5 +1,5 @@
 use antbox_geom::{BoundPoint, Direction};
-use movestate::take_into::TakeIntoNext;
+use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{
@@ -48,7 +48,7 @@ where
 
             let antpt = su.pt + su.rng.random::<Direction>();
 
-            if su.state.move_ant(newant, antpt) {
+            if su.field.move_ant(newant, antpt) {
                 let newh = AntHole {
                     lifeforce: self.lifeforce - if freeant { 0 } else { LIFE_FORCE_SPAWN_ANT },
                     ants: self.ants + 1,

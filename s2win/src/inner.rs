@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use derive_more::Unwrap;
-use movestate::take_into::TakeIntoNext;
+use movestate::TakeIntoNext;
 use speedy2d::window::{WindowHelper, WindowStartupInfo};
 
 use crate::WindowEventHandler;

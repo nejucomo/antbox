@@ -4,6 +4,8 @@
 mod ant;
 mod anthole;
 pub(crate) mod consts;
+mod field;
+mod gencount;
 mod genparams;
 mod optinto;
 mod pheromone;
@@ -17,6 +19,7 @@ pub(crate) mod wcoin;
 
 pub use self::ant::{Ant, AntMode};
 pub use self::anthole::AntHole;
+pub use self::field::Field;
 pub use self::genparams::GenParams;
 pub use self::optinto::OptInto;
 pub use self::pheromone::{Pheromone, Pheromones};

@@ -1,11 +1,11 @@
 use antbox_geom::BoundPoint;
 use derive_new::new;
 
-use crate::State;
+use crate::Field;
 
 #[derive(Debug, new)]
 pub(crate) struct SpotUpdate<'a, R> {
     pub(crate) rng: &'a mut R,
-    pub(crate) state: &'a mut State,
+    pub(crate) field: &'a mut Field,
     pub(crate) pt: BoundPoint,
 }

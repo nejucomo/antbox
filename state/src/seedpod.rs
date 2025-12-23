@@ -1,4 +1,4 @@
-use movestate::take_into::TakeIntoNext;
+use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{
@@ -32,7 +32,7 @@ where
 
     fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         if WCOIN_POD_UPDATES.sample(su.rng) {
-            self.take_into_opt((DoUpdate, su))
+            self.take_into_next((DoUpdate, su))
         } else {
             Some(self)
         }
@@ -46,7 +46,7 @@ where
     type Next = Option<Self>;
 
     fn take_into_next(self, (_, su): (DoUpdate, SpotUpdate<'a, R>)) -> Self::Next {
-        let (target_life, target_nc) = su.state.growth_and_neighbors(su.pt);
+        let (target_life, target_nc) = su.field.growth_and_neighbors(su.pt);
 
         let delta = (target_nc as i8) - (self.seeds as i8);
         let dabs = delta.unsigned_abs() as u32;

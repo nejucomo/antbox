@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub};
 
 use derive_new::new;
-use movestate::take_into::TakeIntoNext;
+use movestate::TakeIntoNext;
 
 use self::Pheromone::*;
 

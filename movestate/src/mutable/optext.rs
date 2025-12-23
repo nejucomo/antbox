@@ -1,10 +1,12 @@
+use crate::starg::Starg;
+
 /// [Option] extensions to codify [Slot](crate::Slot) invariants
 pub(crate) trait OptionExt<T> {
     fn unslot(self) -> T;
 
-    fn mealy_map<F, O>(&mut self, f: F) -> O
+    fn map_to_starg<F, O>(&mut self, f: F) -> O
     where
-        F: FnOnce(T) -> (T, O);
+        F: FnOnce(T) -> Starg<T, O>;
 }
 
 impl<T> OptionExt<T> for Option<T> {
@@ -12,12 +14,12 @@ impl<T> OptionExt<T> for Option<T> {
         self.expect("Slot invariant failed: no state present")
     }
 
-    fn mealy_map<F, O>(&mut self, f: F) -> O
+    fn map_to_starg<F, O>(&mut self, f: F) -> O
     where
-        F: FnOnce(T) -> (T, O),
+        F: FnOnce(T) -> Starg<T, O>,
     {
-        let (next, out) = f(self.take().unslot());
-        *self = Some(next);
-        out
+        let Starg { state, arg } = f(self.take().unslot());
+        *self = Some(state);
+        arg
     }
 }

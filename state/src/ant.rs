@@ -1,11 +1,11 @@
 use antbox_geom::{BoundPoint, DirSet};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
-use movestate::take_into::TakeIntoNext;
+use movestate::TakeIntoNext;
 use rand::distr::Distribution;
 
 use crate::spotupdate::SpotUpdate;
-use crate::{OptInto as _, Pheromone, Pheromones, SeedPod, State, SteppedUpon};
+use crate::{Field, OptInto as _, Pheromone, Pheromones, SeedPod, SteppedUpon};
 
 use self::AntMode::*;
 
@@ -65,7 +65,7 @@ impl Ant {
 }
 
 impl AntMode {
-    fn sense(self, state: &mut State, pt: BoundPoint) -> DirSet {
+    fn sense(self, state: &mut Field, pt: BoundPoint) -> DirSet {
         use Pheromone as Ph;
 
         match self {
@@ -94,11 +94,11 @@ where
     type Next = (Either<Self, Pheromones>, Option<BoundPoint>);
 
     fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
-        let dirs = self.mode.sense(su.state, su.pt);
+        let dirs = self.mode.sense(su.field, su.pt);
         let dir = dirs.sample(su.rng).unwrap();
         let dst = su.pt + dir;
 
-        if su.state.move_ant(self, dst) {
+        if su.field.move_ant(self, dst) {
             (Right(self.ph_here), Some(dst))
         } else {
             (Left(self), None)
