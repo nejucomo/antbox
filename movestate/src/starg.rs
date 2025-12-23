@@ -1,17 +1,17 @@
 use derive_more::{From, Into};
 use derive_new::new;
 
-/// A next `state` and `output`
+/// A `state` and associated `arg`
 #[derive(Debug, From, Into, new)]
-pub struct Stout<S, O> {
+pub struct Starg<S, A> {
     /// The new state
     pub state: S,
-    /// The output
-    pub output: O,
+    /// The arg
+    pub arg: A,
 }
 
-impl<S> From<S> for Stout<S, ()> {
+impl<S> From<S> for Starg<S, ()> {
     fn from(state: S) -> Self {
-        Stout { state, output: () }
+        Starg { state, arg: () }
     }
 }

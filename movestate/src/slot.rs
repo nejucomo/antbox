@@ -1,7 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
+use crate::TakeIntoUpdate;
 use crate::optext::OptionExt as _;
-use crate::takeinto::TakeIntoUpdate;
 
 /// Hold a state and contain functional transitions within a mutable interface
 //
@@ -22,7 +22,7 @@ impl<T> Slot<T> {
     where
         T: TakeIntoUpdate<I>,
     {
-        self.map(|t| t.into_update_with(input))
+        self.map(|t| t.take_into_update(input))
     }
 
     /// Map the inner state to a new value
