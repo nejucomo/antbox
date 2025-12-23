@@ -9,3 +9,5 @@ pub trait IntoStarg<O>: IntoNext + TakeIntoStarg<(), O> {
         self.into_next().into()
     }
 }
+
+impl<B, O> IntoStarg<O> for B where B: IntoNext + TakeIntoStarg<(), O> {}

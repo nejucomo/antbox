@@ -3,7 +3,8 @@ use std::collections::BTreeSet;
 use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_geom::{BoundPoint, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
-use movestate::into::{IntoNext as _, IntoNextWith};
+use movestate::into::IntoNext as _;
+use movestate::take_into::TakeIntoNext;
 use movestate::toolkit::Cycler;
 
 use crate::randutil::ShuffleIntoVec as _;
@@ -72,22 +73,22 @@ impl State {
 struct LifePhase;
 struct GridPhase;
 
-impl<R> IntoNextWith<&mut R> for State
+impl<R> TakeIntoNext<&mut R> for State
 where
     R: rand::Rng,
 {
     type Next = Self;
 
-    fn into_next_with(self, rng: &mut R) -> Self {
-        self.into_next_with(LifePhase)
-            .into_next_with((GridPhase, rng))
+    fn take_into_next(self, rng: &mut R) -> Self {
+        self.take_into_next(LifePhase)
+            .take_into_next((GridPhase, rng))
     }
 }
 
-impl IntoNextWith<LifePhase> for State {
+impl TakeIntoNext<LifePhase> for State {
     type Next = Self;
 
-    fn into_next_with(self, _: LifePhase) -> Self {
+    fn take_into_next(self, _: LifePhase) -> Self {
         State {
             generation: self.generation + 1,
             grid: self.grid,
@@ -96,13 +97,13 @@ impl IntoNextWith<LifePhase> for State {
     }
 }
 
-impl<R> IntoNextWith<(GridPhase, &mut R)> for State
+impl<R> TakeIntoNext<(GridPhase, &mut R)> for State
 where
     R: rand::Rng,
 {
     type Next = Self;
 
-    fn into_next_with(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
+    fn take_into_next(mut self, (_, rng): (GridPhase, &mut R)) -> Self {
         // TODO: Performance: this is a full copy of all points! Can we do a cheaper permutation 0..area?
         let pts = self.bounds().iter_points().shuffle_into_vec(rng);
         let mut steppedonto = BTreeSet::default();
@@ -110,7 +111,7 @@ where
         for pt in pts {
             if !steppedonto.remove(&pt) {
                 let (newspot, optstep) =
-                    self.grid[pt].into_next_with(SpotUpdate::new(rng, &mut self, pt));
+                    self.grid[pt].take_into_next(SpotUpdate::new(rng, &mut self, pt));
                 self.grid[pt] = newspot;
                 if let Some(dst) = optstep {
                     assert!(steppedonto.insert(dst));

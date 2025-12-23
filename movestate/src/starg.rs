@@ -4,7 +4,7 @@ mod term;
 use derive_more::{From, Into};
 use derive_new::new;
 
-pub use self::term::TermStarg;
+pub use self::term::{OptStarg, ResStarg, TermStarg};
 
 /// A `state` and associated `arg`
 #[derive(Debug, From, Into, new)]

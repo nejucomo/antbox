@@ -1,10 +1,10 @@
-use movestate::into::IntoUpdateWithOutput;
+use movestate::mutable::Update;
 use speedy2d::window::{WindowHelper, WindowStartupInfo};
 
 use crate::event::WinEvent;
 
 /// A window handler API which makes a few simplifications over [speedy2d::window::WindowHandler]
-pub trait WindowEventHandler<U: 'static>: for<'a> IntoUpdateWithOutput<WinEvent<'a, U>> {
+pub trait WindowEventHandler<U: 'static>: for<'a> Update<WinEvent<'a, U>, ()> {
     /// The type of parameters used to start this handler
     type Params;
 

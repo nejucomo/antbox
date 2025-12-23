@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub};
 
 use derive_new::new;
-use movestate::into::IntoNextWith;
+use movestate::take_into::TakeIntoNext;
 
 use self::Pheromone::*;
 
@@ -55,13 +55,13 @@ impl From<Pheromone> for Pheromones {
     }
 }
 
-impl<R> IntoNextWith<&mut R> for Pheromones
+impl<R> TakeIntoNext<&mut R> for Pheromones
 where
     R: rand::Rng,
 {
     type Next = Self;
 
-    fn into_next_with(self, rng: &mut R) -> Self {
+    fn take_into_next(self, rng: &mut R) -> Self {
         if !self.is_empty() && rng.random_ratio(1, DECAY_DENOMINATOR) {
             Pheromones::new(self.food - 2.min(self.food), self.home - 1.min(self.home))
         } else {

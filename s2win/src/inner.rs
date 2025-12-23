@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use derive_more::Unwrap;
-use movestate::into::IntoNextWith;
+use movestate::take_into::TakeIntoNext;
 use speedy2d::window::{WindowHelper, WindowStartupInfo};
 
 use crate::WindowEventHandler;
@@ -10,6 +10,7 @@ use crate::event::WinEvent;
 use self::AdapterInner::{Pending, Started};
 
 #[derive(Debug, Unwrap)]
+#[unwrap(ref_mut)]
 pub(crate) enum AdapterInner<H, U>
 where
     U: 'static,
@@ -29,14 +30,14 @@ where
     }
 }
 
-impl<'a, H, U> IntoNextWith<(&'a mut WindowHelper<U>, WindowStartupInfo)> for AdapterInner<H, U>
+impl<'a, H, U> TakeIntoNext<(&'a mut WindowHelper<U>, WindowStartupInfo)> for AdapterInner<H, U>
 where
     U: 'static,
     H: WindowEventHandler<U>,
 {
     type Next = Self;
 
-    fn into_next_with(
+    fn take_into_next(
         self,
         (helper, info): (&'a mut WindowHelper<U>, WindowStartupInfo),
     ) -> Self::Next {
@@ -46,15 +47,15 @@ where
     }
 }
 
-impl<'a, H, U> IntoNextWith<WinEvent<'a, U>> for AdapterInner<H, U>
+impl<'a, H, U> TakeIntoNext<WinEvent<'a, U>> for AdapterInner<H, U>
 where
     U: 'static,
     H: WindowEventHandler<U>,
 {
     type Next = Self;
 
-    fn into_next_with(self, ev: WinEvent<'a, U>) -> Self::Next {
-        let s = self.unwrap_started();
-        Started(s.into_update_out(ev))
+    fn take_into_next(mut self, ev: WinEvent<'a, U>) -> Self::Next {
+        self.unwrap_started_mut().update(ev);
+        self
     }
 }

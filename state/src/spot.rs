@@ -1,6 +1,6 @@
 use antbox_geom::BoundPoint;
 use derive_more::{From, IsVariant, TryInto};
-use movestate::into::IntoNextWith;
+use movestate::take_into::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
@@ -45,13 +45,13 @@ impl Default for Spot {
     }
 }
 
-impl<'a, R> IntoNextWith<SpotUpdate<'a, R>> for Spot
+impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for Spot
 where
     R: rand::Rng,
 {
     type Next = (Self, Option<BoundPoint>);
 
-    fn into_next_with(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use Spot::*;
 
         match self {
