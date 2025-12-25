@@ -15,3 +15,6 @@ pub use self::state::{IntoState, State, TakeIntoState};
 pub use self::stout::{IntoStout, Stout, TakeIntoStout};
 pub use self::take_into_next::TakeIntoNext;
 pub mod mutable;
+
+#[cfg(test)]
+mod tests;
