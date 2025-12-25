@@ -11,6 +11,8 @@ use self::Halting::*;
 pub use self::hstate::{IntoHaltingState, TakeIntoHaltingState};
 pub use self::hstout::{IntoHaltingStout, TakeIntoHaltingStout};
 
+/// `[S]` / `[S, O]`
+///
 /// Either a `Next` state `N` or a [Halt] value
 #[derive(Copy, Clone, Debug, From)]
 pub enum Halting<N> {

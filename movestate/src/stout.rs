@@ -6,6 +6,8 @@ use derive_new::new;
 
 use crate::{IntoNext, TakeIntoNext};
 
+/// `(S, O)`
+///
 /// A container for a state `S` and an output `O`
 #[derive(Copy, Clone, Debug, From, Into, new)]
 pub struct Stout<S, O> {
