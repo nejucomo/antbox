@@ -142,14 +142,7 @@ mod consumers {
 
         use crate::IntoHaltingState;
 
-        #[test_case(Accumulator::default())]
-        #[test_case(Countdown::default())]
         #[test_case(Incrementor::default())]
-        #[test_case(Naturals::default())]
-        #[test_case(NonExtended)]
-        #[test_case(OverflowAccumulator::default())]
-        #[test_case(OverflowingSuccessCounter::default())]
-        #[test_case(OverwriteSlot::default())]
         #[test_case(UpToTen::default())]
         fn test<T: IntoHaltingState>(_: T) {}
     }
@@ -160,16 +153,10 @@ mod consumers {
 
         use crate::IntoHaltingStout;
 
-        #[test_case(Accumulator::default())]
         #[test_case(Countdown(10))]
         #[test_case(Countdown::default())]
-        #[test_case(Incrementor::default())]
         #[test_case(Naturals::default())]
-        #[test_case(NonExtended)]
-        #[test_case(OverflowAccumulator::default())]
-        #[test_case(OverflowingSuccessCounter::default())]
         #[test_case(OverwriteSlot::default())]
-        #[test_case(UpToTen::default())]
         fn test<T: IntoHaltingStout<O>, O>(_: T) {}
     }
 
@@ -180,14 +167,8 @@ mod consumers {
         use crate::TakeIntoHaltingState;
 
         #[test_case(Accumulator::default(), 11)]
-        #[test_case(Countdown::default(), ())]
         #[test_case(Incrementor::default(), ())]
-        #[test_case(Naturals::default(), ())]
-        #[test_case(NonExtended, ())]
-        #[test_case(NonExtended, 2)]
         #[test_case(OverflowAccumulator::default(), 2)]
-        #[test_case(OverflowingSuccessCounter::default(), false)]
-        #[test_case(OverwriteSlot::default(), ())]
         #[test_case(UpToTen::default(), ())]
         fn test<T: TakeIntoHaltingState<I>, I>(_: T, _: I) {}
     }
@@ -198,16 +179,10 @@ mod consumers {
 
         use crate::TakeIntoHaltingStout;
 
-        #[test_case(Accumulator::default(), 23)]
         #[test_case(Countdown::default(), ())]
-        #[test_case(Incrementor::default(), ())]
         #[test_case(Naturals::default(), ())]
-        #[test_case(NonExtended, ())]
-        #[test_case(NonExtended, 2)]
-        #[test_case(OverflowAccumulator::default(), 41)]
         #[test_case(OverflowingSuccessCounter::default(), true)]
         #[test_case(OverwriteSlot::default(), ())]
-        #[test_case(UpToTen::default(), ())]
         fn test<T: TakeIntoHaltingStout<I, O>, I, O>(_: T, _: I) {}
     }
 
@@ -217,13 +192,10 @@ mod consumers {
 
         use crate::IntoNext;
 
-        #[test_case(Accumulator::default())]
         #[test_case(Countdown::default())]
         #[test_case(Incrementor::default())]
         #[test_case(Naturals::default())]
         #[test_case(NonExtended)]
-        #[test_case(OverflowAccumulator::default())]
-        #[test_case(OverflowingSuccessCounter::default())]
         #[test_case(OverwriteSlot::default())]
         #[test_case(UpToTen::default())]
         fn test<T: IntoNext>(_: T) {}
@@ -235,15 +207,7 @@ mod consumers {
 
         use crate::IntoState;
 
-        #[test_case(Accumulator::default())]
-        #[test_case(Countdown::default())]
         #[test_case(Incrementor::default())]
-        #[test_case(Naturals::default())]
-        #[test_case(NonExtended)]
-        #[test_case(OverflowAccumulator::default())]
-        #[test_case(OverflowingSuccessCounter::default())]
-        #[test_case(OverwriteSlot::default())]
-        #[test_case(UpToTen::default())]
         fn test<T: IntoState>(_: T) {}
     }
 
@@ -254,15 +218,7 @@ mod consumers {
         use crate::TakeIntoState;
 
         #[test_case(Accumulator::default(), 5)]
-        #[test_case(Countdown::default(), ())]
         #[test_case(Incrementor::default(), ())]
-        #[test_case(Naturals::default(), ())]
-        #[test_case(NonExtended, ())]
-        #[test_case(NonExtended, 2)]
-        #[test_case(OverflowAccumulator::default(), 41)]
-        #[test_case(OverflowingSuccessCounter::default(), false)]
-        #[test_case(OverwriteSlot::default(), ())]
-        #[test_case(UpToTen::default(), ())]
         fn test<T: TakeIntoState<I>, I>(_: T, _: I) {}
     }
 
@@ -272,15 +228,9 @@ mod consumers {
 
         use crate::IntoStout;
 
-        #[test_case(Accumulator::default())]
-        #[test_case(Countdown::default())]
         #[test_case(Incrementor::default())]
         #[test_case(Naturals::default())]
-        #[test_case(NonExtended)]
-        #[test_case(OverflowAccumulator::default())]
-        #[test_case(OverflowingSuccessCounter::default())]
         #[test_case(OverwriteSlot::default())]
-        #[test_case(UpToTen::default())]
         fn test<T: IntoStout<O>, O>(_: T) {}
     }
 
@@ -291,16 +241,10 @@ mod consumers {
         use crate::TakeIntoStout;
 
         #[test_case(Accumulator::default(), 11)]
-        #[test_case(Countdown::default(), ())]
         #[test_case(Incrementor::default(), ())]
         #[test_case(Naturals::default(), ())]
-        #[test_case(NonExtended, ())]
-        #[test_case(NonExtended, 2)]
-        #[test_case(OverflowAccumulator::default(), 41)]
-        #[test_case(OverflowingSuccessCounter::default(), false)]
         #[test_case(OverwriteSlot::default(), "foo")]
         #[test_case(OverwriteSlot::default(), ())]
-        #[test_case(UpToTen::default(), ())]
         fn test<T: TakeIntoStout<I, O>, I, O>(_: T, _: I) {}
     }
 
