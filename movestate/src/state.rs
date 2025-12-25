@@ -6,6 +6,8 @@ use derive_new::new;
 
 use crate::{IntoNext, TakeIntoNext};
 
+/// `S`
+///
 /// A newtype wrapper around `S` primarily used by producer code to facilitate conversions and blanket extensions
 #[derive(Copy, Clone, Debug, From, new)]
 pub struct State<S> {
@@ -28,7 +30,7 @@ pub trait TakeIntoState<I>: Sized + TakeIntoNext<I, Next: Into<State<Self>>> {
     }
 }
 
-/// `S -> S`: This produces the bare next `Self`, unwrapping the intermediate [State]
+/// `S -> S`
 pub trait IntoState: IntoNext + TakeIntoState<()> {
     /// `S -> S`
     fn into_self(self) -> Self {
