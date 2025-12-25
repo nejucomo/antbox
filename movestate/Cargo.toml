@@ -11,3 +11,5 @@ derive_more = { workspace = true, features = ["from", "into", "as_ref", "deref",
 derive-new.workspace = true
 moveslot.workspace = true
 
+[dev-dependencies]
+test-case.workspace = true
