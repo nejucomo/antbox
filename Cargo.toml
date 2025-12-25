@@ -6,6 +6,7 @@ members = [
   "clife",
   "geom",
   "logging-options",
+  "moveslot",
   "movestate",
   "s2win",
   "state",
@@ -28,6 +29,7 @@ antbox-state = { version = "0.1.0", path = "state" }
 antbox-tick-timer = { version = "0.1.0", path = "tick" }
 antbox-trig = { version = "0.1.0", path = "trig" }
 logging-options = { version = "0.1.0", path = "logging-options" }
+moveslot = { version = "0.1.0", path = "moveslot" }
 movestate = { version = "0.1.0", path = "movestate" }
 
 anyhow = "1.0.100"
