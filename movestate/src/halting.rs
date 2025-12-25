@@ -1,10 +1,15 @@
 //! `* -> [*]`: The [Halting] `Next` type
 
 mod fromimpls;
+mod hstate;
+mod hstout;
 
 use derive_more::From;
 
 use self::Halting::*;
+
+pub use self::hstate::{IntoHaltingState, TakeIntoHaltingState};
+pub use self::hstout::{IntoHaltingStout, TakeIntoHaltingStout};
 
 /// Either a `Next` state `N` or a [Halt] value
 #[derive(Copy, Clone, Debug, From)]
