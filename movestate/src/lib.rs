@@ -4,6 +4,7 @@
 mod halting;
 mod into_next;
 mod state;
+mod stditer;
 mod stout;
 mod take_into_next;
 

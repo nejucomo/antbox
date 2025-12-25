@@ -19,7 +19,7 @@ pub trait TakeIntoHaltingStout<I, O>:
     }
 }
 
-/// `S -> [S, O]`
+/// `S -> [S, O]`; every [Iterator] impls this by blanket extension
 pub trait IntoHaltingStout<O>:
     IntoNext + TakeIntoNext<(), Next: Into<Halting<Stout<Self, O>>>>
 {
