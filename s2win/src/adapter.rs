@@ -1,4 +1,5 @@
-use movestate::mutable::{Slot, Update as _};
+use moveslot::MoveSlot;
+use movestate::mutable::Update as _;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::{UVec2, Vec2};
 use speedy2d::window::{
@@ -15,7 +16,7 @@ use crate::event::MouseInput::{Button, Grabbed, Move, WheelScroll};
 use crate::event::{Info, WinEvent};
 use crate::inner::AdapterInner;
 
-pub(crate) struct HandlerAdapter<H, U>(Slot<AdapterInner<H, U>>)
+pub(crate) struct HandlerAdapter<H, U>(MoveSlot<AdapterInner<H, U>>)
 where
     U: 'static,
     H: WindowEventHandler<U>;
@@ -26,7 +27,7 @@ where
     H: WindowEventHandler<U>,
 {
     pub fn new(params: H::Params) -> Self {
-        HandlerAdapter(Slot::from(AdapterInner::new(params)))
+        HandlerAdapter(MoveSlot::from(AdapterInner::new(params)))
     }
 
     fn update_event<'a, N>(&mut self, helper: &'a mut WindowHelper<U>, info: N)

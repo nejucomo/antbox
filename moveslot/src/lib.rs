@@ -1,14 +1,9 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! A trait and newtype enabling safe temporary ownership behind an `&mut` reference
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod mip;
+mod optimpl;
+mod slot;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::mip::MapInPlace;
+pub use self::slot::MoveSlot;

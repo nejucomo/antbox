@@ -11,4 +11,5 @@ derive-new.workspace = true
 derive_more = { workspace = true, features = ["deref", "deref_mut", "unwrap"] }
 extension-traits.workspace = true
 movestate.workspace = true
+moveslot.workspace = true
 speedy2d.workspace = true
