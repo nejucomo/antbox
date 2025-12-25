@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use derive_more::Unwrap;
 use movestate::TakeIntoNext;
+use movestate::state::State;
 use speedy2d::window::{WindowHelper, WindowStartupInfo};
 
 use crate::WindowEventHandler;
@@ -35,7 +36,7 @@ where
     U: 'static,
     H: WindowEventHandler<U>,
 {
-    type Next = Self;
+    type Next = State<Self>;
 
     fn take_into_next(
         self,
@@ -43,7 +44,7 @@ where
     ) -> Self::Next {
         let params = self.unwrap_pending();
         let s = H::start(params, helper, info);
-        Started(s)
+        Started(s).into()
     }
 }
 
@@ -52,10 +53,10 @@ where
     U: 'static,
     H: WindowEventHandler<U>,
 {
-    type Next = Self;
+    type Next = State<Self>;
 
     fn take_into_next(mut self, ev: WinEvent<'a, U>) -> Self::Next {
         self.unwrap_started_mut().update(ev);
-        self
+        self.into()
     }
 }
