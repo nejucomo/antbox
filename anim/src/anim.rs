@@ -2,6 +2,7 @@ use antbox_geom::Grid;
 use antbox_state::{GenParams, State as AntboxState};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::TakeIntoNext;
+use movestate::state::State;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 use wyrand::WyRand;
@@ -47,12 +48,13 @@ impl<R> TakeIntoNext<&mut R> for AnimationState
 where
     R: rand::Rng,
 {
-    type Next = Self;
+    type Next = State<Self>;
 
-    fn take_into_next(self, rng: &mut R) -> Self {
+    fn take_into_next(self, rng: &mut R) -> Self::Next {
         AnimationState {
             antbox: self.antbox.take_into_next(rng),
             wyrgrid: self.wyrgrid,
         }
+        .into()
     }
 }

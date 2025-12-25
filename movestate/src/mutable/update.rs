@@ -1,7 +1,6 @@
 use moveslot::{MapInPlace as _, MoveSlot};
 
-use crate::TakeIntoNext;
-use crate::starg::Starg;
+use crate::stout::TakeIntoStout;
 
 /// Mutably update and input `I` to produce an `O`
 pub trait Update<I, O> {
@@ -11,12 +10,9 @@ pub trait Update<I, O> {
 
 impl<S, I, O> Update<I, O> for MoveSlot<S>
 where
-    S: TakeIntoNext<I, Next: Into<Starg<S, O>>>,
+    S: TakeIntoStout<I, O>,
 {
     fn update(&mut self, input: I) -> O {
-        self.mapout_in_place(|s| {
-            let Starg { state, arg } = s.take_into_next(input).into();
-            (state, arg)
-        })
+        self.mapout_in_place(|s| s.take_into_self_out(input))
     }
 }
