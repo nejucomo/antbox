@@ -5,7 +5,8 @@ use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
-use movestate::mutable::{Slot, Update};
+use moveslot::MoveSlot;
+use movestate::mutable::Update;
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowHelper, WindowStartupInfo};
 
@@ -33,7 +34,7 @@ where
     #[dbg(placeholder = "...")]
     rng: R,
     mode: RunMode,
-    anim: Slot<AnimationState>,
+    anim: MoveSlot<AnimationState>,
 }
 
 #[derive(Copy, Clone, Debug, IsVariant)]
@@ -79,7 +80,7 @@ where
         helper: &mut WindowHelper<Tick>,
         _: WindowStartupInfo,
     ) -> Self {
-        let anim = Slot::from(AnimationState::new(&mut rng, gp));
+        let anim = MoveSlot::from(AnimationState::new(&mut rng, gp));
         let winst = WinHandler {
             rng,
             mode: Running,

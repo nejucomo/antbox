@@ -119,6 +119,7 @@ dependencies = [
  "env_logger",
  "log",
  "logging-options",
+ "moveslot",
  "movestate",
  "rand",
  "speedy2d",
@@ -174,6 +175,7 @@ dependencies = [
  "derive-new",
  "derive_more",
  "extension-traits",
+ "moveslot",
  "movestate",
  "speedy2d",
 ]
@@ -1122,11 +1124,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "moveslot"
+version = "0.1.0"
+
+[[package]]
 name = "movestate"
 version = "0.1.0"
 dependencies = [
  "derive-new",
  "derive_more",
+ "moveslot",
 ]
 
 [[package]]
