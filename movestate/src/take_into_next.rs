@@ -1,3 +1,6 @@
+use crate::capture::CaptureCopy;
+use crate::next::MapState;
+
 /// `(S, I) -> N`; providers impl only this trait
 ///
 /// The base implementation trait which defines the [movestate](crate) family.
@@ -51,4 +54,13 @@ pub trait TakeIntoNext<I> {
 
     /// Take `self` and an `input` into a [Self::Next] value
     fn take_into_next(self, input: I) -> Self::Next;
+
+    /// Convert into an `IntoNext` by capturing `input` passing to `Self` on each update
+    fn capture_copy(self, input: I) -> CaptureCopy<Self, I>
+    where
+        I: Copy,
+        Self: Sized + TakeIntoNext<I, Next: MapState<Self>>,
+    {
+        CaptureCopy::new(self, input)
+    }
 }

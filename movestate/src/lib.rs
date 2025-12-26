@@ -13,6 +13,7 @@ mod take_into_next;
 mod take_into_state;
 mod take_into_stout;
 
+pub mod capture;
 pub mod next;
 pub use self::into_halting_state::IntoHaltingState;
 pub use self::into_halting_stout::IntoHaltingStout;
