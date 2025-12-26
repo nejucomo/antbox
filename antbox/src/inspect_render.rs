@@ -6,12 +6,14 @@ use antbox_s2win::{WindowEventHandler, WindowExt as _};
 use antbox_state::{GenParams, Spot};
 use derive_debug::Dbg;
 use movestate::mutable::Update;
-use rand::rngs::StdRng;
 use speedy2d::Window;
 
 use crate::Result;
 
-pub fn run(rng: StdRng, gp: GenParams) -> Result<()> {
+pub fn run<R>(rng: R, gp: GenParams) -> Result<()>
+where
+    R: rand::Rng + 'static,
+{
     let w = Window::new_centered(
         &format!("{}-inspect-render", env!("CARGO_PKG_NAME")),
         (800, 600),
@@ -21,17 +23,23 @@ pub fn run(rng: StdRng, gp: GenParams) -> Result<()> {
 }
 
 #[derive(Dbg)]
-struct IRHandler {
+struct IRHandler<R>
+where
+    R: rand::Rng + 'static,
+{
     #[dbg(placeholder = "...")]
-    rng: StdRng,
+    rng: R,
     grid: Grid<Spot>,
 }
 
-impl WindowEventHandler<()> for IRHandler {
-    type Params = (StdRng, GenParams);
+impl<R> WindowEventHandler<()> for IRHandler<R>
+where
+    R: rand::Rng + 'static,
+{
+    type Params = (R, GenParams);
 
     fn start(
-        (mut rng, gp): (StdRng, GenParams),
+        (mut rng, gp): (R, GenParams),
         helper: &mut speedy2d::window::WindowHelper<()>,
         _: speedy2d::window::WindowStartupInfo,
     ) -> Self {
@@ -42,7 +50,10 @@ impl WindowEventHandler<()> for IRHandler {
     }
 }
 
-impl<'a> Update<WinEvent<'a, ()>, ()> for IRHandler {
+impl<'a, R> Update<WinEvent<'a, ()>, ()> for IRHandler<R>
+where
+    R: rand::Rng + 'static,
+{
     fn update(&mut self, WinEvent { helper: _, info }: WinEvent<'a, ()>) {
         use antbox_s2win::event::{
             ButtonPosition::Down, Info::Input, Input::Key, KeyInput::Virtual,
@@ -62,7 +73,10 @@ impl<'a> Update<WinEvent<'a, ()>, ()> for IRHandler {
     }
 }
 
-fn setup_grid(rng: &mut StdRng, grid_size: Bounds) -> Grid<Spot> {
+fn setup_grid<R>(rng: &mut R, grid_size: Bounds) -> Grid<Spot>
+where
+    R: rand::Rng + 'static,
+{
     let mut spots = Vec::with_capacity(grid_size.area());
     for spot in enumstates::enumerate_spot_render_states(rng) {
         spots.push(spot);

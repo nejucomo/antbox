@@ -2,19 +2,19 @@ use crate::next::MapState;
 use crate::{TakeIntoMapState, TakeIntoNext};
 
 /// The impl of [TakeIntoNext::capture_copy]
-#[derive(Copy, Clone, Debug)]
-pub struct CaptureCopy<S, I>
+#[derive(Clone, Debug)]
+pub struct CaptureClone<S, I>
 where
-    I: Copy,
+    I: Clone,
     S: TakeIntoMapState<I>,
 {
     state: S,
     captured: I,
 }
 
-impl<S, I> CaptureCopy<S, I>
+impl<S, I> CaptureClone<S, I>
 where
-    I: Copy,
+    I: Clone,
     S: TakeIntoMapState<I>,
 {
     pub(crate) fn new(state: S, captured: I) -> Self {
@@ -22,9 +22,9 @@ where
     }
 }
 
-impl<S, I> TakeIntoNext<()> for CaptureCopy<S, I>
+impl<S, I> TakeIntoNext<()> for CaptureClone<S, I>
 where
-    I: Copy,
+    I: Clone,
     S: TakeIntoMapState<I>,
 {
     type Next = <S::Next as MapState<S>>::MappedState<Self>;
@@ -32,7 +32,7 @@ where
     fn take_into_next(self, (): ()) -> Self::Next {
         let captured = self.captured;
         self.state
-            .take_into_next(captured)
+            .take_into_next(captured.clone())
             .map_state(|state| Self { state, captured })
     }
 }

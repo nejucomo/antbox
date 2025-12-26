@@ -1,67 +1,28 @@
-use std::ops::DerefMut;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-use antbox_state::{Pheromones, SeedPod, Spot};
+use antbox_state::{SeedPod, Spot};
+use movestate::next::{Halting, Stout};
+use movestate::{IntoHaltingStout as _, TakeIntoNext};
 use rand::Rng;
 
-pub(super) fn enumerate_spot_render_states<R: rand::Rng>(rng: R) -> impl Iterator<Item = Spot> {
-    RngInserter {
-        rng,
-        spot: EnumStates(Spot::default()),
-    }
-    .into_iterator()
+pub(super) fn enumerate_spot_render_states<R: Rng>(rng: R) -> impl Iterator<Item = Spot> {
+    EnumStates(Spot::default())
+        .capture_clone(Rc::new(RefCell::new(rng)))
+        .into_iterator()
 }
 
-struct RngInserter<R> {
-    rng: R,
-    optspot: Option<Spot>,
-}
+struct EnumStates<T>(T);
 
-impl<R> TakeIntoNext<()> for RngInserter<R>
-where
-    R: DerefMut,
-    R::Target: Rng,
-{
-    type Next = Option<(Self, Spot)>;
+impl<R: Rng> TakeIntoNext<Rc<RefCell<R>>> for EnumStates<Spot> {
+    type Next = Halting<Stout<Self, Spot>>;
 
-    fn take_into_next(self, (): ()) -> Self::Next {
-        let RngInserter { mut rng, optspot } = self;
-
-        if let Some(prevspot) = optspot {
-            if let Some(nextspot) = prevspot.take_into_opt_self((EnumStates, rng.deref_mut())) {
-                Some((
-                    RngInserter {
-                        rng,
-                        optspot: Some(nextspot),
-                    },
-                    nextspot,
-                ))
-            } else {
-                None
-            }
-        } else {
-            let sp = Spot::default();
-            Some((
-                RngInserter {
-                    rng,
-                    optspot: Some(spot),
-                },
-                spot,
-            ))
-        }
-    }
-}
-
-struct EnumStates;
-
-impl<R: Rng> TakeIntoNext<R> for EnumStates<Spot> {
-    type Next = Halting<State<Self>>;
-
-    fn take_into_next(self, rng: R) -> Self::Next {
+    fn take_into_next(self, rrr: Rc<RefCell<R>>) -> Self::Next {
         use Spot::*;
 
         match self.0 {
             Empty(ph) => EnumStates(ph)
-                .take_into_opt_self(rng)
+                .take_into_opt_self(rrr)
                 .map(Empty)
                 .unwrap_or_else(|| Food(SeedPod::default())),
             Food(seed_pod) => todo!(),
@@ -69,8 +30,4 @@ impl<R: Rng> TakeIntoNext<R> for EnumStates<Spot> {
             AntHole(ant_hole) => todo!(),
         }
     }
-}
-
-impl<R: Rng> TakeIntoNext<R> for EnumStates<Pheromones> {
-    type Next = Halting<State<Self>>;
 }
