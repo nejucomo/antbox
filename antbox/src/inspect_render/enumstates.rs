@@ -1,10 +1,6 @@
 use std::ops::DerefMut;
 
 use antbox_state::{Pheromones, SeedPod, Spot};
-use movestate::{
-    Halting, IntoHaltingStout, State, Stout, TakeIntoHaltingState, TakeIntoHaltingStout,
-    TakeIntoNext,
-};
 use rand::Rng;
 
 pub(super) fn enumerate_spot_render_states<R: rand::Rng>(rng: R) -> impl Iterator<Item = Spot> {

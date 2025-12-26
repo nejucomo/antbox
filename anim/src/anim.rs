@@ -1,8 +1,8 @@
 use antbox_geom::Grid;
 use antbox_state::{GenParams, State as AntboxState};
 use antbox_tick_timer::{RateLimiter, TickTimer};
-use movestate::State;
 use movestate::TakeIntoNext;
+use movestate::next::State;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
 use wyrand::WyRand;
