@@ -4,7 +4,7 @@ mod fromimpls;
 use derive_more::From;
 use derive_new::new;
 
-use crate::{IntoNext, TakeIntoNext};
+use crate::{IntoNext, MapState, TakeIntoNext};
 
 /// `S`
 ///
@@ -13,6 +13,19 @@ use crate::{IntoNext, TakeIntoNext};
 pub struct State<S> {
     /// The wrapped next state, `S`
     pub state: S,
+}
+
+impl<S> MapState<S> for State<S> {
+    type MappedState<MS> = State<MS>;
+
+    fn map_state<F, T>(self, f: F) -> Self::MappedState<T>
+    where
+        F: FnOnce(S) -> T,
+    {
+        State {
+            state: f(self.state),
+        }
+    }
 }
 
 /// `(S, I) -> S`

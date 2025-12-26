@@ -1,63 +1,80 @@
-use antbox_state::{Pheromones, Spot};
-use movestate::TakeIntoNext;
+use std::ops::DerefMut;
 
-pub(super) fn enumerate_spot_render_states<R: rand::Rng>(
-    rng: &mut R,
-) -> impl Iterator<Item = Spot> + '_ {
-    ErsIterator {
+use antbox_state::{Pheromones, SeedPod, Spot};
+use movestate::{
+    Halting, IntoHaltingStout, State, Stout, TakeIntoHaltingState, TakeIntoHaltingStout,
+    TakeIntoNext,
+};
+use rand::Rng;
+
+pub(super) fn enumerate_spot_render_states<R: rand::Rng>(rng: R) -> impl Iterator<Item = Spot> {
+    RngInserter {
         rng,
-        optrse: Some(RseSpot::Empty(RsePheromones::Empty)),
+        spot: EnumStates(Spot::default()),
     }
+    .into_iterator()
 }
 
-struct ErsIterator<'r, R> {
-    rng: &'r mut R,
-    optrse: Option<RseSpot>,
+struct RngInserter<R> {
+    rng: R,
+    optspot: Option<Spot>,
 }
 
-impl<'r, R: rand::Rng + 'static> Iterator for ErsIterator<'r, R> {
-    type Item = Spot;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(rse) = self.optrse.take() {
-            if let Some(next, st) = rse.take_into_next(self.rng) {
-                self.optrse = Some(next);
-                return Some(st);
-            }
-        }
-        None
-    }
-}
-
-enum RseSpot {
-    Empty(RsePheromones),
-}
-
-enum RsePheromones {
-    #[default]
-    Empty,
-}
-
-impl<'r, R: rand::Rng + 'static> TakeIntoNext<&'r mut R> for RseSpot {
+impl<R> TakeIntoNext<()> for RngInserter<R>
+where
+    R: DerefMut,
+    R::Target: Rng,
+{
     type Next = Option<(Self, Spot)>;
 
-    fn take_into_next(self, rng: &'r mut R) -> Self::Next {
-        use RseSpot::*;
+    fn take_into_next(self, (): ()) -> Self::Next {
+        let RngInserter { mut rng, optspot } = self;
 
-        match self {
-            Empty(rseph) => todo!(),
+        if let Some(prevspot) = optspot {
+            if let Some(nextspot) = prevspot.take_into_opt_self((EnumStates, rng.deref_mut())) {
+                Some((
+                    RngInserter {
+                        rng,
+                        optspot: Some(nextspot),
+                    },
+                    nextspot,
+                ))
+            } else {
+                None
+            }
+        } else {
+            let sp = Spot::default();
+            Some((
+                RngInserter {
+                    rng,
+                    optspot: Some(spot),
+                },
+                spot,
+            ))
         }
     }
 }
 
-impl<'r, R: rand::Rng + 'static> TakeIntoNext<&'r mut R> for RsePheromones {
-    type Next = Option<(Self, Pheromones)>;
+struct EnumStates;
 
-    fn take_into_next(self, rng: &'r mut R) -> Self::Next {
-        use RsePheromones::*;
+impl<R: Rng> TakeIntoNext<R> for EnumStates<Spot> {
+    type Next = Halting<State<Self>>;
 
-        match self {
-            Empty => Some((
+    fn take_into_next(self, rng: R) -> Self::Next {
+        use Spot::*;
+
+        match self.0 {
+            Empty(ph) => EnumStates(ph)
+                .take_into_opt_self(rng)
+                .map(Empty)
+                .unwrap_or_else(|| Food(SeedPod::default())),
+            Food(seed_pod) => todo!(),
+            Ant(ant) => todo!(),
+            AntHole(ant_hole) => todo!(),
         }
     }
+}
+
+impl<R: Rng> TakeIntoNext<R> for EnumStates<Pheromones> {
+    type Next = Halting<State<Self>>;
 }

@@ -10,7 +10,6 @@ use rand::rngs::StdRng;
 use speedy2d::Window;
 
 use crate::Result;
-use crate::inspect_render::enumstates::EnumerateRenderStates as _;
 
 pub fn run(rng: StdRng, gp: GenParams) -> Result<()> {
     let w = Window::new_centered(
@@ -65,7 +64,7 @@ impl<'a> Update<WinEvent<'a, ()>, ()> for IRHandler {
 
 fn setup_grid(rng: &mut StdRng, grid_size: Bounds) -> Grid<Spot> {
     let mut spots = Vec::with_capacity(grid_size.area());
-    for spot in enumerate_spot_render_states(rng) {
+    for spot in enumstates::enumerate_spot_render_states(rng) {
         spots.push(spot);
     }
     for _ in spots.len()..grid_size.area() {

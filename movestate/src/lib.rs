@@ -3,6 +3,7 @@
 
 mod halting;
 mod into_next;
+mod map_state;
 mod state;
 mod stditer;
 mod stout;
@@ -16,6 +17,7 @@ pub use self::state::{IntoState, State, TakeIntoState};
 pub use self::stout::{IntoStout, Stout, TakeIntoStout};
 pub use self::take_into_next::TakeIntoNext;
 pub mod mutable;
+pub use self::map_state::MapState;
 
 #[cfg(test)]
 mod tests;

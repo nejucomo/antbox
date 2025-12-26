@@ -6,6 +6,8 @@ mod hstout;
 
 use derive_more::From;
 
+use crate::MapState;
+
 use self::Halting::*;
 
 pub use self::hstate::{IntoHaltingState, TakeIntoHaltingState};
@@ -35,6 +37,23 @@ impl<N> Halting<N> {
         match self {
             Continue(s) => Some(s),
             Halt => None,
+        }
+    }
+}
+
+impl<N, S> MapState<S> for Halting<N>
+where
+    N: MapState<S>,
+{
+    type MappedState<MS> = Halting<N::MappedState<MS>>;
+
+    fn map_state<F, T>(self, f: F) -> Self::MappedState<T>
+    where
+        F: FnOnce(S) -> T,
+    {
+        match self {
+            Continue(n) => Continue(n.map_state(f)),
+            Halt => Halt,
         }
     }
 }

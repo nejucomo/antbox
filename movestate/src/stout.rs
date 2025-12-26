@@ -4,7 +4,7 @@ mod fromimpls;
 use derive_more::{From, Into};
 use derive_new::new;
 
-use crate::{IntoNext, TakeIntoNext};
+use crate::{IntoNext, MapState, TakeIntoNext};
 
 /// `(S, O)`
 ///
@@ -15,6 +15,20 @@ pub struct Stout<S, O> {
     pub state: S,
     /// The next output, `O`
     pub output: O,
+}
+
+impl<S, O> MapState<S> for Stout<S, O> {
+    type MappedState<MS> = Stout<MS, O>;
+
+    fn map_state<F, T>(self, f: F) -> Self::MappedState<T>
+    where
+        F: FnOnce(S) -> T,
+    {
+        Stout {
+            state: f(self.state),
+            output: self.output,
+        }
+    }
 }
 
 /// `(S, I) -> (S, O)`
