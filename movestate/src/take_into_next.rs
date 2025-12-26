@@ -1,4 +1,4 @@
-/// `(S, I) -> N`
+/// `(S, I) -> N`; providers impl only this trait
 ///
 /// The base implementation trait which defines the [movestate](crate) family.
 ///

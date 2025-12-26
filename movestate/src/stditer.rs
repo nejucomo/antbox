@@ -1,7 +1,33 @@
 //! [std::iter::Iterator] support
 
-use crate::{Halting, Stout, TakeIntoNext};
+use std::marker::PhantomData;
 
+use derive_new::new;
+use moveslot::{MapInPlace as _, MoveSlot};
+
+use crate::{Halting, IntoHaltingStout, Stout, TakeIntoNext};
+
+#[derive(Debug, new)]
+#[new(visibility = "pub(crate)")]
+pub struct IHSIter<S, O> {
+    #[new(into)]
+    mslot: MoveSlot<S>,
+    #[new(default)]
+    ph: PhantomData<O>,
+}
+
+impl<S, O> Iterator for IHSIter<S, O>
+where
+    S: IntoHaltingStout<O>,
+{
+    type Item = O;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.mslot.mip_out_opt(IntoHaltingStout::into_opt_self_out)
+    }
+}
+
+/// Blanket impl such that every [Iterator] is an [IntoHaltingStout](crate::IntoHaltingStout)
 impl<S> TakeIntoNext<()> for S
 where
     S: Iterator,

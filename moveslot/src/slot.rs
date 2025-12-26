@@ -9,15 +9,33 @@ use crate::MapInPlace;
 pub struct MoveSlot<T>(Option<T>);
 
 impl<T> MapInPlace<T> for MoveSlot<T> {
-    fn unwrap_mip(self) -> T {
-        self.0.unwrap_mip()
+    fn unwrap_state(self) -> T {
+        self.0.unwrap_state()
     }
 
-    fn mapout_in_place<F, O>(&mut self, f: F) -> O
+    fn opt_state(self) -> Option<T> {
+        self.0
+    }
+
+    fn mip_out<F, O>(&mut self, f: F) -> O
     where
         F: FnOnce(T) -> (T, O),
     {
-        self.0.mapout_in_place(f)
+        self.0.mip_out(f)
+    }
+
+    fn mip_out_opt<F, O>(&mut self, f: F) -> Option<O>
+    where
+        F: FnOnce(T) -> Option<(T, O)>,
+    {
+        self.0.mip_out_opt(f)
+    }
+
+    fn mip_out_res<F, O, E>(&mut self, f: F) -> Result<O, E>
+    where
+        F: FnOnce(T) -> Result<(T, O), E>,
+    {
+        self.0.mip_out_res(f)
     }
 }
 
