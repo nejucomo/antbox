@@ -1,5 +1,5 @@
-use crate::capture::{CaptureClone, CaptureCopy};
-use crate::next::MapState;
+use crate::TakeIntoMapState;
+use crate::combinators::{CaptureClone, CaptureCopy};
 
 /// `(S, I) -> N`; providers impl only this trait
 ///
@@ -53,7 +53,7 @@ pub trait TakeIntoNext<I>: Sized {
     fn capture_copy(self, input: I) -> CaptureCopy<Self, I>
     where
         I: Copy,
-        Self: Sized + TakeIntoNext<I, Next: MapState<Self>>,
+        Self: TakeIntoMapState<I>,
     {
         CaptureCopy::new(self, input)
     }
@@ -62,7 +62,7 @@ pub trait TakeIntoNext<I>: Sized {
     fn capture_clone(self, input: I) -> CaptureClone<Self, I>
     where
         I: Clone,
-        Self: Sized + TakeIntoNext<I, Next: MapState<Self>>,
+        Self: TakeIntoMapState<I>,
     {
         CaptureClone::new(self, input)
     }

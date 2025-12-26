@@ -15,11 +15,11 @@ where
     R: rand::Rng + 'static,
 {
     let w = Window::new_centered(
-        &format!("{}-inspect-render", env!("CARGO_PKG_NAME")),
+        format!("{}-inspect-render", env!("CARGO_PKG_NAME")),
         (800, 600),
     )?;
 
-    w.run_loop_simplified::<IRHandler>((rng, gp))
+    w.run_loop_simplified::<IRHandler<R>>((rng, gp))
 }
 
 #[derive(Dbg)]
@@ -28,6 +28,7 @@ where
     R: rand::Rng + 'static,
 {
     #[dbg(placeholder = "...")]
+    #[allow(dead_code)]
     rng: R,
     grid: Grid<Spot>,
 }

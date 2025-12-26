@@ -24,6 +24,17 @@ pub enum Halting<N> {
 }
 
 impl<N> Halting<N> {
+    /// Map the [Continue] value
+    pub fn map<F, M>(self, f: F) -> Halting<M>
+    where
+        F: FnOnce(N) -> M,
+    {
+        match self {
+            Continue(v) => Continue(f(v)),
+            Halt => Halt,
+        }
+    }
+
     fn from_option(opt: Option<N>) -> Self {
         opt.map(Continue).unwrap_or(Halt)
     }
