@@ -54,3 +54,19 @@ fn test_iterator_impl() {
 
     assert!(s3.into_opt_self_out().is_none());
 }
+
+#[test]
+fn test_into_iterator() {
+    struct SliceIHS(&'static [usize]);
+
+    impl TakeIntoNext<()> for SliceIHS {
+        type Next = Halting<Stout<Self, usize>>;
+
+        fn take_into_next(self, (): ()) -> Self::Next {
+            self.0.split_first().map(|(&x, s)| (SliceIHS(s), x)).into()
+        }
+    }
+
+    let sum: usize = SliceIHS(&[2, 3, 5]).into_iterator().sum();
+    assert_eq!(sum, 10);
+}
