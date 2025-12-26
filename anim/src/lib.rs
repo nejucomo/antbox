@@ -12,8 +12,11 @@ mod drawantbox;
 mod gridlayout;
 pub mod layers;
 mod rectext;
+mod wyrgrid;
 
 pub use self::anim::AnimationState;
 pub use self::drawable::Drawable;
+pub use self::drawantbox::draw_spots;
 pub use self::gridlayout::GridLayout;
 pub use self::rectext::RectExt;
+pub use self::wyrgrid::WyrGrid;

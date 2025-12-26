@@ -27,11 +27,11 @@ impl<R: Rng> TakeIntoNext<Rc<RefCell<R>>> for EnumSpots {
     }
 }
 
-trait WrapperTrait: Sized {
+trait EnumInterestingValues: Sized {
     fn enum_next<R: Rng>(self, rng: &mut R) -> Option<Self>;
 }
 
-impl WrapperTrait for Spot {
+impl EnumInterestingValues for Spot {
     fn enum_next<R: Rng>(self, rng: &mut R) -> Option<Self> {
         use Spot::*;
 
@@ -41,15 +41,29 @@ impl WrapperTrait for Spot {
                     .map(Empty)
                     .unwrap_or_else(|| Food(SeedPod::default())),
             ),
-            Food(_) => todo!(),
-            Ant(_) => todo!(),
-            AntHole(_) => todo!(),
+            Food(_) => None,    // TODO
+            Ant(_) => None,     // TODO
+            AntHole(_) => None, // TODO
         }
     }
 }
 
-impl WrapperTrait for Pheromones {
-    fn enum_next<R: Rng>(self, _rng: &mut R) -> Option<Self> {
-        todo!()
+impl EnumInterestingValues for Pheromones {
+    fn enum_next<R: Rng>(self, rng: &mut R) -> Option<Self> {
+        let Pheromones { food, home } = self;
+
+        let mut rr_above = |n: u8| n.saturating_add(rng.random_range(1..=48));
+
+        // Diamond traversal:
+        match (food, home) {
+            (u8::MAX, u8::MAX) => None,
+            (0, 0) => Some((1, 0)),
+            (u8::MAX, 0) => Some((0, 1)),
+            (0, u8::MAX) => Some((1, 1)),
+            (f, 0) => Some((rr_above(f), 0)),
+            (0, h) => Some((0, rr_above(h))),
+            (f, h) => Some((rr_above(f), rr_above(h))),
+        }
+        .map(Pheromones::from)
     }
 }

@@ -1,5 +1,6 @@
 mod enumstates;
 
+use antbox_animation::{GridLayout, WyrGrid};
 use antbox_geom::{Bounds, Grid};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
@@ -28,7 +29,6 @@ where
     R: rand::Rng + 'static,
 {
     #[dbg(placeholder = "...")]
-    #[allow(dead_code)]
     rng: R,
     grid: Grid<Spot>,
 }
@@ -55,13 +55,23 @@ impl<'a, R> Update<WinEvent<'a, ()>, ()> for IRHandler<R>
 where
     R: rand::Rng + 'static,
 {
-    fn update(&mut self, WinEvent { helper: _, info }: WinEvent<'a, ()>) {
+    fn update(&mut self, WinEvent { helper, info }: WinEvent<'a, ()>) {
         use antbox_s2win::event::{
-            ButtonPosition::Down, Info::Input, Input::Key, KeyInput::Virtual,
+            ButtonPosition::Down,
+            Info::{DrawRequest, Input},
+            Input::Key,
+            KeyInput::Virtual,
         };
         use speedy2d::window::VirtualKeyCode::Escape;
 
         match info {
+            DrawRequest(gfx) => {
+                let winsize = helper.get_size_pixels().into_f32();
+                let layout = GridLayout::new(self.grid.bounds(), winsize);
+                let wyrgrid = WyrGrid::new(self.grid.bounds(), &mut self.rng);
+                antbox_animation::draw_spots(gfx, &self.grid, layout, &wyrgrid);
+            }
+
             Input(Key(Virtual(Down, Escape))) => {
                 log::info!("bye!");
                 std::process::exit(0);

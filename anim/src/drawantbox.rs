@@ -1,7 +1,7 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
 use antbox_geom::Grid;
-use antbox_state::{Ant, AntHole, Pheromone, Pheromones, SeedPod, Spot, State as AntboxState};
+use antbox_state::{Ant, AntHole, Pheromone, Pheromones, SeedPod, Spot};
 use antbox_trig::{Angle, TrigVec};
 use rand::Rng as _;
 use speedy2d::Graphics2D;
@@ -12,10 +12,15 @@ use wyrand::WyRand;
 use crate::colors::{
     self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, ColorExt as _, DIRT, interpolate,
 };
-use crate::{Drawable, GridLayout, RectExt as _};
+use crate::{Drawable, GridLayout, RectExt as _, WyrGrid};
 
-impl Drawable<(GridLayout, &Grid<WyRand>)> for &AntboxState {
-    fn draw_on(self, gfx: &mut Graphics2D, (layout, wyrgrid): (GridLayout, &Grid<WyRand>)) {
+/// Draw a [Grid] of [Spot]s
+pub fn draw_spots(gfx: &mut Graphics2D, spots: &Grid<Spot>, layout: GridLayout, wg: &WyrGrid) {
+    spots.draw_on(gfx, (layout, wg))
+}
+
+impl Drawable<(GridLayout, &WyrGrid)> for &Grid<Spot> {
+    fn draw_on(self, gfx: &mut Graphics2D, (layout, wyrgrid): (GridLayout, &WyrGrid)) {
         for (pt, rect) in layout.iter_pts_and_rects() {
             let mut wyr = wyrgrid[pt].clone();
             self[pt].draw_on(gfx, (rect, &mut wyr));
