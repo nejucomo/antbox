@@ -1,4 +1,5 @@
 use crate::halting::Halting;
+use crate::stditer::IHSIter;
 use crate::stout::Stout;
 use crate::{IntoNext, TakeIntoNext};
 
@@ -19,7 +20,7 @@ pub trait TakeIntoHaltingStout<I, O>:
     }
 }
 
-/// `S -> [S, O]`
+/// `S -> [S, O]`; isomorphic conversions to/from [Iterator]
 pub trait IntoHaltingStout<O>:
     IntoNext + TakeIntoNext<(), Next: Into<Halting<Stout<Self, O>>>>
 {
@@ -33,6 +34,11 @@ pub trait IntoHaltingStout<O>:
     /// Consumers typically use [IntoHaltingStout::into_opt_self_out] for ergonomics.
     fn into_hstout(self) -> Halting<Stout<Self, O>> {
         self.into_next().into()
+    }
+
+    /// Convert `self` into an [Iterator]
+    fn into_iterator(self) -> IHSIter<Self, O> {
+        IHSIter::new(self)
     }
 }
 
