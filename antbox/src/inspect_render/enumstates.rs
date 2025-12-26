@@ -52,7 +52,7 @@ impl EnumInterestingValues for Pheromones {
     fn enum_next<R: Rng>(self, rng: &mut R) -> Option<Self> {
         let Pheromones { food, home } = self;
 
-        let mut rr_above = |n: u8| n.saturating_add(rng.random_range(1..=48));
+        let mut rr_above = |n: u8| n.saturating_add(rng.random_range(1..=n));
 
         // Diamond traversal:
         match (food, home) {
