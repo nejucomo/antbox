@@ -1,7 +1,7 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
 use antbox_geom::Grid;
-use antbox_state::{Ant, AntHole, Pheromone, Pheromones, SeedPod, Spot};
+use antbox_state::{Ant, AntHole, Pheromones, SeedPod, Spot};
 use antbox_trig::{Angle, TrigVec};
 use rand::Rng as _;
 use speedy2d::Graphics2D;
@@ -122,24 +122,36 @@ impl Drawable<(Rect, &mut WyRand)> for AntHole {
 
 impl Drawable<(Rect, &mut WyRand)> for Pheromones {
     fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
-        use Pheromone::{Food, Home};
         use colors::{ANT_HOLE_IRIS, FOOD_LIFE};
 
-        const ALPHA: f32 = 0.5;
-        const HOME_COLOR_REDNESS: f32 = 0.2;
+        const DECAY_FACTOR: f32 = 0.99;
+        const HOME_COLOR_REDNESS: f32 = 0.4;
 
-        let home_color = ANT_HOLE_IRIS
-            .interpolate(Color::RED, HOME_COLOR_REDNESS)
-            .with_alpha(ALPHA);
+        let home_color = ANT_HOLE_IRIS.interpolate(Color::RED, HOME_COLOR_REDNESS);
+        let food_color = FOOD_LIFE;
 
         let center = rect.center();
         let crad = rect.cell_radius();
-        for (ph, color) in [(Food, FOOD_LIFE.with_alpha(ALPHA)), (Home, home_color)] {
-            for _ in 0..self.magnitude(ph) {
-                let spoke = wyr.random::<TrigVec>().scale(crad);
-                let rad = wyr.random_range(0.1..0.2) * crad;
-                gfx.draw_circle(center + spoke.into_vec2(), rad, color);
-            }
+
+        let mut decay = 1.0;
+        let mut ph = self;
+        while !ph.is_empty() {
+            let color = if wyr.random_ratio(ph.food as u32, ph.food as u32 + ph.home as u32) {
+                ph.food -= 1;
+                food_color
+            } else {
+                ph.home -= 1;
+                home_color
+            };
+
+            let spoke = wyr.random::<TrigVec>().scale(crad);
+            let rad = wyr.random_range(0.2..0.3) * crad * decay * 0.4 * (1.0 + decay);
+            gfx.draw_circle(
+                center + spoke.into_vec2(),
+                rad,
+                color.with_alpha((1.0 - decay) * 0.8 + 0.2),
+            );
+            decay *= DECAY_FACTOR;
         }
     }
 }

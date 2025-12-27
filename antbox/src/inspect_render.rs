@@ -60,7 +60,7 @@ where
             Input::Key,
             KeyInput::Virtual,
         };
-        use speedy2d::window::VirtualKeyCode::Escape;
+        use speedy2d::window::VirtualKeyCode::{Escape, Space};
 
         match info {
             DrawRequest(gfx) => {
@@ -78,6 +78,10 @@ where
                 std::process::exit(0);
             }
 
+            Input(Key(Virtual(Down, Space))) => {
+                helper.request_redraw();
+            }
+
             _ => {
                 // Ignore
             }
@@ -93,6 +97,7 @@ where
     for spot in enumstates::enumerate_spot_render_states(rng) {
         spots.push(spot);
     }
+    log::info!("Rendering {} spot states...", spots.len());
     for _ in spots.len()..grid_size.area() {
         spots.push(Spot::default());
     }
