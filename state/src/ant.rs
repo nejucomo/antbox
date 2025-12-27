@@ -28,6 +28,7 @@ pub enum AntMode {
 }
 
 impl Ant {
+    /// Construct a new ant in the given `mode` as if from an [AntHole](crate::AntHole)
     pub(crate) fn new_from_ant_hole(mode: AntMode) -> Self {
         Ant {
             mode,
@@ -61,6 +62,15 @@ impl Ant {
 
     pub(crate) fn seed_pod(self) -> Option<SeedPod> {
         self.mode.opt_into()
+    }
+}
+
+impl Default for Ant {
+    fn default() -> Self {
+        Ant {
+            mode: Exploring,
+            ph_here: Pheromones::default(),
+        }
     }
 }
 

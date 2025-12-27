@@ -41,7 +41,11 @@ impl EnumInterestingValues for Spot {
                     .map(Empty)
                     .unwrap_or_else(|| Food(SeedPod::default())),
             ),
-            Food(_) => None,    // TODO
+            Food(x) => Some(
+                x.enum_next(rng)
+                    .map(Food)
+                    .unwrap_or_else(|| Ant(Default::default())),
+            ),
             Ant(_) => None,     // TODO
             AntHole(_) => None, // TODO
         }
@@ -65,5 +69,19 @@ impl EnumInterestingValues for Pheromones {
             (f, h) => Some((rr_above(f), rr_above(h))),
         }
         .map(Pheromones::from)
+    }
+}
+
+impl EnumInterestingValues for SeedPod {
+    fn enum_next<R: Rng>(self, _: &mut R) -> Option<Self> {
+        if self.seeds == 8 {
+            if self.ripe {
+                None
+            } else {
+                Some(SeedPod::new(0, true))
+            }
+        } else {
+            Some(SeedPod::new(self.seeds + 1, self.ripe))
+        }
     }
 }
