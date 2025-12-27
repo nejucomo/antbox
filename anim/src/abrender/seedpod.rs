@@ -10,7 +10,7 @@ use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
 use crate::abrender::RWArg;
-use crate::colors;
+use crate::colors::{self, ColorExt as _};
 use crate::layers::Layer::Plants;
 use crate::organic::OrganicScale;
 
@@ -26,7 +26,7 @@ struct DrawParams {
 
 struct Pod(bool);
 struct SingletonSeed;
-struct SeedCluster(u8);
+struct SeedCluster(SeedPod);
 
 impl RWArg<(Rect, &mut WyRand)> for SeedPod {
     fn rwarg(self, rs: &mut RenderScheduler, (rect, wyr): (Rect, &mut WyRand)) {
@@ -45,7 +45,7 @@ impl RWArg<(Rect, &mut WyRand)> for SeedPod {
         if self.seeds == 1 {
             SingletonSeed.rwarg(rs, (dp, wyr));
         } else {
-            SeedCluster(self.seeds).rwarg(rs, (dp, wyr));
+            SeedCluster(self).rwarg(rs, (dp, wyr));
         }
     }
 }
@@ -53,14 +53,18 @@ impl RWArg<(Rect, &mut WyRand)> for SeedPod {
 impl RWArg<(DrawParams, &mut WyRand)> for Pod {
     fn rwarg(self, rs: &mut RenderScheduler, (dp, _wyr): (DrawParams, &mut WyRand)) {
         let DrawParams { center, podrad, .. } = dp;
-        let ls = Plants.layer_scheduler(rs);
-
         let outer = center.with_radius(podrad);
-        if self.0 {
-            ls.schedule(outer.with_color(colors::FOOD_LIFE));
-        }
 
-        ls.schedule(outer.scale(0.9).with_color(colors::SEEDPOD));
+        {
+            let ls = Plants.layer_scheduler(rs);
+
+            ls.schedule(outer.with_color(colors::FOOD_LIFE.with_alpha(if self.0 {
+                0.75
+            } else {
+                0.25
+            })));
+            ls.schedule(outer.scale(0.9).with_color(colors::SEEDPOD));
+        }
     }
 }
 
@@ -78,14 +82,18 @@ impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
         let radf: f32 = 0.47 * org.sample(wyr);
         let distf = (org.sample(wyr) - radf).powi(2);
 
-        let offcenter = center + spotrot.with_distance(podrad).scale(distf);
-
-        ls.schedule(
-            offcenter
-                .with_radius(podrad)
-                .scale(radf)
-                .with_color(colors::SEEDPOD),
-        );
+        for kernel in 0..2 {
+            let offcenter = center
+                + spotrot
+                    .with_distance(podrad)
+                    .scale(distf)
+                    .scale(0.8f32.powi(kernel + 1));
+            let circ = offcenter.with_radius(podrad).scale(radf);
+            let cwc = circ
+                .scale(0.6f32.powi(kernel))
+                .with_color(colors::SEED.with_alpha(1.0 - 0.9f32.powi(1 + kernel)));
+            ls.schedule(cwc);
+        }
     }
 }
 
@@ -100,7 +108,7 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
         } = dp;
         let ls = Plants.layer_scheduler(rs);
 
-        let SeedCluster(seeds) = self;
+        let SeedCluster(SeedPod { seeds, ripe }) = self;
         assert_ne!(1, seeds);
         assert!(seeds <= 8);
 
@@ -122,6 +130,17 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
                 (center + bspoke)
                     .with_radius(radf * podrad * org.sample(wyr))
                     .with_color(seedcolor),
+            );
+        }
+        if ripe {
+            let ripecenter = center + spokef.scale(podrad).scale(0.1 * org.sample(wyr));
+
+            ls.schedule(
+                ripecenter
+                    .with_radius(org.sample(wyr) - radf)
+                    .scale(0.5)
+                    .scale(podrad)
+                    .with_color(colors::FOOD_LIFE.interpolate(seedcolor, 0.7)),
             );
         }
     }
