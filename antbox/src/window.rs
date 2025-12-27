@@ -1,7 +1,7 @@
 use antbox_animation::AnimationState;
+use antbox_gameboard::GenParams;
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
-use antbox_state::GenParams;
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;

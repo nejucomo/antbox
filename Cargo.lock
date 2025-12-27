@@ -106,9 +106,9 @@ version = "0.1.0"
 dependencies = [
  "antbox-animation",
  "antbox-clife",
+ "antbox-gameboard",
  "antbox-geom",
  "antbox-s2win",
- "antbox-state",
  "antbox-tick-timer",
  "antbox-trig",
  "anyhow",
@@ -130,8 +130,8 @@ name = "antbox-animation"
 version = "0.1.0"
 dependencies = [
  "antbox-clife",
+ "antbox-gameboard",
  "antbox-geom",
- "antbox-state",
  "antbox-tick-timer",
  "antbox-trig",
  "derive-debug",
@@ -157,6 +157,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "antbox-gameboard"
+version = "0.1.0"
+dependencies = [
+ "antbox-clife",
+ "antbox-geom",
+ "clap",
+ "derive-new",
+ "derive_more",
+ "either",
+ "log",
+ "movestate",
+ "rand",
+]
+
+[[package]]
 name = "antbox-geom"
 version = "0.1.0"
 dependencies = [
@@ -178,21 +193,6 @@ dependencies = [
  "moveslot",
  "movestate",
  "speedy2d",
-]
-
-[[package]]
-name = "antbox-state"
-version = "0.1.0"
-dependencies = [
- "antbox-clife",
- "antbox-geom",
- "clap",
- "derive-new",
- "derive_more",
- "either",
- "log",
- "movestate",
- "rand",
 ]
 
 [[package]]

@@ -1,4 +1,4 @@
-use antbox_state::GenParams;
+use antbox_gameboard::GenParams;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]

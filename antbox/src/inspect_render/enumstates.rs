@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use antbox_state::{Ant, AntHole, AntMode, Pheromones, SeedPod, Spot};
+use antbox_gameboard::{Ant, AntHole, AntMode, Pheromones, SeedPod, Spot};
 use movestate::next::{Halting, Stout};
 use movestate::{IntoHaltingStout as _, TakeIntoNext};
 use rand::Rng;

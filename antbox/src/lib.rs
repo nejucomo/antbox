@@ -2,7 +2,7 @@ pub mod inspect_render;
 pub mod options;
 pub mod window;
 
-use antbox_state::GenParams;
+use antbox_gameboard::GenParams;
 use clap::Parser as _;
 use logging_options::Backend as _;
 use rand::SeedableRng as _;

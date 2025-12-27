@@ -8,7 +8,7 @@ homepage.workspace = true
 [dependencies]
 derive-debug.workspace = true
 derive-new.workspace = true
-derive_more = { workspace = true, features = ["deref", "deref_mut", "unwrap"] }
+derive_more = { workspace = true, features = ["deref", "deref_mut", "unwrap", "is_variant"] }
 extension-traits.workspace = true
 movestate.workspace = true
 moveslot.workspace = true

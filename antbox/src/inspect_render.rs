@@ -1,10 +1,10 @@
 mod enumstates;
 
 use antbox_animation::{Drawable, GridLayout, WyrGrid, layers};
+use antbox_gameboard::{GenParams, Spot};
 use antbox_geom::{Bounds, Grid};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
-use antbox_state::{GenParams, Spot};
 use derive_debug::Dbg;
 use movestate::mutable::Update;
 use speedy2d::Window;

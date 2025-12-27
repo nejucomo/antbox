@@ -1,4 +1,4 @@
-use antbox_state::{GenParams, State as AntboxState};
+use antbox_gameboard::{BoardState as AntboxState, GenParams};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::TakeIntoNext;
 use movestate::next::State;

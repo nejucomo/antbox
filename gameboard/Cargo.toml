@@ -1,5 +1,5 @@
 [package]
-name = "antbox-state"
+name = "antbox-gameboard"
 description = "The logical state of the `antbox` cellular automaton / artificial life toy."
 version = "0.1.0"
 license.workspace = true
@@ -11,7 +11,7 @@ antbox-clife.workspace = true
 antbox-geom.workspace = true
 clap = { workspace = true, features = ["derive"] }
 derive-new.workspace = true
-derive_more = { workspace = true, features = [ "from", "into", "try_unwrap" ] }
+derive_more = { workspace = true, features = [ "from", "into", "try_unwrap", "is_variant", "try_into" ] }
 either.workspace = true
 log.workspace = true
 movestate.workspace = true
