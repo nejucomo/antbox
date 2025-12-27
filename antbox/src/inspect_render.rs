@@ -15,10 +15,8 @@ pub fn run<R>(rng: R, gp: GenParams) -> Result<()>
 where
     R: rand::Rng + 'static,
 {
-    let w = Window::new_centered(
-        format!("{}-inspect-render", env!("CARGO_PKG_NAME")),
-        (800, 600),
-    )?;
+    let w =
+        Window::new_fullscreen_borderless(format!("{}-inspect-render", env!("CARGO_PKG_NAME")))?;
 
     w.run_loop_simplified::<IRHandler<R>>((rng, gp))
 }
