@@ -9,8 +9,9 @@ use speedy2d::dimen::Vec2;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
+use crate::circle::Circle;
 use crate::organic::OrganicScale;
-use crate::{Drawable, RectExt as _, colors};
+use crate::{Drawable, RectExt as _, Vec2Ext as _, colors};
 
 // Components to split up rendering:
 #[derive(Copy, Clone)]
@@ -52,11 +53,12 @@ impl Drawable<(DrawParams, &mut WyRand)> for Pod {
     fn draw_on(self, gfx: &mut Graphics2D, (dp, _wyr): (DrawParams, &mut WyRand)) {
         let DrawParams { center, podrad, .. } = dp;
 
+        let outer = Circle::new(center, podrad);
         if self.0 {
-            gfx.draw_circle(center, podrad, colors::FOOD_LIFE);
+            outer.draw_on(gfx, colors::FOOD_LIFE);
         }
 
-        gfx.draw_circle(center, podrad * 0.9, colors::SEEDPOD);
+        outer.scale(0.9).draw_on(gfx, colors::SEEDPOD);
     }
 }
 
@@ -73,9 +75,11 @@ impl Drawable<(DrawParams, &mut WyRand)> for SingletonSeed {
         let radf: f32 = 0.47 * org.sample(wyr);
         let distf = (org.sample(wyr) - radf).powi(2);
 
-        let offcenter = center + spotrot.with_distance(podrad * distf);
-
-        gfx.draw_circle(offcenter, podrad * radf, colors::SEEDPOD);
+        let offcenter = center + spotrot.with_distance(podrad).scale(distf);
+        offcenter
+            .with_radius(podrad)
+            .scale(radf)
+            .draw_on(gfx, colors::SEEDPOD);
     }
 }
 
