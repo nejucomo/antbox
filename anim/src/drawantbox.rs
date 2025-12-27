@@ -1,7 +1,7 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
+use antbox_gameboard::{Ant, AntHole, Pheromones, SeedPod, Spot};
 use antbox_geom::Grid;
-use antbox_state::{Ant, AntHole, Pheromones, SeedPod, Spot};
 use antbox_trig::{Angle, TrigVec};
 use rand::Rng as _;
 use speedy2d::Graphics2D;

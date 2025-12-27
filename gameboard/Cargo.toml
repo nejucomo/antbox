@@ -1,5 +1,5 @@
 [package]
-name = "antbox-state"
+name = "antbox-gameboard"
 description = "The logical state of the `antbox` cellular automaton / artificial life toy."
 version = "0.1.0"
 license.workspace = true
