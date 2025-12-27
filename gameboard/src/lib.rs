@@ -7,6 +7,7 @@ pub(crate) mod consts;
 mod field;
 mod gencount;
 mod genparams;
+mod interesting;
 mod optinto;
 mod pheromone;
 mod randutil;

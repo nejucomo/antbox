@@ -4,6 +4,7 @@ use either::Either::{self, Left, Right};
 use movestate::TakeIntoNext;
 use rand::distr::Distribution;
 
+use crate::interesting::Interesting;
 use crate::spotupdate::SpotUpdate;
 use crate::{Field, OptInto as _, Pheromone, Pheromones, SeedPod, SteppedUpon};
 
@@ -123,5 +124,34 @@ impl SteppedUpon for Ant {
     fn stepped_upon_by(self, other: Ant) -> Option<Self> {
         log::debug!("Bonk! {self:?}.stepped_upon_by({other:?})");
         None
+    }
+}
+
+impl Interesting for Ant {
+    fn first_interesting() -> Self {
+        Ant {
+            mode: Exploring,
+            ph_here: Pheromones::default(),
+        }
+    }
+
+    fn next_interesting<R: rand::Rng>(self, rng: &mut R) -> Option<Self> {
+        self.mode
+            .next_interesting(rng)
+            .map(|mode| Ant { mode, ..self })
+    }
+}
+
+impl Interesting for AntMode {
+    fn first_interesting() -> Self {
+        Self::Exploring
+    }
+
+    fn next_interesting<R: rand::Rng>(self, rng: &mut R) -> Option<Self> {
+        match self {
+            Exploring => Some(Hungry),
+            Hungry => Some(WithFood(SeedPod::first_interesting())),
+            WithFood(x) => x.next_interesting(rng).map(WithFood),
+        }
     }
 }
