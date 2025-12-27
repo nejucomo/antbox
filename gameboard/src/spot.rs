@@ -4,6 +4,7 @@ use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
+use crate::interesting::Interesting;
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, AntHole, OptInto, Pheromones, SeedPod, SteppedUpon};
 
@@ -21,6 +22,24 @@ pub enum Spot {
 }
 
 impl Spot {
+    /// Iterate over "interesting" [Spot] values; used for render inspection, for example
+    pub fn interesting_values<R: rand::Rng>(rng: &mut R) -> impl Iterator<Item = Spot> + '_ {
+        pub struct InterestingSpots<'r, R: rand::Rng>(Option<(&'r mut R, Spot)>);
+
+        impl<'r, R: rand::Rng> Iterator for InterestingSpots<'r, R> {
+            type Item = Spot;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                self.0.take().map(|(rng, spot)| {
+                    self.0 = spot.next_interesting(rng).map(|s| (rng, s));
+                    spot
+                })
+            }
+        }
+
+        InterestingSpots(Some((rng, Spot::first_interesting())))
+    }
+
     pub(crate) fn contains<T>(self) -> bool
     where
         Self: OptInto<T>,
@@ -95,6 +114,35 @@ impl SteppedUpon for Spot {
             Food(pod) => pod.stepped_upon_by(ant).map(Ant),
             Ant(incumbent) => incumbent.stepped_upon_by(ant).map(Ant),
             AntHole(ah) => ah.stepped_upon_by(ant).map(AntHole),
+        }
+    }
+}
+
+impl Interesting for Spot {
+    fn first_interesting() -> Self {
+        Self::Empty(Pheromones::first_interesting())
+    }
+
+    fn next_interesting<R: rand::Rng>(self, rng: &mut R) -> Option<Self> {
+        fn subnext<R, A, B>(rng: &mut R, a: A) -> Option<Spot>
+        where
+            R: rand::Rng,
+            A: Interesting,
+            B: Interesting,
+            Spot: From<A> + From<B>,
+        {
+            Some(
+                a.next_interesting(rng)
+                    .map(Spot::from)
+                    .unwrap_or_else(|| Spot::from(B::first_interesting())),
+            )
+        }
+
+        match self {
+            Spot::Empty(x) => subnext::<_, _, SeedPod>(rng, x),
+            Spot::Food(x) => subnext::<_, _, Ant>(rng, x),
+            Spot::Ant(x) => subnext::<_, _, AntHole>(rng, x),
+            Spot::AntHole(x) => x.next_interesting(rng).map(Spot::from),
         }
     }
 }

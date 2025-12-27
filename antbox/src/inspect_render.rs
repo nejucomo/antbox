@@ -1,5 +1,3 @@
-mod enumstates;
-
 use antbox_animation::{Drawable, GridLayout, WyrGrid, layers};
 use antbox_gameboard::{GenParams, Spot};
 use antbox_geom::{Bounds, Grid};
@@ -94,10 +92,9 @@ where
     R: rand::Rng + 'static,
 {
     let mut spots = Vec::with_capacity(grid_size.area());
-    for spot in enumstates::enumerate_spot_render_states(rng) {
-        spots.push(spot);
-    }
+    spots.extend(Spot::interesting_values(rng));
     log::info!("Rendering {} spot states...", spots.len());
+
     for _ in spots.len()..grid_size.area() {
         spots.push(Spot::default());
     }

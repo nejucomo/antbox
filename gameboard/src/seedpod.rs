@@ -1,11 +1,13 @@
 use derive_more::From;
 use derive_new::new;
 use movestate::TakeIntoNext;
+use rand::Rng;
 use rand::distr::Distribution as _;
 
 use crate::consts::{
     LIFE_CHANGE_DENOM, SEED_CHANGE_DENOM, WCOIN_POD_DISAPPEARS, WCOIN_POD_UPDATES,
 };
+use crate::interesting::Interesting;
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, SteppedUpon};
 
@@ -84,5 +86,24 @@ impl SteppedUpon for SeedPod {
 
     fn stepped_upon_by(self, ant: Ant) -> Option<Ant> {
         ant.opt_with(self)
+    }
+}
+
+impl Interesting for SeedPod {
+    fn first_interesting() -> Self {
+        SeedPod::default()
+    }
+
+    fn next_interesting<R: Rng>(self, _: &mut R) -> Option<Self> {
+        if self.seeds == 8 {
+            if self.ripe {
+                None
+            } else {
+                Some(SeedPod::new(0, true))
+            }
+        } else {
+            assert!(self.seeds < 8);
+            Some(SeedPod::new(self.seeds + 1, self.ripe))
+        }
     }
 }

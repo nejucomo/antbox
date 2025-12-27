@@ -6,6 +6,7 @@ use crate::consts::{
     LIFE_FORCE_ANT_RETURNS, LIFE_FORCE_FOOD_LIFE, LIFE_FORCE_FOOD_SEED, LIFE_FORCE_SPAWN_ANT,
     WCOIN_FREE_ANT, WCOIN_LIFE_FORCE_LOSS,
 };
+use crate::interesting::Interesting;
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, SteppedUpon};
 
@@ -93,5 +94,15 @@ impl SteppedUpon for AntHole {
         log::info!("Ant {ant:?} stepped on {newh:?}");
 
         Some(newh)
+    }
+}
+
+impl Interesting for AntHole {
+    fn first_interesting() -> Self {
+        Self::default()
+    }
+
+    fn next_interesting<R: rand::Rng>(self, _: &mut R) -> Option<Self> {
+        None
     }
 }

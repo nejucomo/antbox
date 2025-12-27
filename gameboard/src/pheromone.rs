@@ -4,6 +4,8 @@ use derive_more::From;
 use derive_new::new;
 use movestate::TakeIntoNext;
 
+use crate::interesting::Interesting;
+
 use self::Pheromone::*;
 
 const DECAY_DENOMINATOR: u32 = 37;
@@ -92,5 +94,29 @@ impl Sub for Pheromones {
             food: self.food.saturating_sub(other.food),
             home: self.home.saturating_sub(other.home),
         }
+    }
+}
+
+impl Interesting for Pheromones {
+    fn first_interesting() -> Self {
+        Self::default()
+    }
+
+    fn next_interesting<R: rand::Rng>(self, rng: &mut R) -> Option<Self> {
+        let Pheromones { food, home } = self;
+
+        let mut rr_above = |n: u8| n.saturating_add(rng.random_range(1..=n));
+
+        // Diamond traversal:
+        match (food, home) {
+            (u8::MAX, u8::MAX) => None,
+            (0, 0) => Some((1, 0)),
+            (u8::MAX, 0) => Some((0, 1)),
+            (0, u8::MAX) => Some((1, 1)),
+            (f, 0) => Some((rr_above(f), 0)),
+            (0, h) => Some((0, rr_above(h))),
+            (f, h) => Some((rr_above(f), rr_above(h))),
+        }
+        .map(Pheromones::from)
     }
 }
