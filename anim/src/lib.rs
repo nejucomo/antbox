@@ -11,6 +11,7 @@ mod colors;
 mod drawable;
 mod gridlayout;
 pub mod layers;
+mod organic;
 mod rectext;
 mod wyrgrid;
 
