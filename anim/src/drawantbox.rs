@@ -14,11 +14,6 @@ use crate::colors::{
 };
 use crate::{Drawable, GridLayout, RectExt as _, WyrGrid};
 
-/// Draw a [Grid] of [Spot]s
-pub fn draw_spots(gfx: &mut Graphics2D, spots: &Grid<Spot>, layout: GridLayout, wg: &WyrGrid) {
-    spots.draw_on(gfx, (layout, wg))
-}
-
 impl Drawable<(GridLayout, &WyrGrid)> for &Grid<Spot> {
     fn draw_on(self, gfx: &mut Graphics2D, (layout, wyrgrid): (GridLayout, &WyrGrid)) {
         for (pt, rect) in layout.iter_pts_and_rects() {

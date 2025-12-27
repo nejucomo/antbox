@@ -1,6 +1,6 @@
 mod enumstates;
 
-use antbox_animation::{GridLayout, WyrGrid};
+use antbox_animation::{Drawable, GridLayout, WyrGrid, layers};
 use antbox_geom::{Bounds, Grid};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
@@ -67,7 +67,10 @@ where
                 let winsize = helper.get_size_pixels().into_f32();
                 let layout = GridLayout::new(self.grid.bounds(), winsize);
                 let wyrgrid = WyrGrid::new(self.grid.bounds(), &mut self.rng);
-                antbox_animation::draw_spots(gfx, &self.grid, layout, &wyrgrid);
+
+                layers::Background.draw_on(gfx, ());
+                layers::WireFrame.draw_on(gfx, layout);
+                self.grid.draw_on(gfx, (layout, &wyrgrid));
             }
 
             Input(Key(Virtual(Down, Escape))) => {
