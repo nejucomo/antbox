@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use antbox_state::{Pheromones, SeedPod, Spot};
+use antbox_state::{Ant, AntHole, AntMode, Pheromones, SeedPod, Spot};
 use movestate::next::{Halting, Stout};
 use movestate::{IntoHaltingStout as _, TakeIntoNext};
 use rand::Rng;
@@ -46,8 +46,12 @@ impl EnumInterestingValues for Spot {
                     .map(Food)
                     .unwrap_or_else(|| Ant(Default::default())),
             ),
-            Ant(_) => None,     // TODO
-            AntHole(_) => None, // TODO
+            Ant(x) => Some(
+                x.enum_next(rng)
+                    .map(Ant)
+                    .unwrap_or_else(|| AntHole(Default::default())),
+            ),
+            AntHole(x) => x.enum_next(rng).map(AntHole),
         }
     }
 }
@@ -83,5 +87,33 @@ impl EnumInterestingValues for SeedPod {
         } else {
             Some(SeedPod::new(self.seeds + 1, self.ripe))
         }
+    }
+}
+
+impl EnumInterestingValues for Ant {
+    fn enum_next<R: Rng>(self, rng: &mut R) -> Option<Self> {
+        self.mode.enum_next(rng).map(|mode| {
+            let mut ant = self;
+            ant.mode = mode;
+            ant
+        })
+    }
+}
+
+impl EnumInterestingValues for AntMode {
+    fn enum_next<R: Rng>(self, rng: &mut R) -> Option<Self> {
+        use AntMode::*;
+
+        match self {
+            Exploring => Some(Hungry),
+            Hungry => Some(WithFood(SeedPod::default())),
+            WithFood(x) => x.enum_next(rng).map(WithFood),
+        }
+    }
+}
+
+impl EnumInterestingValues for AntHole {
+    fn enum_next<R: Rng>(self, _rng: &mut R) -> Option<Self> {
+        None
     }
 }

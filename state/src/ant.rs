@@ -12,7 +12,8 @@ use self::AntMode::*;
 /// The state of an ant
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Ant {
-    pub(crate) mode: AntMode,
+    /// The current behavioral mode
+    pub mode: AntMode,
     ph_here: Pheromones,
 }
 
