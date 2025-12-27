@@ -34,12 +34,12 @@ impl TrigVec {
 
     /// Rotate the vector by `angle` in a counter-clockwise direction
     pub fn rotate<A: Into<Angle>>(self, angle: A) -> Self {
-        TrigVec::new(self.angle + angle, self.distance)
+        (self.angle + angle).with_distance(self.distance)
     }
 
     /// Scale the vector by `factor`
     pub fn scale(self, factor: f32) -> Self {
-        TrigVec::new(self.angle, self.distance * factor)
+        self.angle.with_distance(self.distance * factor)
     }
 }
 
@@ -51,6 +51,7 @@ impl From<TrigVec> for Vec2 {
 
 impl Distribution<TrigVec> for StandardUniform {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> TrigVec {
-        TrigVec::new(rng.random::<Angle>(), rng.random_range(0f32..1f32))
+        rng.random::<Angle>()
+            .with_distance(rng.random_range(0f32..1f32))
     }
 }

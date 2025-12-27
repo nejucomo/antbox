@@ -9,9 +9,10 @@ edition.workspace = true
 [dependencies]
 antbox-animation.workspace = true
 antbox-clife.workspace = true
-antbox-geom.workspace = true
-antbox-s2win.workspace = true
 antbox-gameboard.workspace = true
+antbox-geom.workspace = true
+antbox-s2render.workspace = true
+antbox-s2win.workspace = true
 antbox-tick-timer.workspace = true
 antbox-trig.workspace = true
 anyhow.workspace = true
@@ -22,7 +23,7 @@ derive_more = { workspace = true, features = ["is_variant", "try_into", "unwrap"
 env_logger.workspace = true
 log.workspace = true
 logging-options.workspace = true
-movestate.workspace = true
 moveslot.workspace = true
+movestate.workspace = true
 rand.workspace = true
 speedy2d.workspace = true

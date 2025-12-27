@@ -108,6 +108,7 @@ dependencies = [
  "antbox-clife",
  "antbox-gameboard",
  "antbox-geom",
+ "antbox-s2render",
  "antbox-s2win",
  "antbox-tick-timer",
  "antbox-trig",
@@ -132,6 +133,7 @@ dependencies = [
  "antbox-clife",
  "antbox-gameboard",
  "antbox-geom",
+ "antbox-s2render",
  "antbox-tick-timer",
  "antbox-trig",
  "derive-debug",
@@ -180,6 +182,16 @@ dependencies = [
  "itertools",
  "rand",
  "test-case",
+]
+
+[[package]]
+name = "antbox-s2render"
+version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "derive_more",
+ "extension-traits",
+ "speedy2d",
 ]
 
 [[package]]

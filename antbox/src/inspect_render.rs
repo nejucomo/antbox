@@ -1,6 +1,10 @@
-use antbox_animation::{Drawable, GridLayout, WyrGrid, layers};
+use std::cell::RefCell;
+
+use antbox_animation::layers::Layer;
+use antbox_animation::{GridLayout, WyrGrid, layers, spots_into_renderable};
 use antbox_gameboard::{GenParams, Spot};
 use antbox_geom::{Bounds, Grid};
+use antbox_s2render::{RenderScheduler, RenderWithArg as _};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
 use derive_debug::Dbg;
@@ -26,6 +30,7 @@ where
 {
     #[dbg(placeholder = "...")]
     rng: R,
+    rs: RefCell<RenderScheduler>,
     grid: Grid<Spot>,
 }
 
@@ -42,8 +47,9 @@ where
     ) -> Self {
         log::debug!("note: ignoring `--cell-prob {}`", gp.cell_prob);
         helper.request_redraw();
+        let rs = RefCell::new(RenderScheduler::new(Layer::count()));
         let grid = setup_grid(&mut rng, gp.grid_size);
-        IRHandler { rng, grid }
+        IRHandler { rng, rs, grid }
     }
 }
 
@@ -66,9 +72,12 @@ where
                 let layout = GridLayout::new(self.grid.bounds(), winsize);
                 let wyrgrid = WyrGrid::new(self.grid.bounds(), &mut self.rng);
 
-                layers::Background.draw_on(gfx, ());
-                layers::WireFrame.draw_on(gfx, layout);
-                self.grid.draw_on(gfx, (layout, &wyrgrid));
+                let rs: &mut RenderScheduler = &mut self.rs.borrow_mut();
+
+                rs.schedule(layers::Background);
+                rs.schedule(spots_into_renderable(&self.grid, layout, &wyrgrid));
+                rs.schedule(layers::WireFrame.with_render_arg(layout));
+                rs.render(gfx);
             }
 
             Input(Key(Virtual(Down, Escape))) => {
