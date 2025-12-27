@@ -1,5 +1,6 @@
 use std::ops::{Add, Sub};
 
+use derive_more::From;
 use derive_new::new;
 use movestate::TakeIntoNext;
 
@@ -8,10 +9,12 @@ use self::Pheromone::*;
 const DECAY_DENOMINATOR: u32 = 37;
 
 /// The local levels of the [Pheromone]s
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Default, new)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Default, From, new)]
 pub struct Pheromones {
-    food: u8,
-    home: u8,
+    /// The level of [Food]
+    pub food: u8,
+    /// The level of [Home]
+    pub home: u8,
 }
 
 /// A kind of [Ant](crate::Ant) pheromone

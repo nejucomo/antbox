@@ -1,7 +1,8 @@
 // Use sub-mods to ensure `use` namespaces are uncontaminated;
 
 mod providers {
-    use crate::{Halting, State, Stout, TakeIntoNext};
+    use crate::TakeIntoNext;
+    use crate::next::{Halting, State, Stout};
 
     /// I don't trigger any blanket extensions (unless `T = ()`)
     #[derive(Default)]

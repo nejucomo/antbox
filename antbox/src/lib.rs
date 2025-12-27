@@ -1,12 +1,16 @@
-mod cliopts;
+pub mod inspect_render;
+pub mod options;
 pub mod window;
 
+use antbox_state::GenParams;
 use clap::Parser as _;
 use logging_options::Backend as _;
 use rand::SeedableRng as _;
 use rand::rngs::StdRng;
 use speedy2d::error::BacktraceError;
 use speedy2d::window::WindowCreationError;
+
+use crate::options::Command;
 
 pub type Result<T> = std::result::Result<T, BacktraceError<WindowCreationError>>;
 
@@ -16,14 +20,26 @@ const TARGET_FRAME_RATE: f64 = 50.0;
 #[derive(Copy, Clone, Debug)]
 struct Tick;
 
-pub use self::cliopts::Options;
-
 pub fn run() -> Result<()> {
-    let opts = Options::parse();
+    let opts = self::options::Options::parse();
     env_logger::Logger::init_from_options(&opts.logopts);
 
     log::debug!("Initializing RNG from seed {}.", opts.seed);
     let rng = StdRng::seed_from_u64(opts.seed);
 
-    window::run(rng, opts.genparams)
+    opts.cmd.unwrap_or_default().run(rng, opts.genparams)
+}
+
+impl Command {
+    pub fn run<R>(self, rng: R, gp: GenParams) -> Result<()>
+    where
+        R: rand::Rng + 'static,
+    {
+        use Command::*;
+
+        match self {
+            Run => window::run(rng, gp),
+            InspectRender => inspect_render::run(rng, gp),
+        }
+    }
 }

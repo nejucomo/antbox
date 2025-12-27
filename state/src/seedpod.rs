@@ -1,3 +1,5 @@
+use derive_more::From;
+use derive_new::new;
 use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
@@ -8,7 +10,7 @@ use crate::spotupdate::SpotUpdate;
 use crate::{Ant, SteppedUpon};
 
 /// Yum!
-#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, From, new)]
 pub struct SeedPod {
     /// How many seeds are in this pod?
     pub seeds: u8,

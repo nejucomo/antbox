@@ -1,5 +1,5 @@
 use antbox_state::GenParams;
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 pub struct Options {
@@ -12,4 +12,15 @@ pub struct Options {
 
     #[clap(flatten)]
     pub genparams: GenParams,
+
+    #[clap(subcommand)]
+    pub cmd: Option<Command>,
+}
+
+#[derive(Subcommand, Default)]
+pub enum Command {
+    #[default]
+    Run,
+
+    InspectRender,
 }

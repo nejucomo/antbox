@@ -49,4 +49,8 @@ impl Color {
     fn with_alpha(self, a: f32) -> Color {
         Color::from_rgba(self.r(), self.g(), self.b(), a)
     }
+
+    fn interpolate(self, other: Color, factor: f32) -> Color {
+        interpolate(self, other, factor)
+    }
 }

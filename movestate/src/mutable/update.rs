@@ -1,6 +1,6 @@
 use moveslot::{MapInPlace as _, MoveSlot};
 
-use crate::stout::TakeIntoStout;
+use crate::TakeIntoStout;
 
 /// Mutable update with input `I` to produce a `O`
 pub trait Update<I, O> {

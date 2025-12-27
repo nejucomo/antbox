@@ -1,3 +1,6 @@
+use crate::TakeIntoMapState;
+use crate::combinators::{CaptureClone, CaptureCopy};
+
 /// `(S, I) -> N`; providers impl only this trait
 ///
 /// The base implementation trait which defines the [movestate](crate) family.
@@ -39,16 +42,28 @@
 ///     assert_eq!(n3, 3);
 /// }
 /// ```
-///
-///
-/// ## Design Notes
-///
-/// - All trait impls appear textually after the trait definition, starting with more general blankets to more specific, rather than next to the implementing type.
-/// - Attempt the least-constrained bounds which check. For example, [TakeIntoNext] is not [Sized].
-pub trait TakeIntoNext<I> {
+pub trait TakeIntoNext<I>: Sized {
     /// The next type produced when processing an `input`
     type Next;
 
     /// Take `self` and an `input` into a [Self::Next] value
     fn take_into_next(self, input: I) -> Self::Next;
+
+    /// Convert into an `IntoNext` by capturing `input`; pass a copy to `Self` on each [IntoNext::into_next](crate::IntoNext::into_next)
+    fn capture_copy(self, input: I) -> CaptureCopy<Self, I>
+    where
+        I: Copy,
+        Self: TakeIntoMapState<I>,
+    {
+        CaptureCopy::new(self, input)
+    }
+
+    /// Convert into an `IntoNext` by capturing `input`; pass a copy to `Self` on each [IntoNext::into_next](crate::IntoNext::into_next)
+    fn capture_clone(self, input: I) -> CaptureClone<Self, I>
+    where
+        I: Clone,
+        Self: TakeIntoMapState<I>,
+    {
+        CaptureClone::new(self, input)
+    }
 }

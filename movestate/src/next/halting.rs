@@ -1,15 +1,12 @@
 //! `* -> [*]`: The [Halting] `Next` type
 
 mod fromimpls;
-mod hstate;
-mod hstout;
 
 use derive_more::From;
 
-use self::Halting::*;
+use crate::next::MapState;
 
-pub use self::hstate::{IntoHaltingState, TakeIntoHaltingState};
-pub use self::hstout::{IntoHaltingStout, TakeIntoHaltingStout};
+use self::Halting::*;
 
 /// `[S]` / `[S, O]`
 ///
@@ -27,6 +24,17 @@ pub enum Halting<N> {
 }
 
 impl<N> Halting<N> {
+    /// Map the [Continue] value
+    pub fn map<F, M>(self, f: F) -> Halting<M>
+    where
+        F: FnOnce(N) -> M,
+    {
+        match self {
+            Continue(v) => Continue(f(v)),
+            Halt => Halt,
+        }
+    }
+
     fn from_option(opt: Option<N>) -> Self {
         opt.map(Continue).unwrap_or(Halt)
     }
@@ -35,6 +43,23 @@ impl<N> Halting<N> {
         match self {
             Continue(s) => Some(s),
             Halt => None,
+        }
+    }
+}
+
+impl<N, S> MapState<S> for Halting<N>
+where
+    N: MapState<S>,
+{
+    type MappedState<MS> = Halting<N::MappedState<MS>>;
+
+    fn map_state<F, T>(self, f: F) -> Self::MappedState<T>
+    where
+        F: FnOnce(S) -> T,
+    {
+        match self {
+            Continue(n) => Continue(n.map_state(f)),
+            Halt => Halt,
         }
     }
 }

@@ -10,10 +10,12 @@ use crate::{AntHole, Field, Spot, State};
 /// A [Distribution] for generating a [State]
 #[derive(Args, Copy, Clone, Debug, From, Into, new)]
 pub struct GenParams {
+    /// The probability a given cell will have growth (Conway's Life)
     #[clap(long, default_value = "0.7", help_heading = "Generation Parameters")]
-    cell_prob: f64,
+    pub cell_prob: f64,
+    /// The size of the grid
     #[clap(long, default_value = "70x40", help_heading = "Generation Parameters")]
-    grid_size: Bounds,
+    pub grid_size: Bounds,
 }
 
 impl GenParams {

@@ -5,7 +5,8 @@ use std::marker::PhantomData;
 use derive_new::new;
 use moveslot::{MapInPlace as _, MoveSlot};
 
-use crate::{Halting, IntoHaltingStout, Stout, TakeIntoNext};
+use crate::next::{Halting, Stout};
+use crate::{IntoHaltingStout, TakeIntoNext};
 
 #[derive(Debug, new)]
 #[new(visibility = "pub(crate)")]

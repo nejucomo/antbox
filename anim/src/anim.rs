@@ -1,13 +1,11 @@
-use antbox_geom::Grid;
 use antbox_state::{GenParams, State as AntboxState};
 use antbox_tick_timer::{RateLimiter, TickTimer};
-use movestate::State;
 use movestate::TakeIntoNext;
+use movestate::next::State;
 use speedy2d::Graphics2D;
 use speedy2d::dimen::Vec2;
-use wyrand::WyRand;
 
-use crate::{Drawable as _, GridLayout, layers};
+use crate::{Drawable as _, GridLayout, WyrGrid, layers};
 
 const ANTBOX_FRAME_RATE: f64 = 5.0;
 
@@ -15,7 +13,7 @@ const ANTBOX_FRAME_RATE: f64 = 5.0;
 #[derive(Debug)]
 pub struct AnimationState {
     antbox: RateLimiter<AntboxState>,
-    wyrgrid: Grid<WyRand>,
+    wyrgrid: WyrGrid,
 }
 
 impl AnimationState {
@@ -23,16 +21,9 @@ impl AnimationState {
     pub fn new<R: rand::Rng>(rng: &mut R, gp: GenParams) -> Self {
         let antbox = gp.generate_state(rng);
         let antbox = RateLimiter::new(antbox, TickTimer::with_frame_rate(ANTBOX_FRAME_RATE));
-        let bounds = antbox.bounds();
-        let mut v = Vec::with_capacity(bounds.area());
-        for _ in 0..bounds.area() {
-            v.push(WyRand::new(rng.random()));
-        }
+        let wyrgrid = WyrGrid::new(antbox.bounds(), rng);
 
-        AnimationState {
-            antbox,
-            wyrgrid: Grid::new(bounds, v),
-        }
+        AnimationState { antbox, wyrgrid }
     }
 
     /// Draw `self` onto `gfx`

@@ -1,20 +1,21 @@
 use std::f32::consts::{FRAC_1_SQRT_2, PI, TAU};
 
 use antbox_geom::Grid;
-use antbox_state::{Ant, AntHole, Pheromone, Pheromones, SeedPod, Spot, State as AntboxState};
+use antbox_state::{Ant, AntHole, Pheromone, Pheromones, SeedPod, Spot};
 use antbox_trig::{Angle, TrigVec};
 use rand::Rng as _;
 use speedy2d::Graphics2D;
+use speedy2d::color::Color;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
 use crate::colors::{
     self, ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, ColorExt as _, DIRT, interpolate,
 };
-use crate::{Drawable, GridLayout, RectExt as _};
+use crate::{Drawable, GridLayout, RectExt as _, WyrGrid};
 
-impl Drawable<(GridLayout, &Grid<WyRand>)> for &AntboxState {
-    fn draw_on(self, gfx: &mut Graphics2D, (layout, wyrgrid): (GridLayout, &Grid<WyRand>)) {
+impl Drawable<(GridLayout, &WyrGrid)> for &Grid<Spot> {
+    fn draw_on(self, gfx: &mut Graphics2D, (layout, wyrgrid): (GridLayout, &WyrGrid)) {
         for (pt, rect) in layout.iter_pts_and_rects() {
             let mut wyr = wyrgrid[pt].clone();
             self[pt].draw_on(gfx, (rect, &mut wyr));
@@ -124,14 +125,16 @@ impl Drawable<(Rect, &mut WyRand)> for Pheromones {
         use Pheromone::{Food, Home};
         use colors::{ANT_HOLE_IRIS, FOOD_LIFE};
 
-        const ALPHA: f32 = 0.7;
+        const ALPHA: f32 = 0.5;
+        const HOME_COLOR_REDNESS: f32 = 0.2;
+
+        let home_color = ANT_HOLE_IRIS
+            .interpolate(Color::RED, HOME_COLOR_REDNESS)
+            .with_alpha(ALPHA);
 
         let center = rect.center();
         let crad = rect.cell_radius();
-        for (ph, color) in [
-            (Food, FOOD_LIFE.with_alpha(ALPHA)),
-            (Home, ANT_HOLE_IRIS.with_alpha(ALPHA)),
-        ] {
+        for (ph, color) in [(Food, FOOD_LIFE.with_alpha(ALPHA)), (Home, home_color)] {
             for _ in 0..self.magnitude(ph) {
                 let spoke = wyr.random::<TrigVec>().scale(crad);
                 let rad = wyr.random_range(0.1..0.2) * crad;
