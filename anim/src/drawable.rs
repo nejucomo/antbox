@@ -1,3 +1,7 @@
+mod ant;
+mod antbox;
+mod seedpod;
+
 use speedy2d::Graphics2D;
 
 /// An object which can be drawn onto a [Graphics2D]

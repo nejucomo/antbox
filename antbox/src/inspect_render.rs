@@ -67,8 +67,8 @@ where
                 let wyrgrid = WyrGrid::new(self.grid.bounds(), &mut self.rng);
 
                 layers::Background.draw_on(gfx, ());
-                layers::WireFrame.draw_on(gfx, layout);
                 self.grid.draw_on(gfx, (layout, &wyrgrid));
+                layers::WireFrame.draw_on(gfx, layout);
             }
 
             Input(Key(Virtual(Down, Escape))) => {
