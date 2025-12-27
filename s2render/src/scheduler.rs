@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use derive_more::{Index, IndexMut};
 use speedy2d::Graphics2D;
 use speedy2d::color::Color;
@@ -41,7 +43,7 @@ impl RenderScheduler {
         }
 
         for layer in self.layers.iter_mut() {
-            while let Some(shwico) = layer.0.pop() {
+            while let Some(shwico) = layer.0.pop_front() {
                 shwico.draw_onto(gfx);
             }
         }
@@ -55,13 +57,13 @@ impl RenderScheduler {
 
 /// Schedule [ShapeWithColor]s for a given layer
 ///
-/// The render order within a [LayerScheduler] is not guaranteed.
+/// The render order within a [LayerScheduler] is guaranteed to occur in the order of [LayerScheduler::schedule] calls
 #[derive(Debug, Default)]
-pub struct LayerScheduler(Vec<ShapeWithColor>);
+pub struct LayerScheduler(VecDeque<ShapeWithColor>);
 
 impl LayerScheduler {
     /// Schedule a [ShapeWithColor] on this layer
     pub fn schedule(&mut self, shwico: ShapeWithColor) {
-        self.0.push(shwico);
+        self.0.push_back(shwico);
     }
 }
