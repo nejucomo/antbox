@@ -24,7 +24,7 @@ struct DrawParams {
     seedcolor: Color,
 }
 
-struct Pod(bool);
+struct Pod(SeedPod);
 struct SingletonSeed;
 struct SeedCluster(SeedPod);
 
@@ -40,7 +40,7 @@ impl RWArg<(Rect, &mut WyRand)> for SeedPod {
             seedcolor: colors::food_neighbor_count(self.seeds),
         };
 
-        Pod(self.ripe).rwarg(rs, (dp, wyr));
+        Pod(self).rwarg(rs, (dp, wyr));
 
         if self.seeds == 1 {
             SingletonSeed.rwarg(rs, (dp, wyr));
@@ -53,18 +53,22 @@ impl RWArg<(Rect, &mut WyRand)> for SeedPod {
 impl RWArg<(DrawParams, &mut WyRand)> for Pod {
     fn rwarg(self, rs: &mut RenderScheduler, (dp, _wyr): (DrawParams, &mut WyRand)) {
         let DrawParams { center, podrad, .. } = dp;
+        let ls = Plants.layer_scheduler(rs);
         let outer = center.with_radius(podrad);
 
-        {
-            let ls = Plants.layer_scheduler(rs);
+        let Pod(SeedPod { seeds, ripe }) = self;
 
-            ls.schedule(outer.with_color(colors::FOOD_LIFE.with_alpha(if self.0 {
-                0.75
-            } else {
-                0.25
-            })));
-            ls.schedule(outer.scale(0.9).with_color(colors::SEEDPOD));
-        }
+        let alpha_ripe = if ripe { 0.75 } else { 0.25 };
+        let alpha_seeds = 1.0 - 0.5 * ((seeds as f32 - 3.0).abs() / 5.0).powi(2);
+
+        let life_color = colors::FOOD_LIFE.with_alpha(alpha_ripe * alpha_seeds);
+
+        ls.schedule(outer.with_color(life_color));
+        ls.schedule(
+            outer
+                .scale(0.9)
+                .with_color(colors::SEEDPOD.interpolate(life_color, 0.1)),
+        );
     }
 }
 
@@ -122,6 +126,33 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
 
         let spokef = spotrot.with_distance(org.sample(wyr) - radf);
 
+        // Draw the center flower hub:
+        let (hub_circ, hub_color) = {
+            let ripecenter = center + spokef.scale(podrad).scale(0.1 * org.sample(wyr));
+
+            let circ = ripecenter
+                .with_radius(org.sample(wyr) - radf)
+                .scale(0.6)
+                .scale(podrad);
+
+            let clr = {
+                let (seedf, dirtf, alpha) = if ripe {
+                    (0.55, 0.0, 0.95)
+                } else {
+                    (0.9, 0.3, 0.8)
+                };
+
+                colors::FOOD_LIFE
+                    .interpolate(seedcolor, seedf)
+                    .interpolate(colors::DIRT, dirtf)
+                    .with_alpha(alpha)
+            };
+
+            (circ, clr)
+        };
+
+        ls.schedule(hub_circ.with_color(hub_color));
+
         for seed in 0..seeds {
             let bspokef = spokef.rotate(spotrot + 2.0 * org.sample(wyr) * theta * seed as f32);
             let bspoke = bspokef.scale(podrad);
@@ -132,16 +163,7 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
                     .with_color(seedcolor),
             );
         }
-        if ripe {
-            let ripecenter = center + spokef.scale(podrad).scale(0.1 * org.sample(wyr));
 
-            ls.schedule(
-                ripecenter
-                    .with_radius(org.sample(wyr) - radf)
-                    .scale(0.5)
-                    .scale(podrad)
-                    .with_color(colors::FOOD_LIFE.interpolate(seedcolor, 0.7)),
-            );
-        }
+        ls.schedule(hub_circ.scale(0.7).with_color(hub_color.with_alpha(0.7)));
     }
 }
