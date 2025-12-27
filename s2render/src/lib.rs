@@ -1,14 +1,23 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! [Renderable] trait for [Layer]-orderd (z-axis) rendering
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod circle;
+mod drawonto;
+mod element;
+mod layer;
+mod queue;
+mod rectext;
+mod renderable;
+mod shape;
+mod shwico;
+mod vec2ext;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::circle::Circle;
+pub use self::element::Element;
+pub use self::layer::Layer;
+pub use self::queue::RenderQueue;
+pub use self::rectext::RectExt;
+pub use self::renderable::Renderable;
+pub use self::shape::Shape;
+pub use self::shwico::{ShapeWithColor, WithColor};
+pub use self::vec2ext::Vec2Ext;

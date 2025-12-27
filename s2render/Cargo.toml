@@ -6,3 +6,7 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+derive-new.workspace = true
+derive_more = { workspace = true, features = ["from"] }
+extension-traits.workspace = true
+speedy2d.workspace = true
