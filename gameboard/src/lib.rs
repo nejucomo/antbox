@@ -1,4 +1,4 @@
-//! Provides [State] and supporting types for functional, I/O-free `antbox` state evolution
+//! Provides [BoardState] and supporting types for functional, I/O-free `antbox` state evolution
 #![deny(unsafe_code, missing_docs)]
 
 mod ant;
@@ -25,5 +25,5 @@ pub use self::optinto::OptInto;
 pub use self::pheromone::{Pheromone, Pheromones};
 pub use self::seedpod::SeedPod;
 pub use self::spot::Spot;
-pub use self::state::State;
+pub use self::state::BoardState;
 pub use self::steppedupon::SteppedUpon;

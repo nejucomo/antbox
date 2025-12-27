@@ -7,7 +7,7 @@ use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATE
 use crate::spotupdate::SpotUpdate;
 use crate::{Ant, AntHole, OptInto, Pheromones, SeedPod, SteppedUpon};
 
-/// A [Spot] in the [State](crate::State)
+/// A [Spot] in the [BoardState](crate::BoardState)
 #[derive(Copy, Clone, Debug, From, TryInto, IsVariant)]
 pub enum Spot {
     /// Nothing is here except pheromones

@@ -5,9 +5,9 @@ use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::{AntHole, Field, Spot, State};
+use crate::{AntHole, BoardState, Field, Spot};
 
-/// A [Distribution] for generating a [State]
+/// A [Distribution] for generating a [BoardState]
 #[derive(Args, Copy, Clone, Debug, From, Into, new)]
 pub struct GenParams {
     /// The probability a given cell will have growth (Conway's Life)
@@ -20,14 +20,14 @@ pub struct GenParams {
 
 impl GenParams {
     /// Generate the initial state from the parameters
-    pub fn generate_state<R: Rng>(self, rng: &mut R) -> State {
+    pub fn generate_state<R: Rng>(self, rng: &mut R) -> BoardState {
         self.sample(rng)
     }
 }
 
-impl Distribution<State> for GenParams {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> State {
-        State::new(Field::new(self.sample(rng), self.sample(rng)))
+impl Distribution<BoardState> for GenParams {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> BoardState {
+        BoardState::new(Field::new(self.sample(rng), self.sample(rng)))
     }
 }
 
