@@ -1,17 +1,18 @@
 use std::f32::consts::PI;
 
 use antbox_gameboard::SeedPod;
+use antbox_s2render::{RectExt as _, RenderScheduler, Vec2Ext as _, WithColor};
 use antbox_trig::Angle;
 use rand_distr::Distribution as _;
-use speedy2d::Graphics2D;
 use speedy2d::color::Color;
 use speedy2d::dimen::Vec2;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
-use crate::circle::Circle;
+use crate::abrender::RWArg;
+use crate::colors;
+use crate::layers::Layer::Plants;
 use crate::organic::OrganicScale;
-use crate::{Drawable, RectExt as _, Vec2Ext as _, colors};
 
 // Components to split up rendering:
 #[derive(Copy, Clone)]
@@ -27,8 +28,8 @@ struct Pod(bool);
 struct SingletonSeed;
 struct SeedCluster(u8);
 
-impl Drawable<(Rect, &mut WyRand)> for SeedPod {
-    fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
+impl RWArg<(Rect, &mut WyRand)> for SeedPod {
+    fn rwarg(self, rs: &mut RenderScheduler, (rect, wyr): (Rect, &mut WyRand)) {
         let org = OrganicScale::default();
         let center = rect.center();
         let dp = DrawParams {
@@ -39,31 +40,32 @@ impl Drawable<(Rect, &mut WyRand)> for SeedPod {
             seedcolor: colors::food_neighbor_count(self.seeds),
         };
 
-        Pod(self.ripe).draw_on(gfx, (dp, wyr));
+        Pod(self.ripe).rwarg(rs, (dp, wyr));
 
         if self.seeds == 1 {
-            SingletonSeed.draw_on(gfx, (dp, wyr));
+            SingletonSeed.rwarg(rs, (dp, wyr));
         } else {
-            SeedCluster(self.seeds).draw_on(gfx, (dp, wyr));
+            SeedCluster(self.seeds).rwarg(rs, (dp, wyr));
         }
     }
 }
 
-impl Drawable<(DrawParams, &mut WyRand)> for Pod {
-    fn draw_on(self, gfx: &mut Graphics2D, (dp, _wyr): (DrawParams, &mut WyRand)) {
+impl RWArg<(DrawParams, &mut WyRand)> for Pod {
+    fn rwarg(self, rs: &mut RenderScheduler, (dp, _wyr): (DrawParams, &mut WyRand)) {
         let DrawParams { center, podrad, .. } = dp;
+        let ls = Plants.layer_scheduler(rs);
 
-        let outer = Circle::new(center, podrad);
+        let outer = center.with_radius(podrad);
         if self.0 {
-            outer.draw_on(gfx, colors::FOOD_LIFE);
+            ls.schedule(outer.with_color(colors::FOOD_LIFE));
         }
 
-        outer.scale(0.9).draw_on(gfx, colors::SEEDPOD);
+        ls.schedule(outer.scale(0.9).with_color(colors::SEEDPOD));
     }
 }
 
-impl Drawable<(DrawParams, &mut WyRand)> for SingletonSeed {
-    fn draw_on(self, gfx: &mut Graphics2D, (dp, wyr): (DrawParams, &mut WyRand)) {
+impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
+    fn rwarg(self, rs: &mut RenderScheduler, (dp, wyr): (DrawParams, &mut WyRand)) {
         let DrawParams {
             org,
             center,
@@ -71,20 +73,24 @@ impl Drawable<(DrawParams, &mut WyRand)> for SingletonSeed {
             spotrot,
             ..
         } = dp;
+        let ls = Plants.layer_scheduler(rs);
 
         let radf: f32 = 0.47 * org.sample(wyr);
         let distf = (org.sample(wyr) - radf).powi(2);
 
         let offcenter = center + spotrot.with_distance(podrad).scale(distf);
-        offcenter
-            .with_radius(podrad)
-            .scale(radf)
-            .draw_on(gfx, colors::SEEDPOD);
+
+        ls.schedule(
+            offcenter
+                .with_radius(podrad)
+                .scale(radf)
+                .with_color(colors::SEEDPOD),
+        );
     }
 }
 
-impl Drawable<(DrawParams, &mut WyRand)> for SeedCluster {
-    fn draw_on(self, gfx: &mut Graphics2D, (dp, wyr): (DrawParams, &mut WyRand)) {
+impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
+    fn rwarg(self, rs: &mut RenderScheduler, (dp, wyr): (DrawParams, &mut WyRand)) {
         let DrawParams {
             org,
             center,
@@ -92,6 +98,7 @@ impl Drawable<(DrawParams, &mut WyRand)> for SeedCluster {
             spotrot,
             seedcolor,
         } = dp;
+        let ls = Plants.layer_scheduler(rs);
 
         let SeedCluster(seeds) = self;
         assert_ne!(1, seeds);
@@ -111,7 +118,11 @@ impl Drawable<(DrawParams, &mut WyRand)> for SeedCluster {
             let bspokef = spokef.rotate(spotrot + 2.0 * org.sample(wyr) * theta * seed as f32);
             let bspoke = bspokef.scale(podrad);
 
-            gfx.draw_circle(center + bspoke, radf * podrad * org.sample(wyr), seedcolor);
+            ls.schedule(
+                (center + bspoke)
+                    .with_radius(radf * podrad * org.sample(wyr))
+                    .with_color(seedcolor),
+            );
         }
     }
 }

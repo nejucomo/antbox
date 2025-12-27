@@ -1,27 +1,31 @@
 use std::f32::consts::{FRAC_1_SQRT_2, TAU};
 
 use antbox_gameboard::{Ant, AntHole};
+use antbox_s2render::{RectExt, RenderScheduler, Vec2Ext as _, WithColor as _};
 use antbox_trig::TrigVec;
-use speedy2d::Graphics2D;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
+use crate::abrender::RWArg;
 use crate::colors::{ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, DIRT, interpolate};
-use crate::{Drawable, RectExt as _};
+use crate::layers::Layer;
 
-impl Drawable<(Rect, &mut WyRand)> for Ant {
-    fn draw_on(self, gfx: &mut Graphics2D, (rect, wyr): (Rect, &mut WyRand)) {
-        self.pheromones_underneath()
-            .draw_on(gfx, (rect.clone(), wyr));
+impl RWArg<(Rect, &mut WyRand)> for Ant {
+    fn rwarg(self, rs: &mut RenderScheduler, (rect, wyr): (Rect, &mut WyRand)) {
+        self.pheromones_underneath().rwarg(rs, (rect.clone(), wyr));
 
         // TODO: head, throax, abdomen, food pellet
         let rad = rect.cell_radius() * 0.5;
-        gfx.draw_circle(rect.center(), rad, ANT);
+        Layer::Ants
+            .layer_scheduler(rs)
+            .schedule(rect.center().with_radius(rad).with_color(ANT));
     }
 }
 
-impl Drawable<(Rect, &mut WyRand)> for AntHole {
-    fn draw_on(self, gfx: &mut Graphics2D, (rect, _wyr): (Rect, &mut WyRand)) {
+impl RWArg<(Rect, &mut WyRand)> for AntHole {
+    fn rwarg(self, rs: &mut RenderScheduler, (rect, _wyr): (Rect, &mut WyRand)) {
+        let ls = Layer::AntHole.layer_scheduler(rs);
+
         let center = rect.center();
 
         // Slightly too big to fit:
@@ -48,7 +52,7 @@ impl Drawable<(Rect, &mut WyRand)> for AntHole {
                     j as f32 / innercircles as f32,
                 )
             };
-            gfx.draw_circle(c, rad, color);
+            ls.schedule(c.with_radius(rad).with_color(color));
         }
     }
 }

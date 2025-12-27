@@ -1,8 +1,8 @@
 use speedy2d::Graphics2D;
 use speedy2d::color::Color;
 
+use crate::Shape;
 use crate::drawonto::DrawOnto;
-use crate::{Circle, Element, Layer, Shape};
 
 /// A [Shape] with a [Color]
 #[derive(Copy, Clone, Debug)]
@@ -12,11 +12,6 @@ pub struct ShapeWithColor {
 }
 
 impl ShapeWithColor {
-    /// Convert to an [Element] by specifying the target [Layer]
-    pub fn on_layer(self, layer: Layer) -> Element {
-        Element::new(layer, self)
-    }
-
     /// Immediately draw onto `gfx`
     pub fn draw_onto(self, gfx: &mut Graphics2D) {
         self.shape.draw_onto(gfx, self.color);
@@ -29,14 +24,14 @@ pub trait WithColor {
     fn with_color(self, color: Color) -> ShapeWithColor;
 }
 
-impl WithColor for Shape {
+impl<T> WithColor for T
+where
+    T: Into<Shape>,
+{
     fn with_color(self, color: Color) -> ShapeWithColor {
-        ShapeWithColor { color, shape: self }
-    }
-}
-
-impl WithColor for Circle {
-    fn with_color(self, color: Color) -> ShapeWithColor {
-        Shape::from(self).with_color(color)
+        ShapeWithColor {
+            color,
+            shape: self.into(),
+        }
     }
 }
