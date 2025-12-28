@@ -5,7 +5,6 @@ use derive_more::{From, Into};
 use derive_new::new;
 use rand::Rng;
 use rand::distr::{Distribution, StandardUniform};
-use speedy2d::dimen::Vec2;
 
 use crate::angle::Angle;
 use crate::{Distance, Point, Transformable};
@@ -27,13 +26,6 @@ impl From<Point> for Polar {
             angle: y.atan2(x).into(),
             distance: (x.powi(2) + y.powi(2)).sqrt().into(),
         }
-    }
-}
-
-impl From<Polar> for Vec2 {
-    fn from(p: Polar) -> Self {
-        let Point { x, y } = p.into();
-        Vec2 { x, y }
     }
 }
 

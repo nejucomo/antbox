@@ -1,7 +1,7 @@
+use antbox_geom::Shape;
 use speedy2d::Graphics2D;
 use speedy2d::color::Color;
 
-use crate::Shape;
 use crate::drawonto::DrawOnto;
 
 /// A [Shape] with a [Color]

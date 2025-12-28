@@ -8,6 +8,10 @@ use rand::distr::{Distribution, StandardUniform};
 use crate::{Distance, Polar};
 
 /// An angle in radians
+///
+/// # Geomertry
+///
+/// An absolute/contextless [Angle] is from the positive X-axis measuring counterclockwise.
 #[derive(Copy, Clone, Into)]
 pub struct Angle(f32);
 

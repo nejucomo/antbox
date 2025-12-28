@@ -180,7 +180,6 @@ dependencies = [
  "derive-new",
  "derive_more",
  "rand",
- "speedy2d",
 ]
 
 [[package]]

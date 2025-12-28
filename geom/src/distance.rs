@@ -14,6 +14,16 @@ impl From<f32> for Distance {
     }
 }
 
+impl Eq for Distance {}
+
+// We allow this suspicious implementation because `self.0` is never `nan`
+#[allow(clippy::derive_ord_xor_partial_ord)]
+impl Ord for Distance {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+
 impl Mul<f32> for Distance {
     type Output = Self;
 

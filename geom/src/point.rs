@@ -1,17 +1,65 @@
-use std::ops::Add;
+use std::ops::{Add, Neg, Sub};
 
 use derive_more::{From, Into};
 use derive_new::new;
 
-use crate::Polar;
+use crate::{Angle, Circle, Distance, Polar, Transformable, Vector};
 
 /// A two-dimensional vector using cartesian coordinates
+///
+/// # Geometry
+///  
+/// X-axis is horizontal from left to right.
+/// Y-axis is vertical from top to bottom.
 #[derive(Copy, Clone, Debug, new, From, Into)]
 pub struct Point {
     /// The x coordinate
     pub x: f32,
     /// The y coordinate
     pub y: f32,
+}
+
+impl Point {
+    /// The [Vector] which [start](Vector::start)s on `self` proceeding to [delta](Vector::delta)
+    pub fn with_delta<P>(self, delta: P) -> Vector
+    where
+        P: Into<Point>,
+    {
+        Vector::new(self, delta)
+    }
+
+    /// The [Vector] which [start](Vector::start)s on `self` proceeding to the absolute point `to` (e.g. [delta](Vector::delta) `= to - start`)
+    pub fn vector_to<P>(self, to: P) -> Vector
+    where
+        P: Into<Point>,
+    {
+        Vector::new(self, to.into() - self)
+    }
+
+    /// The [Circle] centered on `self` with `radius`
+    pub fn with_radius<R>(self, radius: R) -> Circle
+    where
+        R: Into<Distance>,
+    {
+        Circle::new(self, radius)
+    }
+}
+
+impl Transformable for Point {
+    fn rotate<A>(self, a: A) -> Self
+    where
+        A: Into<Angle>,
+    {
+        Polar::from(self).rotate(a).into()
+    }
+
+    fn scale(self, s: f32) -> Self {
+        Polar::from(self).scale(s).into()
+    }
+
+    fn translate(self, delta: Point) -> Self {
+        self + delta
+    }
 }
 
 impl From<Polar> for Point {
@@ -34,5 +82,27 @@ where
             x: self.x + x,
             y: self.y + y,
         }
+    }
+}
+
+impl Neg for Point {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Point {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
+}
+
+impl<P> Sub<P> for Point
+where
+    P: Into<Point>,
+{
+    type Output = Self;
+
+    fn sub(self, rhs: P) -> Self::Output {
+        self + (-rhs.into())
     }
 }
