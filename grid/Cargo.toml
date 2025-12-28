@@ -1,5 +1,5 @@
 [package]
-name = "antbox-geom"
+name = "antbox-grid"
 description = "Two-dimensional logical grid coordinate utilities for `antbox`."
 version = "0.1.0"
 license.workspace = true

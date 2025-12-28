@@ -1,4 +1,4 @@
-use antbox_geom::BoundPoint;
+use antbox_grid::BoundPoint;
 use derive_new::new;
 
 use crate::Field;

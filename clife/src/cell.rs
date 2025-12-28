@@ -1,4 +1,4 @@
-/// A [Grid](antbox_geom::Grid) cell type which provides an `is_alive`/`set_alive` interface for Conway's Life
+/// A [Grid](antbox_grid::Grid) cell type which provides an `is_alive`/`set_alive` interface for Conway's Life
 pub trait ConwayCell {
     /// Whether or not the cell is alive according to Conway's Life
     fn is_alive(&self) -> bool;

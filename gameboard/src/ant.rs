@@ -1,4 +1,4 @@
-use antbox_geom::{BoundPoint, DirSet};
+use antbox_grid::{BoundPoint, DirSet};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
 use movestate::TakeIntoNext;

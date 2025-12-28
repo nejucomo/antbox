@@ -8,7 +8,7 @@ edition.workspace = true
 
 [dependencies]
 antbox-clife.workspace = true
-antbox-geom.workspace = true
+antbox-grid.workspace = true
 clap = { workspace = true, features = ["derive"] }
 derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into", "try_unwrap", "is_variant", "try_into" ] }

@@ -1,4 +1,4 @@
-use antbox_geom::{Bounds, Grid};
+use antbox_grid::{Bounds, Grid};
 use clap::Args;
 use derive_more::{From, Into};
 use derive_new::new;

@@ -1,4 +1,4 @@
-use antbox_geom::BoundPoint;
+use antbox_grid::BoundPoint;
 use derive_more::{From, IsVariant, TryInto};
 use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;

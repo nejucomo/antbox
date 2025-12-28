@@ -7,7 +7,7 @@ homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
-antbox-geom.workspace = true
+antbox-grid.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into", "deref", "deref_mut" ] }
 movestate.workspace = true

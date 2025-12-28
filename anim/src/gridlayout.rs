@@ -1,4 +1,4 @@
-use antbox_geom::{BoundPoint, Bounds};
+use antbox_grid::{BoundPoint, Bounds};
 use speedy2d::dimen::Vec2;
 use speedy2d::shape::Rect;
 

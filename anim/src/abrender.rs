@@ -2,7 +2,7 @@ mod ant;
 mod seedpod;
 
 use antbox_gameboard::{Pheromones, Spot};
-use antbox_geom::Grid;
+use antbox_grid::Grid;
 use antbox_s2render::{
     RectExt as _, RenderCycle, RenderWithArg, Renderable, Vec2Ext as _, WithColor as _,
 };

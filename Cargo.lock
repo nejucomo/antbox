@@ -107,7 +107,7 @@ dependencies = [
  "antbox-animation",
  "antbox-clife",
  "antbox-gameboard",
- "antbox-geom",
+ "antbox-grid",
  "antbox-s2render",
  "antbox-s2win",
  "antbox-tick-timer",
@@ -132,7 +132,7 @@ version = "0.1.0"
 dependencies = [
  "antbox-clife",
  "antbox-gameboard",
- "antbox-geom",
+ "antbox-grid",
  "antbox-s2render",
  "antbox-tick-timer",
  "antbox-trig",
@@ -152,7 +152,7 @@ dependencies = [
 name = "antbox-clife"
 version = "0.1.0"
 dependencies = [
- "antbox-geom",
+ "antbox-grid",
  "derive-new",
  "derive_more",
  "movestate",
@@ -163,7 +163,7 @@ name = "antbox-gameboard"
 version = "0.1.0"
 dependencies = [
  "antbox-clife",
- "antbox-geom",
+ "antbox-grid",
  "clap",
  "derive-new",
  "derive_more",
@@ -174,7 +174,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "antbox-geom"
+name = "antbox-grid"
 version = "0.1.0"
 dependencies = [
  "derive-new",

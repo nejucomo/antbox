@@ -1,4 +1,4 @@
-use antbox_geom::{BoundPoint, Grid};
+use antbox_grid::{BoundPoint, Grid};
 
 use crate::{ConwayCell, conways_rule};
 
@@ -45,7 +45,7 @@ where
 
 #[test]
 fn twiddler() {
-    use antbox_geom::Bounds;
+    use antbox_grid::Bounds;
 
     let mut gs: Vec<Grid<bool>> = vec![Grid::from(Bounds::new(5, 5))];
     gs[0][(2, 1)].set_alive(true);

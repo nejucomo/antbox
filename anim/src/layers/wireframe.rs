@@ -1,4 +1,4 @@
-use antbox_geom::Bounds;
+use antbox_grid::Bounds;
 use antbox_s2render::{RenderCycle, RenderWithArg, Vec2Ext as _, WithColor as _};
 use speedy2d::dimen::Vec2;
 

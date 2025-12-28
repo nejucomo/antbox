@@ -5,7 +5,7 @@ members = [
   "antbox",
   "clife",
   "gameboard",
-  "geom",
+  "grid",
   "logging-options",
   "moveslot",
   "movestate",
@@ -25,7 +25,7 @@ antbox = { version = "0.1.0", path = "antbox" }
 antbox-animation = { version = "0.1.0", path = "anim" }
 antbox-clife = { version = "0.1.0", path = "clife" }
 antbox-gameboard = { version = "0.1.0", path = "gameboard" }
-antbox-geom = { version = "0.1.0", path = "geom" }
+antbox-grid = { version = "0.1.0", path = "grid" }
 antbox-s2render = { version = "0.1.0", path = "s2render" }
 antbox-s2win = { version = "0.1.0", path = "s2win" }
 antbox-tick-timer = { version = "0.1.0", path = "tick" }
