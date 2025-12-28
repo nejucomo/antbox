@@ -201,7 +201,6 @@ dependencies = [
  "derive-new",
  "derive_more",
  "extension-traits",
- "speedy2d",
 ]
 
 [[package]]

@@ -10,4 +10,3 @@ antbox-geom.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = ["from", "index", "index_mut"] }
 extension-traits.workspace = true
-speedy2d.workspace = true

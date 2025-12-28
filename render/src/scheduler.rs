@@ -1,11 +1,8 @@
 use std::collections::VecDeque;
 
-use speedy2d::Graphics2D;
-use speedy2d::color::Color;
+use crate::{Backend, Color, Renderable, ShapeWithColor};
 
-use crate::{Renderable, ShapeWithColor};
-
-/// A [RenderScheduler] sorts [ShapeWithColor]s by [LayerScheduler] to draw onto a [Graphics2D] in layer (z-axis) order
+/// A [RenderScheduler] sorts [ShapeWithColor]s by [LayerScheduler] to draw onto a [Backend] in layer (z-axis) order
 #[derive(Debug)]
 pub struct RenderScheduler {
     bgslot: Option<Color>,
@@ -56,14 +53,17 @@ impl<'a> RenderCycle<'a> {
     }
 
     /// Render all scheduled elements, draining the queue
-    pub fn render(mut self, gfx: &mut Graphics2D) {
+    pub fn render<B>(mut self, gfx: &mut B)
+    where
+        B: Backend,
+    {
         if let Some(bg) = self.rs.bgslot.take() {
             gfx.clear_screen(bg);
         }
 
         for layer in self.rs.layers.iter_mut() {
             while let Some(shwico) = layer.0.pop_front() {
-                shwico.draw_onto(gfx);
+                shwico.render_to(gfx);
             }
         }
 

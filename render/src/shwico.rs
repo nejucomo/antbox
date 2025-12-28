@@ -1,20 +1,21 @@
 use antbox_geom::Shape;
-use speedy2d::Graphics2D;
-use speedy2d::color::Color;
 
-use crate::drawonto::DrawOnto;
+use crate::Color;
+use crate::backend::Backend;
 
 /// A [Shape] with a [Color]
 #[derive(Copy, Clone, Debug)]
 pub struct ShapeWithColor {
-    color: Color,
     shape: Shape,
+    color: Color,
 }
 
 impl ShapeWithColor {
-    /// Immediately draw onto `gfx`
-    pub fn draw_onto(self, gfx: &mut Graphics2D) {
-        self.shape.draw_onto(gfx, self.color);
+    pub(crate) fn render_to<B>(self, gfx: &mut B)
+    where
+        B: Backend,
+    {
+        gfx.render(self.shape, self.color);
     }
 }
 
@@ -30,8 +31,8 @@ where
 {
     fn with_color(self, color: Color) -> ShapeWithColor {
         ShapeWithColor {
-            color,
             shape: self.into(),
+            color,
         }
     }
 }
