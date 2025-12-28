@@ -1,7 +1,7 @@
 use test_case::test_case;
 
 use crate::Direction::{self, *};
-use crate::{BoundPoint, Bounds, Point};
+use crate::{GridCoord, Bounds, Coord};
 
 #[test_case((0, 0), North => (0, 2))]
 #[test_case((0, 0), NorthEast => (1, 2))]
@@ -20,6 +20,6 @@ use crate::{BoundPoint, Bounds, Point};
 #[test_case((1, 1), West => (0, 1))]
 #[test_case((1, 1), NorthWest => (0, 0))]
 fn in_3x3_step(xy: (usize, usize), dir: Direction) -> (usize, usize) {
-    let pt = BoundPoint::new(Point::from(xy), Bounds::new(3, 3));
+    let pt = GridCoord::new(Coord::from(xy), Bounds::new(3, 3));
     (pt + dir).point().into()
 }

@@ -1,4 +1,4 @@
-use antbox_grid::BoundPoint;
+use antbox_grid::GridCoord;
 use derive_new::new;
 
 use crate::Field;
@@ -7,5 +7,5 @@ use crate::Field;
 pub(crate) struct SpotUpdate<'a, R> {
     pub(crate) rng: &'a mut R,
     pub(crate) field: &'a mut Field,
-    pub(crate) pt: BoundPoint,
+    pub(crate) pt: GridCoord,
 }

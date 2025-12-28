@@ -5,7 +5,7 @@ use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::{BoundPoint, Point};
+use crate::{GridCoord, Coord};
 
 /// Two-dimensional area bounds
 #[derive(Copy, Clone, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
@@ -23,23 +23,23 @@ impl Bounds {
     }
 
     /// Bind a point, if it's within our bounds
-    pub fn bind<P: Into<Point>>(self, pt: P) -> Option<BoundPoint> {
+    pub fn bind<P: Into<Coord>>(self, pt: P) -> Option<GridCoord> {
         let pt = pt.into();
         if pt.x < self.width && pt.y < self.height {
-            Some(BoundPoint::new(pt, self))
+            Some(GridCoord::new(pt, self))
         } else {
             None
         }
     }
 
-    /// Iterate over the [BoundPoint]s herein
-    pub fn iter_points(self) -> impl Iterator<Item = BoundPoint> {
+    /// Iterate over the [GridCoord]s herein
+    pub fn iter_points(self) -> impl Iterator<Item = GridCoord> {
         (0..self.area()).map(move |ix| self.ix_to_bp(ix))
     }
 
-    pub(crate) fn ix_to_bp(self, ix: usize) -> BoundPoint {
+    pub(crate) fn ix_to_bp(self, ix: usize) -> GridCoord {
         assert!(ix < self.area());
-        BoundPoint::new(Point::new(ix % self.width, ix / self.width), self)
+        GridCoord::new(Coord::new(ix % self.width, ix / self.width), self)
     }
 }
 
@@ -67,8 +67,8 @@ impl std::fmt::Debug for Bounds {
     }
 }
 
-impl Distribution<BoundPoint> for Bounds {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> BoundPoint {
+impl Distribution<GridCoord> for Bounds {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> GridCoord {
         self.ix_to_bp(rng.random_range(0..self.area()))
     }
 }

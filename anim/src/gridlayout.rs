@@ -1,4 +1,4 @@
-use antbox_grid::{BoundPoint, Bounds};
+use antbox_grid::{Bounds, GridCoord};
 use speedy2d::dimen::Vec2;
 use speedy2d::shape::Rect;
 
@@ -34,7 +34,7 @@ impl GridLayout {
     }
 
     /// Iterate over logical [BoundPoint]s and their associated pixel [Rect]s
-    pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (BoundPoint, Rect)> {
+    pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
         let Vec2 { x: cellw, y: cellh } = self.cell_bounds;
 
         self.bounds.iter_points().map(move |pt| {
@@ -55,7 +55,7 @@ impl GridLayout {
 fn verify_pts_and_rects() {
     let bounds = Bounds::new(2, 2);
     let gl = GridLayout::new(bounds, Vec2::new(24., 18.));
-    let bprs: Vec<(BoundPoint, Rect)> = gl.iter_pts_and_rects().collect();
+    let bprs: Vec<(GridCoord, Rect)> = gl.iter_pts_and_rects().collect();
     assert_eq!(
         bprs,
         &[

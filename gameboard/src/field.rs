@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
 use antbox_clife::{ConwayGrid, ConwayMachine};
-use antbox_grid::{BoundPoint, DirSet, Direction, Grid};
+use antbox_grid::{GridCoord, DirSet, Direction, Grid};
 use derive_more::{Deref, From, Into};
 use movestate::TakeIntoNext;
 
@@ -32,7 +32,7 @@ impl Field {
     }
 
     /// Return the directions from `pt` which have the `greatest`/weakest magnitude of `ph`
-    pub fn pheromone_gradient(&self, pt: BoundPoint, ph: Pheromone, greatest: bool) -> DirSet {
+    pub fn pheromone_gradient(&self, pt: GridCoord, ph: Pheromone, greatest: bool) -> DirSet {
         let it = Direction::each().map(|d| self[pt + d].pheromones().magnitude(ph));
 
         let best = if greatest {
@@ -46,16 +46,16 @@ impl Field {
     }
 
     /// Whether or not food is growing here
-    pub fn food_is_growing(&self, pt: BoundPoint) -> bool {
+    pub fn food_is_growing(&self, pt: GridCoord) -> bool {
         self.clife[pt]
     }
 
     /// The growth status and growth-neighbors here
-    pub fn growth_and_neighbors(&self, pt: BoundPoint) -> (bool, usize) {
+    pub fn growth_and_neighbors(&self, pt: GridCoord) -> (bool, usize) {
         self.clife.life_and_neighbors(pt)
     }
 
-    pub(crate) fn move_ant(&mut self, ant: Ant, dst: BoundPoint) -> bool {
+    pub(crate) fn move_ant(&mut self, ant: Ant, dst: GridCoord) -> bool {
         if let Some(dstspot) = self.grid[dst].stepped_upon_by(ant) {
             self.grid[dst] = dstspot;
             true
