@@ -2,7 +2,7 @@ mod ant;
 mod seedpod;
 
 use antbox_gameboard::{Pheromones, Spot};
-use antbox_geom::Polar;
+use antbox_geom::{Polar, Transformable as _};
 use antbox_grid::Grid;
 use antbox_s2render::{
     RectExt as _, RenderCycle, RenderWithArg, Renderable, Vec2Ext as _, WithColor as _,
@@ -91,7 +91,7 @@ impl RWArg<(Rect, &mut WyRand)> for Pheromones {
             let rad = wyr.random_range(0.2..0.3) * crad * decay * 0.4 * (1.0 + decay);
 
             ls.schedule(
-                (center + spoke.into_vec2())
+                (center + spoke)
                     .with_radius(rad)
                     .with_color(color.with_alpha((1.0 - decay) * 0.8 + 0.2)),
             );

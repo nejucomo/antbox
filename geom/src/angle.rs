@@ -20,14 +20,9 @@ impl Angle {
         Polar::new(self, distance)
     }
 
-    /// The cosine of this angle
-    pub fn cos(self) -> f32 {
-        self.0.cos()
-    }
-
-    /// The sine of this angle
-    pub fn sin(self) -> f32 {
-        self.0.sin()
+    /// The (sin, cos) of this angle
+    pub fn sin_cos(self) -> (f32, f32) {
+        self.0.sin_cos()
     }
 }
 

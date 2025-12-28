@@ -1,23 +1,38 @@
 use std::ops::Add;
 
-use crate::{Angle, Cartesian, Distance, Polar};
+use derive_more::{From, Into};
+use derive_new::new;
 
-/// A point in the two-dimensional plane
-pub trait Point: Sized + Copy + Clone + PointPeer<Cartesian> + PointPeer<Polar> {
+use crate::Polar;
+
+/// A two-dimensional vector using cartesian coordinates
+#[derive(Copy, Clone, Debug, new, From, Into)]
+pub struct Point {
     /// The x coordinate
-    fn x(self) -> f32;
-
+    pub x: f32,
     /// The y coordinate
-    fn y(self) -> f32;
-
-    /// The [Angle] from the X-axis in a counterclockwide direction
-    fn angle(self) -> Angle;
-
-    /// The [Distance] from the origin
-    fn distance(self) -> Distance;
+    pub y: f32,
 }
 
-/// A supertrait for [Point] to ensure symmetry between Cartesian and Polar representations
-pub trait PointPeer<P>: From<P> + Into<P> + Add<P, Output = Self> {}
+impl From<Polar> for Point {
+    fn from(Polar { angle, distance }: Polar) -> Self {
+        let (s, c) = angle.sin_cos();
+        let d = f32::from(distance);
+        Point { x: c * d, y: s * d }
+    }
+}
 
-impl<B, P> PointPeer<P> for B where B: From<P> + Into<P> + Add<P, Output = Self> {}
+impl<P> Add<P> for Point
+where
+    P: Into<Point>,
+{
+    type Output = Self;
+
+    fn add(self, rhs: P) -> Self::Output {
+        let Point { x, y } = rhs.into();
+        Point {
+            x: self.x + x,
+            y: self.y + y,
+        }
+    }
+}
