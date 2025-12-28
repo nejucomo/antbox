@@ -4,27 +4,29 @@ use rand::Rng;
 use rand::distr::{Distribution, StandardUniform};
 use speedy2d::dimen::Vec2;
 
+use crate::Distance;
 use crate::angle::Angle;
 
 /// A two-dimensional vector using polar coordinates
 #[derive(Copy, Clone, Debug, new, From, Into)]
-pub struct TrigVec {
+pub struct Polar {
     /// The vector's [Angle]
     #[new(into)]
     pub angle: Angle,
     /// The vector's distance
-    pub distance: f32,
+    #[new(into)]
+    pub distance: Distance,
 }
 
-impl TrigVec {
-    /// The `x` cartesian coordinate
-    pub fn x(self) -> f32 {
-        self.angle.cos() * self.distance
+impl Polar {
+    /// The shortest [Distance] from the Y-axis
+    pub fn x(self) -> Distance {
+        self.distance * self.angle.cos()
     }
 
-    /// The `y` cartesian coordinate
-    pub fn y(self) -> f32 {
-        self.angle.sin() * self.distance
+    /// The shortest [Distance] from the X-axis
+    pub fn y(self) -> Distance {
+        self.distance * self.angle.sin()
     }
 
     /// Convert to a [Vec2]
@@ -43,14 +45,14 @@ impl TrigVec {
     }
 }
 
-impl From<TrigVec> for Vec2 {
-    fn from(tv: TrigVec) -> Vec2 {
-        Vec2::new(tv.x(), tv.y())
+impl From<Polar> for Vec2 {
+    fn from(tv: Polar) -> Vec2 {
+        Vec2::new(tv.x().into(), tv.y().into())
     }
 }
 
-impl Distribution<TrigVec> for StandardUniform {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> TrigVec {
+impl Distribution<Polar> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Polar {
         rng.random::<Angle>()
             .with_distance(rng.random_range(0f32..1f32))
     }

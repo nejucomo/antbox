@@ -1,8 +1,8 @@
 use std::f32::consts::{FRAC_1_SQRT_2, TAU};
 
 use antbox_gameboard::{Ant, AntHole};
+use antbox_geom::Polar;
 use antbox_s2render::{RectExt, RenderCycle, Vec2Ext as _, WithColor as _};
-use antbox_geom::TrigVec;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
@@ -30,7 +30,7 @@ impl RWArg<(Rect, &mut WyRand)> for AntHole {
 
         // Slightly too big to fit:
         let radbig = rect.cell_radius() * 1.7;
-        let spoke = TrigVec::new(
+        let spoke = Polar::new(
             (center.x / center.y).asinh() * TAU,
             (center.x * center.y).rem_euclid(FRAC_1_SQRT_2).sin().abs() * radbig * 0.7,
         );

@@ -1,8 +1,10 @@
-//! [TrigVec] and friends
+//! Two-dimensional geometry for `antbox`
 #![deny(unsafe_code, missing_docs)]
 
 mod angle;
-mod trigvec;
+mod distance;
+mod polar;
 
 pub use self::angle::Angle;
-pub use self::trigvec::TrigVec;
+pub use self::distance::Distance;
+pub use self::polar::Polar;
