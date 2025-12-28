@@ -7,7 +7,7 @@ use crate::{Angle, Distance, Point, Transformable, Vector};
 pub struct Line {
     /// The [Vector]
     #[new(into)]
-    pub seg: Vector,
+    pub vec: Vector,
     /// The width
     #[new(into)]
     pub width: Distance,
@@ -19,21 +19,21 @@ impl Transformable for Line {
         A: Into<Angle>,
     {
         Line {
-            seg: self.seg.rotate(a),
+            vec: self.vec.rotate(a),
             ..self
         }
     }
 
     fn scale(self, s: f32) -> Self {
         Line {
-            seg: self.seg.scale(s),
+            vec: self.vec.scale(s),
             width: self.width * s,
         }
     }
 
     fn translate(self, delta: Point) -> Self {
         Line {
-            seg: self.seg.translate(delta),
+            vec: self.vec.translate(delta),
             ..self
         }
     }

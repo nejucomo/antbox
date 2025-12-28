@@ -1,4 +1,4 @@
-use antbox_geom::{Circle, Line, Point, Shape};
+use antbox_geom::{Circle, Line, Point, Rect, Shape};
 use speedy2d::Graphics2D;
 use speedy2d::color::Color;
 use speedy2d::dimen::Vec2;
@@ -9,20 +9,26 @@ pub(crate) trait DrawOnto {
 
 impl DrawOnto for Line {
     fn draw_onto(self, gfx: &mut Graphics2D, color: Color) {
-        let Line {
-            start,
-            delta,
-            width,
-        } = self;
-        let to = start + delta;
+        let Line { vec, width } = self;
 
-        gfx.draw_line(start.v2(), to.v2(), width.into(), color);
+        gfx.draw_line(vec.start.v2(), vec.to().v2(), width.into(), color);
     }
 }
 
 impl DrawOnto for Circle {
     fn draw_onto(self, gfx: &mut Graphics2D, color: Color) {
         gfx.draw_circle(self.center.v2(), self.radius.into(), color);
+    }
+}
+
+impl DrawOnto for Rect {
+    fn draw_onto(self, gfx: &mut Graphics2D, color: Color) {
+        let d = self.diagonal();
+
+        gfx.draw_rectangle(
+            speedy2d::shape::Rectangle::new(d.start.v2(), d.to().v2()),
+            color,
+        );
     }
 }
 
@@ -33,6 +39,7 @@ impl DrawOnto for Shape {
         match self {
             Circle(x) => x.draw_onto(gfx, color),
             Line(x) => x.draw_onto(gfx, color),
+            Rect(x) => x.draw_onto(gfx, color),
         }
     }
 }
