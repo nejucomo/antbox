@@ -198,6 +198,7 @@ dependencies = [
 name = "antbox-s2render"
 version = "0.1.0"
 dependencies = [
+ "antbox-geom",
  "derive-new",
  "derive_more",
  "extension-traits",
