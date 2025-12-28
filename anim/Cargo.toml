@@ -12,7 +12,7 @@ antbox-gameboard.workspace = true
 antbox-grid.workspace = true
 antbox-s2render.workspace = true
 antbox-tick-timer.workspace = true
-antbox-trig.workspace = true
+antbox-geom.workspace = true
 derive-debug.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = ["deref", "deref_mut", "try_into"] }

@@ -12,7 +12,7 @@ members = [
   "s2render",
   "s2win",
   "tick",
-  "trig",
+  "geom",
 ]
 
 [workspace.package]
@@ -29,7 +29,7 @@ antbox-grid = { version = "0.1.0", path = "grid" }
 antbox-s2render = { version = "0.1.0", path = "s2render" }
 antbox-s2win = { version = "0.1.0", path = "s2win" }
 antbox-tick-timer = { version = "0.1.0", path = "tick" }
-antbox-trig = { version = "0.1.0", path = "trig" }
+antbox-geom = { version = "0.1.0", path = "geom" }
 logging-options = { version = "0.1.0", path = "logging-options" }
 moveslot = { version = "0.1.0", path = "moveslot" }
 movestate = { version = "0.1.0", path = "movestate" }

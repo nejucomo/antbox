@@ -1,5 +1,5 @@
 [package]
-name = "antbox-trig"
+name = "antbox-geom"
 description = "Two-dimensional polar coordinate support for `antbox` graphics."
 version = "0.1.0"
 license.workspace = true

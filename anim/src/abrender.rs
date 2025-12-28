@@ -6,7 +6,7 @@ use antbox_grid::Grid;
 use antbox_s2render::{
     RectExt as _, RenderCycle, RenderWithArg, Renderable, Vec2Ext as _, WithColor as _,
 };
-use antbox_trig::TrigVec;
+use antbox_geom::TrigVec;
 use derive_more::From;
 use rand::Rng as _;
 use speedy2d::color::Color;

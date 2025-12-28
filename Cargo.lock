@@ -107,11 +107,11 @@ dependencies = [
  "antbox-animation",
  "antbox-clife",
  "antbox-gameboard",
+ "antbox-geom",
  "antbox-grid",
  "antbox-s2render",
  "antbox-s2win",
  "antbox-tick-timer",
- "antbox-trig",
  "anyhow",
  "clap",
  "derive-debug",
@@ -132,10 +132,10 @@ version = "0.1.0"
 dependencies = [
  "antbox-clife",
  "antbox-gameboard",
+ "antbox-geom",
  "antbox-grid",
  "antbox-s2render",
  "antbox-tick-timer",
- "antbox-trig",
  "derive-debug",
  "derive-new",
  "derive_more",
@@ -171,6 +171,16 @@ dependencies = [
  "log",
  "movestate",
  "rand",
+]
+
+[[package]]
+name = "antbox-geom"
+version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "derive_more",
+ "rand",
+ "speedy2d",
 ]
 
 [[package]]
@@ -217,16 +227,6 @@ dependencies = [
  "extension-traits",
  "log",
  "movestate",
-]
-
-[[package]]
-name = "antbox-trig"
-version = "0.1.0"
-dependencies = [
- "derive-new",
- "derive_more",
- "rand",
- "speedy2d",
 ]
 
 [[package]]

@@ -2,7 +2,7 @@ use std::f32::consts::{FRAC_1_SQRT_2, TAU};
 
 use antbox_gameboard::{Ant, AntHole};
 use antbox_s2render::{RectExt, RenderCycle, Vec2Ext as _, WithColor as _};
-use antbox_trig::TrigVec;
+use antbox_geom::TrigVec;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
 

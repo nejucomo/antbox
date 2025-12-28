@@ -14,7 +14,7 @@ antbox-grid.workspace = true
 antbox-s2render.workspace = true
 antbox-s2win.workspace = true
 antbox-tick-timer.workspace = true
-antbox-trig.workspace = true
+antbox-geom.workspace = true
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
 derive-debug.workspace = true
