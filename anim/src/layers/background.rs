@@ -1,4 +1,4 @@
-use antbox_s2render::{RenderScheduler, Renderable};
+use antbox_s2render::{RenderCycle, Renderable};
 
 use crate::colors;
 
@@ -7,7 +7,7 @@ use crate::colors;
 pub struct Background;
 
 impl Renderable for Background {
-    fn schedule(self, rq: &mut RenderScheduler) {
-        colors::DIRT.schedule(rq);
+    fn schedule(self, cycle: &mut RenderCycle) {
+        colors::DIRT.schedule(cycle);
     }
 }

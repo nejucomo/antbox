@@ -1,7 +1,7 @@
 use std::f32::consts::{FRAC_1_SQRT_2, TAU};
 
 use antbox_gameboard::{Ant, AntHole};
-use antbox_s2render::{RectExt, RenderScheduler, Vec2Ext as _, WithColor as _};
+use antbox_s2render::{RectExt, RenderCycle, Vec2Ext as _, WithColor as _};
 use antbox_trig::TrigVec;
 use speedy2d::shape::Rect;
 use wyrand::WyRand;
@@ -11,20 +11,20 @@ use crate::colors::{ANT, ANT_HOLE_ENTRANCE, ANT_HOLE_IRIS, DIRT, interpolate};
 use crate::layers::Layer;
 
 impl RWArg<(Rect, &mut WyRand)> for Ant {
-    fn rwarg(self, rs: &mut RenderScheduler, (rect, wyr): (Rect, &mut WyRand)) {
+    fn rwarg(self, rs: &mut RenderCycle, (rect, wyr): (Rect, &mut WyRand)) {
         self.pheromones_underneath().rwarg(rs, (rect.clone(), wyr));
 
         // TODO: head, throax, abdomen, food pellet
         let rad = rect.cell_radius() * 0.5;
         Layer::Ants
-            .layer_scheduler(rs)
+            .scheduler(rs)
             .schedule(rect.center().with_radius(rad).with_color(ANT));
     }
 }
 
 impl RWArg<(Rect, &mut WyRand)> for AntHole {
-    fn rwarg(self, rs: &mut RenderScheduler, (rect, _wyr): (Rect, &mut WyRand)) {
-        let ls = Layer::AntHole.layer_scheduler(rs);
+    fn rwarg(self, rs: &mut RenderCycle, (rect, _wyr): (Rect, &mut WyRand)) {
+        let ls = Layer::AntHole.scheduler(rs);
 
         let center = rect.center();
 

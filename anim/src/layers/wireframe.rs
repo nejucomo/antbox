@@ -1,5 +1,5 @@
 use antbox_geom::Bounds;
-use antbox_s2render::{RenderScheduler, RenderWithArg, Vec2Ext as _, WithColor as _};
+use antbox_s2render::{RenderCycle, RenderWithArg, Vec2Ext as _, WithColor as _};
 use speedy2d::dimen::Vec2;
 
 use crate::layers::Layer;
@@ -10,8 +10,8 @@ use crate::{GridLayout, colors};
 pub struct WireFrame;
 
 impl RenderWithArg<GridLayout> for WireFrame {
-    fn schedule_with_arg(self, rs: &mut RenderScheduler, layout: GridLayout) {
-        let layer = Layer::WireFrame.layer_scheduler(rs);
+    fn schedule_with_arg(self, cycle: &mut RenderCycle, layout: GridLayout) {
+        let layer = Layer::WireFrame.scheduler(cycle);
         let GridLayout {
             bounds: Bounds { width, height },
             view_size,

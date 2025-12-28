@@ -72,12 +72,13 @@ where
                 let layout = GridLayout::new(self.grid.bounds(), winsize);
                 let wyrgrid = WyrGrid::new(self.grid.bounds(), &mut self.rng);
 
-                let rs: &mut RenderScheduler = &mut self.rs.borrow_mut();
+                let mut rsched = self.rs.borrow_mut();
+                let mut cycle = rsched.start_cycle();
 
-                rs.schedule(layers::Background);
-                rs.schedule(spots_into_renderable(&self.grid, layout, &wyrgrid));
-                rs.schedule(layers::WireFrame.with_render_arg(layout));
-                rs.render(gfx);
+                cycle.schedule(layers::Background);
+                cycle.schedule(spots_into_renderable(&self.grid, layout, &wyrgrid));
+                cycle.schedule(layers::WireFrame.with_render_arg(layout));
+                cycle.render(gfx);
             }
 
             Input(Key(Virtual(Down, Escape))) => {

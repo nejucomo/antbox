@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 
 use antbox_gameboard::SeedPod;
-use antbox_s2render::{RectExt as _, RenderScheduler, Vec2Ext as _, WithColor};
+use antbox_s2render::{RectExt as _, RenderCycle, Vec2Ext as _, WithColor};
 use antbox_trig::Angle;
 use rand_distr::Distribution as _;
 use speedy2d::color::Color;
@@ -29,7 +29,7 @@ struct SingletonSeed;
 struct SeedCluster(SeedPod);
 
 impl RWArg<(Rect, &mut WyRand)> for SeedPod {
-    fn rwarg(self, rs: &mut RenderScheduler, (rect, wyr): (Rect, &mut WyRand)) {
+    fn rwarg(self, cycle: &mut RenderCycle, (rect, wyr): (Rect, &mut WyRand)) {
         let org = OrganicScale::default();
         let center = rect.center();
         let dp = DrawParams {
@@ -40,20 +40,20 @@ impl RWArg<(Rect, &mut WyRand)> for SeedPod {
             seedcolor: colors::food_neighbor_count(self.seeds),
         };
 
-        Pod(self).rwarg(rs, (dp, wyr));
+        Pod(self).rwarg(cycle, (dp, wyr));
 
         if self.seeds == 1 {
-            SingletonSeed.rwarg(rs, (dp, wyr));
+            SingletonSeed.rwarg(cycle, (dp, wyr));
         } else {
-            SeedCluster(self).rwarg(rs, (dp, wyr));
+            SeedCluster(self).rwarg(cycle, (dp, wyr));
         }
     }
 }
 
 impl RWArg<(DrawParams, &mut WyRand)> for Pod {
-    fn rwarg(self, rs: &mut RenderScheduler, (dp, _wyr): (DrawParams, &mut WyRand)) {
+    fn rwarg(self, cycle: &mut RenderCycle, (dp, _wyr): (DrawParams, &mut WyRand)) {
         let DrawParams { center, podrad, .. } = dp;
-        let ls = Plants.layer_scheduler(rs);
+        let ls = Plants.scheduler(cycle);
         let outer = center.with_radius(podrad);
 
         let Pod(SeedPod { seeds, ripe }) = self;
@@ -73,7 +73,7 @@ impl RWArg<(DrawParams, &mut WyRand)> for Pod {
 }
 
 impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
-    fn rwarg(self, rs: &mut RenderScheduler, (dp, wyr): (DrawParams, &mut WyRand)) {
+    fn rwarg(self, cycle: &mut RenderCycle, (dp, wyr): (DrawParams, &mut WyRand)) {
         let DrawParams {
             org,
             center,
@@ -81,7 +81,7 @@ impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
             spotrot,
             ..
         } = dp;
-        let ls = Plants.layer_scheduler(rs);
+        let ls = Plants.scheduler(cycle);
 
         let radf: f32 = 0.47 * org.sample(wyr);
         let distf = (org.sample(wyr) - radf).powi(2);
@@ -102,7 +102,7 @@ impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
 }
 
 impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
-    fn rwarg(self, rs: &mut RenderScheduler, (dp, wyr): (DrawParams, &mut WyRand)) {
+    fn rwarg(self, cycle: &mut RenderCycle, (dp, wyr): (DrawParams, &mut WyRand)) {
         let DrawParams {
             org,
             center,
@@ -110,7 +110,7 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
             spotrot,
             seedcolor,
         } = dp;
-        let ls = Plants.layer_scheduler(rs);
+        let ls = Plants.scheduler(cycle);
 
         let SeedCluster(SeedPod { seeds, ripe }) = self;
         assert_ne!(1, seeds);

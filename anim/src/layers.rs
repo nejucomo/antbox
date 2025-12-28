@@ -2,7 +2,7 @@
 mod background;
 mod wireframe;
 
-use antbox_s2render::{LayerScheduler, RenderScheduler};
+use antbox_s2render::{LayerScheduler, RenderCycle};
 
 pub use self::background::Background;
 pub use self::wireframe::WireFrame;
@@ -25,15 +25,11 @@ pub enum Layer {
 impl Layer {
     /// The total number of layers
     pub fn count() -> usize {
-        Layer::WireFrame.as_usize() + 1
+        1 + Layer::WireFrame as usize
     }
 
     /// The [LayerScheduler] for this [Layer]
-    pub fn layer_scheduler(self, rs: &mut RenderScheduler) -> &mut LayerScheduler {
-        &mut rs[self.as_usize()]
-    }
-
-    fn as_usize(self) -> usize {
-        self as usize
+    pub fn scheduler<'a>(self, cycle: &'a mut RenderCycle) -> &'a mut LayerScheduler {
+        cycle.get_layer(self as usize)
     }
 }
