@@ -1,16 +1,16 @@
 use speedy2d::color::Color;
 
-use crate::RenderScheduler;
+use crate::RenderCycle;
 
 /// Types which can enqueue render elements
 pub trait Renderable {
     /// Schedule `self` to be rendered into `rq`
-    fn schedule(self, sched: &mut RenderScheduler);
+    fn schedule(self, cycle: &mut RenderCycle);
 }
 
 impl Renderable for Color {
-    fn schedule(self, sched: &mut RenderScheduler) {
-        sched.schedule_bg_color(self);
+    fn schedule(self, cycle: &mut RenderCycle) {
+        cycle.schedule_bg_color(self);
     }
 }
 
@@ -19,10 +19,10 @@ where
     A: Renderable,
     B: Renderable,
 {
-    fn schedule(self, sched: &mut RenderScheduler) {
+    fn schedule(self, cycle: &mut RenderCycle) {
         let (a, b) = self;
-        a.schedule(sched);
-        b.schedule(sched);
+        a.schedule(cycle);
+        b.schedule(cycle);
     }
 }
 
@@ -32,8 +32,8 @@ where
     B: Renderable,
     C: Renderable,
 {
-    fn schedule(self, sched: &mut RenderScheduler) {
+    fn schedule(self, cycle: &mut RenderCycle) {
         let (a, b, c) = self;
-        (a, (b, c)).schedule(sched);
+        (a, (b, c)).schedule(cycle);
     }
 }

@@ -39,14 +39,15 @@ impl AnimationState {
 
     /// Draw `self` onto `gfx`
     pub fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
-        let rs: &mut RenderScheduler = &mut self.rs.borrow_mut();
-
-        rs.schedule(layers::Background);
-
         let layout = GridLayout::new(self.antbox.bounds(), view_size);
-        rs.schedule(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
-        rs.schedule(layers::WireFrame.with_render_arg(layout));
-        rs.render(gfx);
+
+        let mut rsched = self.rs.borrow_mut();
+        let mut cycle = rsched.start_cycle();
+
+        cycle.schedule(layers::Background);
+        cycle.schedule(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
+        cycle.schedule(layers::WireFrame.with_render_arg(layout));
+        cycle.render(gfx);
     }
 }
 

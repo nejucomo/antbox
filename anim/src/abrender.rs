@@ -4,7 +4,7 @@ mod seedpod;
 use antbox_gameboard::{Pheromones, Spot};
 use antbox_geom::Grid;
 use antbox_s2render::{
-    RectExt as _, RenderScheduler, RenderWithArg, Renderable, Vec2Ext as _, WithColor as _,
+    RectExt as _, RenderCycle, RenderWithArg, Renderable, Vec2Ext as _, WithColor as _,
 };
 use antbox_trig::TrigVec;
 use derive_more::From;
@@ -30,45 +30,45 @@ pub fn spots_into_renderable(
 struct AntBoxRender<T>(T);
 
 impl RenderWithArg<(GridLayout, &WyrGrid)> for AntBoxRender<&Grid<Spot>> {
-    fn schedule_with_arg(self, sch: &mut RenderScheduler, (layout, wyrg): (GridLayout, &WyrGrid)) {
-        self.0.rwarg(sch, (layout, wyrg));
+    fn schedule_with_arg(self, cycle: &mut RenderCycle, (layout, wyrg): (GridLayout, &WyrGrid)) {
+        self.0.rwarg(cycle, (layout, wyrg));
     }
 }
 
 trait RWArg<A> {
-    fn rwarg(self, rs: &mut RenderScheduler, arg: A);
+    fn rwarg(self, cycle: &mut RenderCycle, arg: A);
 }
 
 impl RWArg<(GridLayout, &WyrGrid)> for &Grid<Spot> {
-    fn rwarg(self, rs: &mut RenderScheduler, (layout, wyrg): (GridLayout, &WyrGrid)) {
+    fn rwarg(self, cycle: &mut RenderCycle, (layout, wyrg): (GridLayout, &WyrGrid)) {
         for (pt, rect) in layout.iter_pts_and_rects() {
             let mut wyr = wyrg[pt].clone();
-            self[pt].rwarg(rs, (rect, &mut wyr));
+            self[pt].rwarg(cycle, (rect, &mut wyr));
         }
     }
 }
 
 impl RWArg<(Rect, &mut WyRand)> for Spot {
-    fn rwarg(self, rs: &mut RenderScheduler, arg: (Rect, &mut WyRand)) {
+    fn rwarg(self, cycle: &mut RenderCycle, arg: (Rect, &mut WyRand)) {
         use Spot::*;
 
         match self {
-            Empty(x) => x.rwarg(rs, arg),
-            Food(x) => x.rwarg(rs, arg),
-            Ant(x) => x.rwarg(rs, arg),
-            AntHole(x) => x.rwarg(rs, arg),
+            Empty(x) => x.rwarg(cycle, arg),
+            Food(x) => x.rwarg(cycle, arg),
+            Ant(x) => x.rwarg(cycle, arg),
+            AntHole(x) => x.rwarg(cycle, arg),
         }
     }
 }
 
 impl RWArg<(Rect, &mut WyRand)> for Pheromones {
-    fn rwarg(self, rs: &mut RenderScheduler, (rect, wyr): (Rect, &mut WyRand)) {
+    fn rwarg(self, cycle: &mut RenderCycle, (rect, wyr): (Rect, &mut WyRand)) {
         use colors::{ANT_HOLE_IRIS, FOOD_LIFE};
 
         const DECAY_FACTOR: f32 = 0.99;
         const HOME_COLOR_REDNESS: f32 = 0.4;
 
-        let ls = Layer::Pheromones.layer_scheduler(rs);
+        let ls = Layer::Pheromones.scheduler(cycle);
 
         let home_color = ANT_HOLE_IRIS.interpolate(Color::RED, HOME_COLOR_REDNESS);
         let food_color = FOOD_LIFE;
