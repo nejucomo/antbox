@@ -4,7 +4,7 @@ mod seedpod;
 use antbox_gameboard::{Pheromones, Spot};
 use antbox_geom::{Polar, Transformable as _};
 use antbox_grid::Grid;
-use antbox_s2render::{RectExt as _, RenderCycle, RenderWithArg, Renderable, WithColor as _};
+use antbox_render::{RectExt as _, RenderCycle, RenderWithArg, Renderable, WithColor as _};
 use derive_more::From;
 use rand::Rng as _;
 use speedy2d::color::Color;

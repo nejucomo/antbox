@@ -1,4 +1,4 @@
-use antbox_s2render::{RenderCycle, Renderable};
+use antbox_render::{RenderCycle, Renderable};
 
 use crate::colors;
 

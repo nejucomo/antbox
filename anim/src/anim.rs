@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 
 use antbox_gameboard::{BoardState as AntboxState, GenParams};
-use antbox_s2render::{RenderScheduler, RenderWithArg};
+use antbox_render::{RenderScheduler, RenderWithArg};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::TakeIntoNext;
 use movestate::next::State;

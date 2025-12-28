@@ -5,7 +5,7 @@ use derive_new::new;
 use rand::Rng;
 use rand::distr::Distribution;
 
-use crate::{GridCoord, Coord};
+use crate::{Coord, GridCoord};
 
 /// Two-dimensional area bounds
 #[derive(Copy, Clone, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]

@@ -1,4 +1,4 @@
-use antbox_grid::{GridCoord, DirSet};
+use antbox_grid::{DirSet, GridCoord};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
 use movestate::TakeIntoNext;

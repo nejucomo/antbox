@@ -1,7 +1,7 @@
 use test_case::test_case;
 
 use crate::Direction::{self, *};
-use crate::{GridCoord, Bounds, Coord};
+use crate::{Bounds, Coord, GridCoord};
 
 #[test_case((0, 0), North => (0, 2))]
 #[test_case((0, 0), NorthEast => (1, 2))]

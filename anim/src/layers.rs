@@ -2,7 +2,7 @@
 mod background;
 mod wireframe;
 
-use antbox_s2render::{LayerScheduler, RenderCycle};
+use antbox_render::{LayerScheduler, RenderCycle};
 
 pub use self::background::Background;
 pub use self::wireframe::WireFrame;

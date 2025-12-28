@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{GridCoord, Bounds, Coord, DirSet, Direction};
+use crate::{Bounds, Coord, DirSet, Direction, GridCoord};
 
 /// A 2-D grid of `T` cells
 #[derive(Clone, PartialEq)]

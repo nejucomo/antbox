@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
 use antbox_clife::{ConwayGrid, ConwayMachine};
-use antbox_grid::{GridCoord, DirSet, Direction, Grid};
+use antbox_grid::{DirSet, Direction, Grid, GridCoord};
 use derive_more::{Deref, From, Into};
 use movestate::TakeIntoNext;
 

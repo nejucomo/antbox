@@ -9,7 +9,7 @@ members = [
   "logging-options",
   "moveslot",
   "movestate",
-  "s2render",
+  "render",
   "s2win",
   "tick",
   "geom",
@@ -26,7 +26,7 @@ antbox-animation = { version = "0.1.0", path = "anim" }
 antbox-clife = { version = "0.1.0", path = "clife" }
 antbox-gameboard = { version = "0.1.0", path = "gameboard" }
 antbox-grid = { version = "0.1.0", path = "grid" }
-antbox-s2render = { version = "0.1.0", path = "s2render" }
+antbox-render = { version = "0.1.0", path = "render" }
 antbox-s2win = { version = "0.1.0", path = "s2win" }
 antbox-tick-timer = { version = "0.1.0", path = "tick" }
 antbox-geom = { version = "0.1.0", path = "geom" }

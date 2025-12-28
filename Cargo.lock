@@ -109,7 +109,7 @@ dependencies = [
  "antbox-gameboard",
  "antbox-geom",
  "antbox-grid",
- "antbox-s2render",
+ "antbox-render",
  "antbox-s2win",
  "antbox-tick-timer",
  "anyhow",
@@ -134,7 +134,7 @@ dependencies = [
  "antbox-gameboard",
  "antbox-geom",
  "antbox-grid",
- "antbox-s2render",
+ "antbox-render",
  "antbox-tick-timer",
  "derive-debug",
  "derive-new",
@@ -194,7 +194,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "antbox-s2render"
+name = "antbox-render"
 version = "0.1.0"
 dependencies = [
  "antbox-geom",

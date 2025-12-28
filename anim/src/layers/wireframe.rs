@@ -1,5 +1,5 @@
 use antbox_grid::Bounds;
-use antbox_s2render::{RenderCycle, RenderWithArg, Vec2Ext as _, WithColor as _};
+use antbox_render::{RenderCycle, RenderWithArg, Vec2Ext as _, WithColor as _};
 use speedy2d::dimen::Vec2;
 
 use crate::layers::Layer;

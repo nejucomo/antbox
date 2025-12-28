@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 
 use antbox_gameboard::SeedPod;
 use antbox_geom::{Angle, Transformable as _};
-use antbox_s2render::{RectExt as _, RenderCycle, Vec2Ext as _, WithColor};
+use antbox_render::{RectExt as _, RenderCycle, Vec2Ext as _, WithColor};
 use rand_distr::Distribution as _;
 use speedy2d::color::Color;
 use speedy2d::dimen::Vec2;

@@ -1,4 +1,4 @@
-use antbox_grid::{GridCoord, Grid};
+use antbox_grid::{Grid, GridCoord};
 
 use crate::{ConwayCell, conways_rule};
 

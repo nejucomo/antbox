@@ -1,4 +1,4 @@
-use antbox_grid::{GridCoord, Direction};
+use antbox_grid::{Direction, GridCoord};
 use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
