@@ -1,5 +1,5 @@
+use antbox_render::Color;
 use extension_traits::extension;
-use speedy2d::color::Color;
 
 /// The background color
 pub(crate) const DIRT: Color = interpolate(
@@ -46,6 +46,15 @@ const fn interpolate_f32(from: f32, to: f32, factor: f32) -> f32 {
 
 #[extension(pub(crate) trait ColorExt)]
 impl Color {
+    fn to_ab_render(self) -> antbox_render::Color {
+        antbox_render::Color {
+            r: self.r(),
+            g: self.g(),
+            b: self.b(),
+            a: self.a(),
+        }
+    }
+
     fn with_alpha(self, a: f32) -> Color {
         Color::from_rgba(self.r(), self.g(), self.b(), a)
     }
