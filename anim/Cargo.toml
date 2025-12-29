@@ -21,5 +21,4 @@ log.workspace = true
 movestate.workspace = true
 rand.workspace = true
 rand_distr.workspace = true
-speedy2d.workspace = true
 wyrand = { workspace = true, features = ["rand_core"] }

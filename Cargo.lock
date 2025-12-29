@@ -144,7 +144,6 @@ dependencies = [
  "movestate",
  "rand",
  "rand_distr",
- "speedy2d",
  "wyrand",
 ]
 

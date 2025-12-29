@@ -1,19 +1,14 @@
 use std::collections::VecDeque;
 
-use crate::{Backend, Color, Renderable, ShapeWithColor};
+use antbox_geom::Rect;
+
+use crate::{Backend, Color, RenderCycle, ShapeWithColor};
 
 /// A [RenderScheduler] sorts [ShapeWithColor]s by [LayerScheduler] to draw onto a [Backend] in layer (z-axis) order
 #[derive(Debug)]
 pub struct RenderScheduler {
     bgslot: Option<Color>,
     layers: Vec<LayerScheduler>,
-}
-
-/// A [RenderCycle] encapsulates [schedul](RenderCycle::schedule)ing any number of [Renderable]s, then [render](RenderCycle::render)ing them all.
-#[derive(Debug)]
-pub struct RenderCycle<'a> {
-    rs: &'a mut RenderScheduler,
-    done: bool,
 }
 
 impl RenderScheduler {
@@ -30,55 +25,32 @@ impl RenderScheduler {
     }
 
     /// Start a new [RenderCycle]
-    pub fn start_cycle(&mut self) -> RenderCycle<'_> {
-        RenderCycle {
-            rs: self,
-            done: false,
-        }
-    }
-}
-
-impl<'a> RenderCycle<'a> {
-    /// Schedule the given [Renderable]
-    pub fn schedule<R>(&mut self, r: R)
-    where
-        R: Renderable,
-    {
-        r.schedule(self);
+    pub fn start_cycle(&mut self, view_size: Rect) -> RenderCycle<'_> {
+        RenderCycle::new(self, view_size)
     }
 
-    /// Get the layer scheduler for the give layer
-    pub fn get_layer(&mut self, layer: usize) -> &mut LayerScheduler {
-        &mut self.rs.layers[layer]
+    // [RenderCycle] interface:
+    pub(crate) fn schedule_bg_color(&mut self, color: Color) {
+        assert!(self.bgslot.replace(color).is_none());
     }
 
-    /// Render all scheduled elements, draining the queue
-    pub fn render<B>(mut self, gfx: &mut B)
+    pub(crate) fn get_layer(&mut self, layer: usize) -> &mut LayerScheduler {
+        &mut self.layers[layer]
+    }
+
+    pub(crate) fn render<B>(&mut self, gfx: &mut B)
     where
         B: Backend,
     {
-        if let Some(bg) = self.rs.bgslot.take() {
+        if let Some(bg) = self.bgslot.take() {
             gfx.clear_screen(bg);
         }
 
-        for layer in self.rs.layers.iter_mut() {
+        for layer in self.layers.iter_mut() {
             while let Some(shwico) = layer.0.pop_front() {
                 shwico.render_to(gfx);
             }
         }
-
-        self.done = true;
-    }
-
-    /// Schedule the element to be drawn
-    pub(crate) fn schedule_bg_color(&mut self, color: Color) {
-        assert!(self.rs.bgslot.replace(color).is_none());
-    }
-}
-
-impl<'a> Drop for RenderCycle<'a> {
-    fn drop(&mut self) {
-        assert!(self.done);
     }
 }
 

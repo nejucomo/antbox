@@ -1,12 +1,10 @@
 use std::cell::RefCell;
 
 use antbox_gameboard::{BoardState as AntboxState, GenParams};
-use antbox_render::{RenderScheduler, RenderWithArg};
+use antbox_render::{RenderCycle, RenderScheduler, RenderWithArg, Renderable};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::TakeIntoNext;
 use movestate::next::State;
-use speedy2d::Graphics2D;
-use speedy2d::dimen::Vec2;
 
 use crate::layers::Layer;
 use crate::{GridLayout, WyrGrid, layers, spots_into_renderable};
@@ -36,19 +34,6 @@ impl AnimationState {
             rs,
         }
     }
-
-    /// Draw `self` onto `gfx`
-    pub fn draw(&self, gfx: &mut Graphics2D, view_size: Vec2) {
-        let layout = GridLayout::new(self.antbox.bounds(), view_size);
-
-        let mut rsched = self.rs.borrow_mut();
-        let mut cycle = rsched.start_cycle();
-
-        cycle.schedule(layers::Background);
-        cycle.schedule(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
-        cycle.schedule(layers::WireFrame.with_render_arg(layout));
-        cycle.render(gfx);
-    }
 }
 
 impl<R> TakeIntoNext<&mut R> for AnimationState
@@ -64,5 +49,16 @@ where
             rs: self.rs,
         }
         .into()
+    }
+}
+
+impl Renderable for &AnimationState {
+    fn schedule(self, cycle: &mut RenderCycle) {
+        let layout = GridLayout::new(self.antbox.bounds(), view_size);
+
+        cycle.schedule(layers::Background);
+        cycle.schedule(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
+        cycle.schedule(layers::WireFrame.with_render_arg(layout));
+        cycle.render(gfx);
     }
 }

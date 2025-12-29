@@ -1,6 +1,5 @@
+use antbox_geom::Point;
 use antbox_grid::{Bounds, GridCoord};
-use speedy2d::dimen::Vec2;
-use speedy2d::shape::Rect;
 
 /// A [GridLayout] matches logical [Bounds] to a pixel view coordinates
 #[derive(Copy, Clone, Debug)]
@@ -8,21 +7,22 @@ pub struct GridLayout {
     /// The logical bounds
     pub bounds: Bounds,
     /// The view size in (abstract) pixels
-    pub view_size: Vec2,
-    /// The cell size in (abstract) pixels
-    pub cell_bounds: Vec2,
+    pub view_size: Rect,
+    /// The cell bounds around the origin in (abstract) pixels
+    pub cell_bounds: Rect,
     /// The cell radius in (abstract) pixels
     pub cell_radius: f32,
 }
 
 impl GridLayout {
     /// Construct a new [Self]
-    pub fn new(bounds: Bounds, view_size: Vec2) -> Self {
+    pub fn new(bounds: Bounds, view_size: Point) -> Self {
         let cell_bounds = {
             let w32 = bounds.width as f32;
             let h32 = bounds.height as f32;
 
-            Vec2::new(view_size.x / w32, view_size.y / h32)
+            Point::new(0, 0)
+            Point::new(view_size.x / w32, view_size.y / h32)
         };
 
         Self {
