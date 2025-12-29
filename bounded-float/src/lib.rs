@@ -1,8 +1,8 @@
-//! [NF] newtype wrapping [f32] on the interval `[0, 1]`
+//! Range-bounded [f32] newtypes for intervals `[0, 1]`, `[0, ∞]`, `(0, ∞)`
 #![deny(unsafe_code, missing_docs)]
 
 mod error;
-mod nf;
+mod norm;
 
-pub use self::error::NFError;
-pub use self::nf::NF;
+pub use self::error::BoundedFloatError;
+pub use self::norm::NormF32;
