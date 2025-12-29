@@ -1,14 +1,8 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! [NF] newtype wrapping [f32] on the interval `[0, 1]`
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod error;
+mod nf;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::error::NFError;
+pub use self::nf::NF;
