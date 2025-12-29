@@ -1226,6 +1226,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "normfloat"
+version = "0.1.0"
+
+[[package]]
 name = "num-integer"
 version = "0.1.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
