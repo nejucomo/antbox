@@ -4,13 +4,14 @@ members = [
   "anim",
   "antbox",
   "clife",
+  "color",
+  "float",
   "gameboard",
   "geom",
   "grid",
   "logging-options",
   "moveslot",
   "movestate",
-  "antbox-float",
   "render",
   "s2win",
   "tick",
@@ -25,6 +26,8 @@ homepage = "https://github.com/nejucomo/antbox"
 antbox = { version = "0.1.0", path = "antbox" }
 antbox-animation = { version = "0.1.0", path = "anim" }
 antbox-clife = { version = "0.1.0", path = "clife" }
+antbox-color = { version = "0.1.0", path = "color" }
+antbox-float = { version = "0.1.0", path = "float" }
 antbox-gameboard = { version = "0.1.0", path = "gameboard" }
 antbox-geom = { version = "0.1.0", path = "geom" }
 antbox-grid = { version = "0.1.0", path = "grid" }
@@ -34,7 +37,6 @@ antbox-tick-timer = { version = "0.1.0", path = "tick" }
 logging-options = { version = "0.1.0", path = "logging-options" }
 moveslot = { version = "0.1.0", path = "moveslot" }
 movestate = { version = "0.1.0", path = "movestate" }
-antbox-float = { version = "0.1.0", path = "antbox-float" }
 
 anyhow = "1.0.100"
 clap = "4.5.53"
