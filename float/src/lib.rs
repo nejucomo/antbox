@@ -1,4 +1,4 @@
-//! Range-bounded [f32] newtypes for intervals `[0, 1]`, `[0, ∞]`, `(0, ∞)`
+//! Newtype wrappers for [f32]
 #![deny(unsafe_code, missing_docs)]
 
 mod error;

@@ -43,3 +43,14 @@ macro_rules! def_rgba {
 
 def_rgba!(RGBAu, u8, rgba, rgb, u8::MAX);
 def_rgba!(RGBAf, NormF32, rgba_f, rgb_f, NormF32::from_f32(1.0));
+
+impl From<RGBAu> for RGBAf {
+    fn from(us: RGBAu) -> Self {
+        RGBAf {
+            r: NormF32::from_u8(us.r),
+            g: NormF32::from_u8(us.g),
+            b: NormF32::from_u8(us.b),
+            a: NormF32::from_u8(us.a),
+        }
+    }
+}
