@@ -6,3 +6,4 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+antbox-float.workspace = true

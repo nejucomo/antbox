@@ -160,6 +160,9 @@ dependencies = [
 [[package]]
 name = "antbox-color"
 version = "0.1.0"
+dependencies = [
+ "antbox-float",
+]
 
 [[package]]
 name = "antbox-float"
