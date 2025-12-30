@@ -2,15 +2,9 @@
 #![deny(unsafe_code, missing_docs)]
 
 mod backend;
-mod cycle;
-mod rendarg;
+mod rarg;
 mod renderable;
-mod scheduler;
-mod shwico;
 
 pub use self::backend::Backend;
-pub use self::cycle::RenderCycle;
-pub use self::rendarg::RenderWithArg;
+pub use self::rarg::RenderWithArg;
 pub use self::renderable::Renderable;
-pub use self::scheduler::{LayerScheduler, RenderScheduler};
-pub use self::shwico::{ShapeWithColor, WithColor};

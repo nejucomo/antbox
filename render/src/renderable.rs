@@ -1,31 +1,31 @@
-use crate::RenderCycle;
+use crate::Backend;
 
 /// Types which can enqueue render elements
 pub trait Renderable {
-    /// Schedule `self` to be rendered into `rq`
-    fn schedule(self, cycle: &mut RenderCycle);
+    /// Render `self` to be rendered into `rq`
+    fn render_to<B: Backend>(self, rb: &mut B);
 }
 
-impl<A, B> Renderable for (A, B)
+impl<X, Y> Renderable for (X, Y)
 where
-    A: Renderable,
-    B: Renderable,
+    X: Renderable,
+    Y: Renderable,
 {
-    fn schedule(self, cycle: &mut RenderCycle) {
+    fn render_to<B: Backend>(self, rb: &mut B) {
         let (a, b) = self;
-        a.schedule(cycle);
-        b.schedule(cycle);
+        a.render_to(rb);
+        b.render_to(rb);
     }
 }
 
-impl<A, B, C> Renderable for (A, B, C)
+impl<X, Y, Z> Renderable for (X, Y, Z)
 where
-    A: Renderable,
-    B: Renderable,
-    C: Renderable,
+    X: Renderable,
+    Y: Renderable,
+    Z: Renderable,
 {
-    fn schedule(self, cycle: &mut RenderCycle) {
+    fn render_to<B: Backend>(self, rb: &mut B) {
         let (a, b, c) = self;
-        (a, (b, c)).schedule(cycle);
+        (a, (b, c)).render_to(rb);
     }
 }

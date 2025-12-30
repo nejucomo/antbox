@@ -211,6 +211,7 @@ dependencies = [
 name = "antbox-render"
 version = "0.1.0"
 dependencies = [
+ "antbox-color",
  "antbox-geom",
  "derive-new",
  "derive_more",

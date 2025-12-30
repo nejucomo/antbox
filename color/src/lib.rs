@@ -3,8 +3,8 @@
 
 use antbox_float::NormF32;
 
-/// An _RBGA_ color representation with [NormF32] bands
-pub struct RBGA {
+/// An _RGBA_ color representation with [NormF32] bands
+pub struct Color {
     /// The red band
     pub r: NormF32,
     /// The green band
@@ -15,7 +15,7 @@ pub struct RBGA {
     pub a: NormF32,
 }
 
-impl RBGA {
+impl Color {
     /// Construct with all four bands
     pub const fn new(r: NormF32, g: NormF32, b: NormF32, a: NormF32) -> Self {
         Self { r, g, b, a }
@@ -42,12 +42,12 @@ impl RBGA {
     }
 }
 
-/// Shorthand for [RBGA::new_u8]
-pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> RBGA {
-    RBGA::new_u8(r, g, b, a)
+/// Shorthand for [Color::new_u8]
+pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> Color {
+    Color::new_u8(r, g, b, a)
 }
 
-/// Shorthand for [RBGA::new_u8_full_alpha]
-pub const fn rgb(r: u8, g: u8, b: u8) -> RBGA {
-    RBGA::new_u8_full_alpha(r, g, b)
+/// Shorthand for [Color::new_u8_full_alpha]
+pub const fn rgb(r: u8, g: u8, b: u8) -> Color {
+    Color::new_u8_full_alpha(r, g, b)
 }
