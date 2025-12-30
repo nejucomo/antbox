@@ -158,6 +158,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "antbox-float"
+version = "0.1.0"
+dependencies = [
+ "derive_more",
+ "thiserror 2.0.17",
+]
+
+[[package]]
 name = "antbox-gameboard"
 version = "0.1.0"
 dependencies = [
@@ -265,14 +273,6 @@ name = "block"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
-
-[[package]]
-name = "bounded-float"
-version = "0.1.0"
-dependencies = [
- "derive_more",
- "thiserror 2.0.17",
-]
 
 [[package]]
 name = "bumpalo"
