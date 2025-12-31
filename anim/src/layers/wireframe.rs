@@ -1,8 +1,7 @@
+use antbox_geom::{Dimensions, Point};
 use antbox_grid::Bounds;
-use antbox_render::{RenderCycle, RenderWithArg, Vec2Ext as _, WithColor as _};
-use speedy2d::dimen::Vec2;
+use antbox_render::{Backend, RenderWithArg};
 
-use crate::layers::Layer;
 use crate::{GridLayout, colors};
 
 /// The wireframe layer, showing the grid cell rectangles
@@ -10,29 +9,37 @@ use crate::{GridLayout, colors};
 pub struct WireFrame;
 
 impl RenderWithArg<GridLayout> for WireFrame {
-    fn schedule_with_arg(self, cycle: &mut RenderCycle, layout: GridLayout) {
-        let layer = Layer::WireFrame.scheduler(cycle);
+    fn render_with_arg<B: Backend>(self, rb: &mut B, layout: GridLayout) {
         let GridLayout {
-            bounds: Bounds { width, height },
-            view_size,
-            cell_dims: cell_bounds,
-            cell_radius: _,
+            bounds:
+                Bounds {
+                    width: columns,
+                    height: rows,
+                },
+            view_size:
+                Dimensions {
+                    width: view_width,
+                    height: view_height,
+                },
+            cell_dims:
+                Dimensions {
+                    width: cell_width,
+                    height: cell_height,
+                },
         } = layout;
 
-        for col in 0..width {
-            let x = (col as f32) * cell_bounds.x;
-            layer.schedule(
-                Vec2::new(x, 0.0)
-                    .to((x, view_size.y), 1.0)
-                    .with_color(colors::WIRE_FRAME),
+        for col in 0..columns {
+            let x = cell_width * col;
+            rb.render(
+                Point::new(x, 0.0).vector_to((x, view_height)),
+                colors::WIRE_FRAME,
             );
         }
-        for row in 0..height {
-            let y = (row as f32) * cell_bounds.y;
-            layer.schedule(
-                Vec2::new(0.0, y)
-                    .to((view_size.x, y), 1.0)
-                    .with_color(colors::WIRE_FRAME),
+        for row in 0..rows {
+            let y = cell_height * row;
+            rb.render(
+                Point::new(0.0, y).vector_to((view_width, y)),
+                colors::WIRE_FRAME,
             );
         }
     }

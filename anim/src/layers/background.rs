@@ -1,4 +1,4 @@
-use antbox_render::{RenderCycle, Renderable};
+use antbox_render::{Backend, Renderable};
 
 use crate::colors;
 
@@ -7,7 +7,7 @@ use crate::colors;
 pub struct Background;
 
 impl Renderable for Background {
-    fn schedule(self, cycle: &mut RenderCycle) {
-        colors::DIRT.schedule(cycle);
+    fn render_to<B: Backend>(self, rb: &mut B) {
+        rb.clear_screen(colors::DIRT);
     }
 }
