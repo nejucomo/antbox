@@ -3,6 +3,9 @@
 
 use antbox_float::NormF32;
 
+#[allow(missing_docs)]
+pub const BLACK: Color = rgb(0, 0, 0);
+
 /// An _RGBA_ color representation with [NormF32] bands
 pub struct Color {
     /// The red band
@@ -39,6 +42,16 @@ impl Color {
     /// Construct from  _RGB_ [u8] bands
     pub const fn new_u8_full_alpha(r: u8, g: u8, b: u8) -> Self {
         Self::new_u8(r, g, b, u8::MAX)
+    }
+
+    /// Interpolate linearly between two colors
+    pub const fn interpolate(self, other: Color, proportion: NormF32) -> Color {
+        Color {
+            r: self.r.interpolate(other.r, proportion),
+            g: self.g.interpolate(other.g, proportion),
+            b: self.b.interpolate(other.b, proportion),
+            a: self.a.interpolate(other.a, proportion),
+        }
     }
 }
 

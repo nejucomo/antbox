@@ -8,6 +8,7 @@ homepage.workspace = true
 
 [dependencies]
 antbox-clife.workspace = true
+antbox-color.workspace = true
 antbox-gameboard.workspace = true
 antbox-geom.workspace = true
 antbox-grid.workspace = true

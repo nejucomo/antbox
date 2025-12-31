@@ -32,6 +32,11 @@ impl NormF32 {
     pub const fn from_u8(u: u8) -> Self {
         Self::from_f32(u as f32 / u8::MAX as f32)
     }
+
+    /// Convert to a norm float approximating `u /` [`u8::MAX`]
+    pub const fn interpolate(self, other: Self, proportion: Self) -> Self {
+        Self::from_f32((other.0 - self.0) * proportion.0 + self.0)
+    }
 }
 
 impl TryFrom<f32> for NormF32 {

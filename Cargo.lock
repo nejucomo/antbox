@@ -131,6 +131,7 @@ name = "antbox-animation"
 version = "0.1.0"
 dependencies = [
  "antbox-clife",
+ "antbox-color",
  "antbox-gameboard",
  "antbox-geom",
  "antbox-grid",
@@ -169,6 +170,7 @@ name = "antbox-float"
 version = "0.1.0"
 dependencies = [
  "derive_more",
+ "extension-traits",
  "thiserror 2.0.17",
 ]
 

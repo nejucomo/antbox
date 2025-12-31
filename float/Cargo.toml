@@ -7,4 +7,5 @@ homepage.workspace = true
 
 [dependencies]
 derive_more = { workspace = true, features = ["into"] }
+extension-traits.workspace = true
 thiserror.workspace = true

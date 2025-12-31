@@ -1,65 +1,35 @@
-use antbox_render::Color;
-use extension_traits::extension;
+use antbox_color::{BLACK, Color, rgb, rgba};
 
 /// The background color
-pub(crate) const DIRT: Color = interpolate(
-    Color::from_rgb(118. / 255., 80. / 255., 51.3 / 255.),
-    Color::BLACK,
-    0.6,
-);
+pub(crate) const DIRT: Color = rgb(118, 80, 51).interpolate(BLACK, 0.6);
 
-pub(crate) const WIRE_FRAME: Color = Color::from_rgb(0.1, 0.12, 0.16);
+pub(crate) const WIRE_FRAME: Color = rgb(26, 31, 41);
 
-pub(crate) const SEEDPOD: Color = interpolate(Color::from_rgba(0.25, 0.25, 0.25, 0.75), DIRT, 0.5);
-pub(crate) const SEED: Color = Color::from_rgb(0.96, 0.87, 0.7);
-pub(crate) const RIPE: Color = Color::from_rgb(0.1, 0.5, 0.17);
-pub(crate) const OVERCROWDED: Color = Color::from_rgb(0.153, 0.125, 0.042);
-pub(crate) const FOOD_LIFE: Color = Color::from_rgb(0.5, 0.77, 0.46);
+pub(crate) const SEEDPOD: Color = rgba(64, 64, 64, 191).interpolate(DIRT, 0.5);
+pub(crate) const SEED: Color = rgb(245, 222, 179);
+pub(crate) const RIPE: Color = rgb(26, 128, 43);
+pub(crate) const OVERCROWDED: Color = rgb(39, 32, 11);
+pub(crate) const FOOD_LIFE: Color = rgb(128, 196, 117);
 
-pub(crate) const ANT: Color = Color::from_rgb(100. / 255., 100. / 255., 170. / 255.);
+pub(crate) const ANT: Color = rgb(100, 100, 170);
 pub(crate) const ANT_HOLE_ENTRANCE: Color = Color::BLACK;
 pub(crate) const ANT_HOLE_IRIS: Color =
-    interpolate(DIRT, interpolate(Color::RED, Color::WHITE, 0.3), 0.1);
+    DIRT.interpolate(Color::RED.interpolate(Color::WHITE, 0.3), 0.1);
 
 pub(crate) fn food_neighbor_count(c: u8) -> Color {
     assert!(c < 9, "{c:?}");
     let c = c as f32;
     if c <= 3.0 {
-        interpolate(SEED, RIPE, c / 3.0)
+        SEED.interpolate(RIPE, c / 3.0)
     } else {
-        interpolate(RIPE, OVERCROWDED, (c - 3.0) / 5.0)
+        RIPE.interpolate(OVERCROWDED, (c - 3.0) / 5.0)
     }
 }
 
-pub const fn interpolate(from: Color, to: Color, factor: f32) -> Color {
-    Color::from_rgba(
-        interpolate_f32(from.r(), to.r(), factor),
-        interpolate_f32(from.g(), to.g(), factor),
-        interpolate_f32(from.b(), to.b(), factor),
-        interpolate_f32(from.a(), to.a(), factor),
-    )
-}
+// #[extension(pub(crate) trait ColorExt)]
+// impl Color {
 
-const fn interpolate_f32(from: f32, to: f32, factor: f32) -> f32 {
-    factor * (to - from) + from
-}
-
-#[extension(pub(crate) trait ColorExt)]
-impl Color {
-    fn to_ab_render(self) -> antbox_render::Color {
-        antbox_render::Color {
-            r: self.r(),
-            g: self.g(),
-            b: self.b(),
-            a: self.a(),
-        }
-    }
-
-    fn with_alpha(self, a: f32) -> Color {
-        Color::from_rgba(self.r(), self.g(), self.b(), a)
-    }
-
-    fn interpolate(self, other: Color, factor: f32) -> Color {
-        interpolate(self, other, factor)
-    }
-}
+//     fn with_alpha(self, a: f32) -> Color {
+//         rgba(self.r(), self.g(), self.b(), a)
+//     }
+// }
