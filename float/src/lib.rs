@@ -5,4 +5,4 @@ mod error;
 mod norm;
 
 pub use self::error::BoundedFloatError;
-pub use self::norm::NormF32;
+pub use self::norm::Norm;

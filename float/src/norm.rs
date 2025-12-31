@@ -6,23 +6,23 @@ use crate::BoundedFloatError;
 
 /// A newtype wrapping [f32] on the interval `[0, 1]`
 #[derive(Copy, Clone, Debug, Into)]
-pub struct NormF32(f32);
+pub struct Norm(f32);
 
-impl NormF32 {
+impl Norm {
     /// Wrap `f`, panicking if `f` is out-of-range
-    pub const fn from_f32(f: f32) -> Self {
+    pub const fn fromp_f32(f: f32) -> Self {
         // Self::try_from_f32(f).unwrap()
         if let Ok(s) = Self::try_from_f32(f) {
             s
         } else {
-            panic!("`NormF32::from_f32(...)` failure");
+            panic!("`Norm::fromp_f32(...)` failure");
         }
     }
 
     /// Try to construct from a raw [f32]
     pub const fn try_from_f32(f: f32) -> Result<Self, BoundedFloatError> {
         if 0.0 <= f && f <= 1.0 {
-            Ok(NormF32(f))
+            Ok(Norm(f))
         } else {
             Err(BoundedFloatError { f })
         }
@@ -30,16 +30,16 @@ impl NormF32 {
 
     /// Convert to a norm float approximating `u /` [`u8::MAX`]
     pub const fn from_u8(u: u8) -> Self {
-        Self::from_f32(u as f32 / u8::MAX as f32)
+        Self(u as f32 / u8::MAX as f32)
     }
 
     /// Convert to a norm float approximating `u /` [`u8::MAX`]
     pub const fn interpolate(self, other: Self, proportion: Self) -> Self {
-        Self::from_f32((other.0 - self.0) * proportion.0 + self.0)
+        Self((other.0 - self.0) * proportion.0 + self.0)
     }
 }
 
-impl TryFrom<f32> for NormF32 {
+impl TryFrom<f32> for Norm {
     type Error = BoundedFloatError;
 
     fn try_from(f: f32) -> Result<Self, Self::Error> {
@@ -47,18 +47,18 @@ impl TryFrom<f32> for NormF32 {
     }
 }
 
-impl Mul for NormF32 {
+impl Mul for Norm {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Self::from_f32(self.0 * rhs.0)
+        Self(self.0 * rhs.0)
     }
 }
 
-impl Mul<NormF32> for f32 {
+impl Mul<Norm> for f32 {
     type Output = f32;
 
-    fn mul(self, rhs: NormF32) -> Self::Output {
+    fn mul(self, rhs: Norm) -> Self::Output {
         self * rhs.0
     }
 }
