@@ -15,7 +15,7 @@ impl RenderWithArg<GridLayout> for WireFrame {
         let GridLayout {
             bounds: Bounds { width, height },
             view_size,
-            cell_bounds,
+            cell_dims: cell_bounds,
             cell_radius: _,
         } = layout;
 

@@ -1,12 +1,10 @@
-use std::cell::RefCell;
-
 use antbox_gameboard::{BoardState as AntboxState, GenParams};
-use antbox_render::{RenderCycle, RenderScheduler, RenderWithArg, Renderable};
+use antbox_geom::Dimensions;
+use antbox_render::{Backend, RenderWithArg, Renderable};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::TakeIntoNext;
 use movestate::next::State;
 
-use crate::layers::Layer;
 use crate::{GridLayout, WyrGrid, layers, spots_into_renderable};
 
 const ANTBOX_FRAME_RATE: f64 = 5.0;
@@ -16,8 +14,6 @@ const ANTBOX_FRAME_RATE: f64 = 5.0;
 pub struct AnimationState {
     antbox: RateLimiter<AntboxState>,
     wyrgrid: WyrGrid,
-    /// This is behind a [RefCell] because we're "caching the allocation"
-    rs: RefCell<RenderScheduler>,
 }
 
 impl AnimationState {
@@ -26,13 +22,8 @@ impl AnimationState {
         let antbox = gp.generate_state(rng);
         let antbox = RateLimiter::new(antbox, TickTimer::with_frame_rate(ANTBOX_FRAME_RATE));
         let wyrgrid = WyrGrid::new(antbox.bounds(), rng);
-        let rs = RefCell::new(RenderScheduler::new(Layer::count()));
 
-        AnimationState {
-            antbox,
-            wyrgrid,
-            rs,
-        }
+        AnimationState { antbox, wyrgrid }
     }
 }
 
@@ -46,19 +37,17 @@ where
         AnimationState {
             antbox: self.antbox.take_into_next(rng),
             wyrgrid: self.wyrgrid,
-            rs: self.rs,
         }
         .into()
     }
 }
 
-impl Renderable for &AnimationState {
-    fn schedule(self, cycle: &mut RenderCycle) {
+impl RenderWithArg<Dimensions> for &AnimationState {
+    fn render_with_arg<B: Backend>(self, rb: &mut B, view_size: Dimensions) {
         let layout = GridLayout::new(self.antbox.bounds(), view_size);
 
-        cycle.schedule(layers::Background);
-        cycle.schedule(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
-        cycle.schedule(layers::WireFrame.with_render_arg(layout));
-        cycle.render(gfx);
+        rb.render_to(layers::Background);
+        rb.render_to(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
+        rb.render_with_arg(layers::WireFrame, layout);
     }
 }

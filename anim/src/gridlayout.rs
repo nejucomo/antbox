@@ -1,4 +1,4 @@
-use antbox_geom::Point;
+use antbox_geom::{Dimensions, Point, Rect};
 use antbox_grid::{Bounds, GridCoord};
 
 /// A [GridLayout] matches logical [Bounds] to a pixel view coordinates
@@ -7,45 +7,31 @@ pub struct GridLayout {
     /// The logical bounds
     pub bounds: Bounds,
     /// The view size in (abstract) pixels
-    pub view_size: Rect,
+    pub view_size: Dimensions,
     /// The cell bounds around the origin in (abstract) pixels
-    pub cell_bounds: Rect,
-    /// The cell radius in (abstract) pixels
-    pub cell_radius: f32,
+    pub cell_dims: Dimensions,
 }
 
 impl GridLayout {
     /// Construct a new [Self]
-    pub fn new(bounds: Bounds, view_size: Point) -> Self {
-        let cell_bounds = {
-            let w32 = bounds.width as f32;
-            let h32 = bounds.height as f32;
-
-            Point::new(0, 0)
-            Point::new(view_size.x / w32, view_size.y / h32)
-        };
+    pub fn new(bounds: Bounds, view_size: Dimensions) -> Self {
+        let cell_dims = view_size / (bounds.width, bounds.height);
 
         Self {
             bounds,
             view_size,
-            cell_bounds,
-            cell_radius: cell_bounds.x.min(cell_bounds.y) / 2.0,
+            cell_dims,
         }
     }
 
     /// Iterate over logical [BoundPoint]s and their associated pixel [Rect]s
     pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
-        let Vec2 { x: cellw, y: cellh } = self.cell_bounds;
+        let rect_top_left = Rect::from_point_and_dimensions(Point::ORIGIN, self.cell_dims);
 
-        self.bounds.iter_points().map(move |pt| {
-            let left = cellw * (pt.x() as f32);
-            let top = cellh * (pt.y() as f32);
-            let right = left + cellw;
-            let bottom = top + cellh;
-
+        self.bounds.iter_points().map(move |coord| {
             (
-                pt,
-                Rect::new(Vec2::new(left, top), Vec2::new(right, bottom)),
+                coord,
+                rect_top_left.translate(self.cell_dims * (coord.x(), coord.y())),
             )
         })
     }
@@ -54,7 +40,7 @@ impl GridLayout {
 #[test]
 fn verify_pts_and_rects() {
     let bounds = Bounds::new(2, 2);
-    let gl = GridLayout::new(bounds, Vec2::new(24., 18.));
+    let gl = GridLayout::new(bounds, Dimensions::new(24., 18.));
     let bprs: Vec<(GridCoord, Rect)> = gl.iter_pts_and_rects().collect();
     assert_eq!(
         bprs,

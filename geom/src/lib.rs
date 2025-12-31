@@ -9,6 +9,7 @@
 
 mod angle;
 mod circle;
+mod dims;
 mod line;
 mod point;
 mod polar;
@@ -19,6 +20,7 @@ mod vector;
 
 pub use self::angle::Angle;
 pub use self::circle::Circle;
+pub use self::dims::Dimensions;
 pub use self::line::Line;
 pub use self::point::Point;
 pub use self::polar::Polar;
