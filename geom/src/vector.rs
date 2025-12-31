@@ -1,3 +1,4 @@
+use antbox_float::NNF;
 use derive_new::new;
 
 use crate::{Angle, Distance, Line, Point, Transformable};
@@ -29,26 +30,23 @@ impl Vector {
 }
 
 impl Transformable for Vector {
-    fn rotate<A>(self, a: A) -> Self
-    where
-        A: Into<Angle>,
-    {
+    fn rotate_by_angle(self, a: Angle) -> Self {
         Vector {
-            delta: self.delta.rotate(a),
+            delta: self.delta.rotate_by_angle(a),
             ..self
         }
     }
 
-    fn scale(self, s: f32) -> Self {
+    fn scale_by_nnf(self, s: NNF) -> Self {
         Vector {
-            delta: self.delta.scale(s),
+            delta: self.delta.scale_by_nnf(s),
             ..self
         }
     }
 
-    fn translate(self, delta: Point) -> Self {
+    fn translate_by_point(self, p: Point) -> Self {
         Vector {
-            start: self.start + delta,
+            start: self.start + p,
             ..self
         }
     }

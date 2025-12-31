@@ -1,6 +1,7 @@
 use std::ops::Mul;
 
 use derive_more::Into;
+use rand::distr::{Distribution, StandardUniform};
 
 use crate::BoundedFloatError;
 
@@ -9,6 +10,13 @@ use crate::BoundedFloatError;
 pub struct Norm(f32);
 
 impl Norm {
+    #[allow(missing_docs)]
+    pub const ZERO: Norm = Norm(0f32);
+    #[allow(missing_docs)]
+    pub const ONE: Norm = Norm(1f32);
+    #[allow(missing_docs)]
+    pub const HALF: Norm = Norm(0.5f32);
+
     /// Wrap `f`, panicking if `f` is out-of-range
     pub const fn fromp_f32(f: f32) -> Self {
         // Self::try_from_f32(f).unwrap()
@@ -60,5 +68,11 @@ impl Mul<Norm> for f32 {
 
     fn mul(self, rhs: Norm) -> Self::Output {
         self * rhs.0
+    }
+}
+
+impl Distribution<Norm> for StandardUniform {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Norm {
+        Norm(rng.random_range(0f32..=1f32))
     }
 }

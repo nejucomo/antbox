@@ -1,5 +1,6 @@
 use std::ops::{Add, Neg, Sub};
 
+use antbox_float::NNF;
 use derive_more::{From, Into};
 use derive_new::new;
 
@@ -46,19 +47,16 @@ impl Point {
 }
 
 impl Transformable for Point {
-    fn rotate<A>(self, a: A) -> Self
-    where
-        A: Into<Angle>,
-    {
-        Polar::from(self).rotate(a).into()
+    fn rotate_by_angle(self, a: Angle) -> Self {
+        Polar::from(self).rotate_by_angle(a).into()
     }
 
-    fn scale(self, s: f32) -> Self {
-        Polar::from(self).scale(s).into()
+    fn scale_by_nnf(self, s: NNF) -> Self {
+        Polar::from(self).scale_by_nnf(s).into()
     }
 
-    fn translate(self, delta: Point) -> Self {
-        self + delta
+    fn translate_by_point(self, p: Point) -> Self {
+        self + p
     }
 }
 

@@ -1,3 +1,4 @@
+use antbox_float::NNF;
 use derive_new::new;
 
 use crate::{Angle, Distance, Point, Transformable};
@@ -14,26 +15,23 @@ pub struct Circle {
 }
 
 impl Transformable for Circle {
-    fn rotate<A>(self, a: A) -> Self
-    where
-        A: Into<Angle>,
-    {
+    fn rotate_by_angle(self, a: Angle) -> Self {
         Circle {
-            center: self.center.rotate(a),
+            center: self.center.rotate_by_angle(a),
             ..self
         }
     }
 
-    fn scale(self, s: f32) -> Self {
+    fn scale_by_nnf(self, s: NNF) -> Self {
         Circle {
             radius: self.radius * s,
             ..self
         }
     }
 
-    fn translate(self, delta: Point) -> Self {
+    fn translate_by_point(self, p: Point) -> Self {
         Circle {
-            center: self.center.translate(delta),
+            center: self.center.translate_by_point(p),
             ..self
         }
     }

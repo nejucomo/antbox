@@ -3,10 +3,10 @@ use std::ops::{Add, Div, Mul};
 
 use derive_more::Into;
 
-use crate::BoundedFloatError;
+use crate::{BoundedFloatError, Norm};
 
-/// <u>N</u>on-<u>N</u>egative <u>F</u>inite: a newtype wrapping [f32] on the interval `[0, 1)`
-#[derive(Copy, Clone, Debug, Into)]
+/// <u>N</u>on-<u>N</u>egative <u>F</u>inite: a newtype wrapping [f32] on the interval `[0, ∞)`
+#[derive(Copy, Clone, Debug, Into, PartialEq, PartialOrd)]
 pub struct NNF(f32);
 
 impl NNF {
@@ -30,11 +30,27 @@ impl NNF {
     }
 }
 
+impl From<Norm> for NNF {
+    fn from(n: Norm) -> Self {
+        Self(n.into())
+    }
+}
+
 impl TryFrom<f32> for NNF {
     type Error = BoundedFloatError;
 
     fn try_from(f: f32) -> Result<Self, Self::Error> {
         Self::try_from_f32(f)
+    }
+}
+
+impl Eq for NNF {}
+
+// We allow this suspicious implementation because `self.0` is never `nan` or `±∞`
+#[allow(clippy::derive_ord_xor_partial_ord)]
+impl Ord for NNF {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other).unwrap()
     }
 }
 
@@ -54,11 +70,19 @@ impl Mul for NNF {
     }
 }
 
-impl Mul<NNF> for f32 {
+impl Mul<Norm> for NNF {
+    type Output = NNF;
+
+    fn mul(self, rhs: Norm) -> Self::Output {
+        self * NNF::from(rhs)
+    }
+}
+
+impl Mul<f32> for NNF {
     type Output = f32;
 
-    fn mul(self, rhs: NNF) -> Self::Output {
-        self * rhs.0
+    fn mul(self, rhs: f32) -> Self::Output {
+        self.0 * rhs
     }
 }
 

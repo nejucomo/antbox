@@ -1,3 +1,4 @@
+use antbox_float::NNF;
 use derive_more::From;
 
 use crate::{Angle, Circle, Line, Point, Rect, Transformable};
@@ -14,36 +15,33 @@ pub enum Shape {
 }
 
 impl Transformable for Shape {
-    fn rotate<A>(self, a: A) -> Self
-    where
-        A: Into<Angle>,
-    {
+    fn rotate_by_angle(self, a: Angle) -> Self {
         use Shape::*;
 
         match self {
-            Circle(x) => Circle(x.rotate(a)),
-            Line(x) => Line(x.rotate(a)),
-            Rect(x) => Rect(x.rotate(a)),
+            Circle(x) => Circle(x.rotate_by_angle(a)),
+            Line(x) => Line(x.rotate_by_angle(a)),
+            Rect(x) => Rect(x.rotate_by_angle(a)),
         }
     }
 
-    fn scale(self, s: f32) -> Self {
+    fn scale_by_nnf(self, s: NNF) -> Self {
         use Shape::*;
 
         match self {
-            Circle(x) => Circle(x.scale(s)),
-            Line(x) => Line(x.scale(s)),
-            Rect(x) => Rect(x.scale(s)),
+            Circle(x) => Circle(x.scale_by_nnf(s)),
+            Line(x) => Line(x.scale_by_nnf(s)),
+            Rect(x) => Rect(x.scale_by_nnf(s)),
         }
     }
 
-    fn translate(self, delta: Point) -> Self {
+    fn translate_by_point(self, p: Point) -> Self {
         use Shape::*;
 
         match self {
-            Circle(x) => Circle(x.translate(delta)),
-            Line(x) => Line(x.translate(delta)),
-            Rect(x) => Rect(x.translate(delta)),
+            Circle(x) => Circle(x.translate_by_point(p)),
+            Line(x) => Line(x.translate_by_point(p)),
+            Rect(x) => Rect(x.translate_by_point(p)),
         }
     }
 }

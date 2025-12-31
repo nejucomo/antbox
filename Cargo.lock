@@ -171,6 +171,7 @@ version = "0.1.0"
 dependencies = [
  "derive_more",
  "extension-traits",
+ "rand",
  "thiserror 2.0.17",
 ]
 
@@ -193,6 +194,7 @@ dependencies = [
 name = "antbox-geom"
 version = "0.1.0"
 dependencies = [
+ "antbox-float",
  "derive-new",
  "derive_more",
  "rand",

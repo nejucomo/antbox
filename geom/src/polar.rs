@@ -1,6 +1,6 @@
-use std::f32::consts::PI;
 use std::ops::Add;
 
+use antbox_float::{NNF, Norm};
 use derive_more::{From, Into};
 use derive_new::new;
 use rand::Rng;
@@ -24,7 +24,7 @@ impl From<Point> for Polar {
     fn from(Point { x, y }: Point) -> Self {
         Polar {
             angle: y.atan2(x).into(),
-            distance: (x.powi(2) + y.powi(2)).sqrt().into(),
+            distance: (x.powi(2) + y.powi(2)).sqrt().try_into().unwrap(),
         }
     }
 }
@@ -42,31 +42,27 @@ where
 }
 
 impl Transformable for Polar {
-    fn rotate<A>(self, a: A) -> Self
-    where
-        A: Into<Angle>,
-    {
+    fn rotate_by_angle(self, a: Angle) -> Self {
         Polar {
-            angle: self.angle + a.into(),
+            angle: self.angle + a,
             ..self
         }
     }
 
-    fn scale(self, s: f32) -> Self {
+    fn scale_by_nnf(self, s: NNF) -> Self {
         Polar {
-            distance: self.distance * s.abs(),
-            angle: self.angle + if s >= 0.0 { 0.0 } else { PI },
+            distance: self.distance * s,
+            ..self
         }
     }
 
-    fn translate(self, delta: Point) -> Self {
-        self + delta
+    fn translate_by_point(self, p: Point) -> Self {
+        self + p
     }
 }
 
 impl Distribution<Polar> for StandardUniform {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Polar {
-        rng.random::<Angle>()
-            .with_distance(rng.random_range(0f32..1f32))
+        rng.random::<Angle>().with_distance(rng.random::<Norm>())
     }
 }

@@ -1,3 +1,5 @@
+use antbox_float::{NNF, Norm};
+
 use crate::{Angle, Distance, Point, Transformable, Vector};
 
 /// A [Rect]angle
@@ -17,40 +19,37 @@ impl Rect {
     /// The width and height
     pub fn width_and_height(self) -> (Distance, Distance) {
         let Point { x: w, y: h } = self.0.delta;
-        (w.into(), h.into())
+        (Distance::fromp_f32(w), Distance::fromp_f32(h))
     }
 
     /// The center [Point]
     pub fn center(self) -> Point {
-        self.diagonal().scale(0.5).to()
+        self.diagonal().scale(Norm::HALF).to()
     }
 
     /// The minimum side length
     pub fn minimum_side_length(self) -> Distance {
         let (w, h) = self.width_and_height();
-        w.min(h) * 0.5
+        w.min(h) * Norm::HALF
     }
 
     /// The inner radius is half the minimum side length
     pub fn inner_radius(self) -> Distance {
-        self.minimum_side_length() * 0.5
+        self.minimum_side_length() * Norm::HALF
     }
 }
 
 impl Transformable for Rect {
-    fn rotate<A>(self, a: A) -> Self
-    where
-        A: Into<Angle>,
-    {
-        Self(self.0.rotate(a))
+    fn rotate_by_angle(self, a: Angle) -> Self {
+        Self(self.0.rotate_by_angle(a))
     }
 
-    fn scale(self, s: f32) -> Self {
-        Self(self.0.scale(s))
+    fn scale_by_nnf(self, s: NNF) -> Self {
+        Self(self.0.scale_by_nnf(s))
     }
 
-    fn translate(self, delta: Point) -> Self {
-        Self(self.0.translate(delta))
+    fn translate_by_point(self, p: Point) -> Self {
+        Self(self.0.translate_by_point(p))
     }
 }
 
