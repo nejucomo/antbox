@@ -6,7 +6,7 @@ use antbox_float::Norm;
 #[allow(missing_docs)]
 pub const BLACK: Color = rgb(0, 0, 0);
 
-/// An _RGBA_ color representation with [NormF32] bands
+/// An _RGBA_ color representation with [Norm] bands
 pub struct Color {
     /// The red band
     pub r: Norm,
@@ -26,7 +26,7 @@ impl Color {
 
     /// Construct with all _RGB_ bands and full alpha
     pub const fn new_full_alpha(r: Norm, g: Norm, b: Norm) -> Self {
-        Self::new(r, g, b, Norm::from_f32(1.0))
+        Self::new(r, g, b, Norm::fromp_f32(1.0))
     }
 
     /// Construct from [u8] bands
