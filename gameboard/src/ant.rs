@@ -1,4 +1,4 @@
-use antbox_geom::{BoundPoint, DirSet};
+use antbox_grid::{DirSet, GridCoord};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
 use movestate::TakeIntoNext;
@@ -77,7 +77,7 @@ impl Default for Ant {
 }
 
 impl AntMode {
-    fn sense(self, state: &mut Field, pt: BoundPoint) -> DirSet {
+    fn sense(self, state: &mut Field, pt: GridCoord) -> DirSet {
         use Pheromone as Ph;
 
         match self {
@@ -103,7 +103,7 @@ impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for Ant
 where
     R: rand::Rng,
 {
-    type Next = (Either<Self, Pheromones>, Option<BoundPoint>);
+    type Next = (Either<Self, Pheromones>, Option<GridCoord>);
 
     fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         let dirs = self.mode.sense(su.field, su.pt);

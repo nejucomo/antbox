@@ -4,10 +4,14 @@
 #![deny(unsafe_code, missing_docs)]
 
 mod adapter;
+mod control;
 mod handler;
 mod inner;
+mod into_ab;
 mod winext;
 
 pub mod event;
+pub use self::control::Control;
 pub use self::handler::WindowEventHandler;
 pub use self::winext::WindowExt;
+pub use speedy2d::window::UserEventSender;

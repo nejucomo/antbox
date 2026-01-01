@@ -108,10 +108,10 @@ dependencies = [
  "antbox-clife",
  "antbox-gameboard",
  "antbox-geom",
- "antbox-s2render",
+ "antbox-grid",
+ "antbox-render",
  "antbox-s2win",
  "antbox-tick-timer",
- "antbox-trig",
  "anyhow",
  "clap",
  "derive-debug",
@@ -131,11 +131,13 @@ name = "antbox-animation"
 version = "0.1.0"
 dependencies = [
  "antbox-clife",
+ "antbox-color",
+ "antbox-float",
  "antbox-gameboard",
  "antbox-geom",
- "antbox-s2render",
+ "antbox-grid",
+ "antbox-render",
  "antbox-tick-timer",
- "antbox-trig",
  "derive-debug",
  "derive-new",
  "derive_more",
@@ -144,7 +146,6 @@ dependencies = [
  "movestate",
  "rand",
  "rand_distr",
- "speedy2d",
  "wyrand",
 ]
 
@@ -152,10 +153,27 @@ dependencies = [
 name = "antbox-clife"
 version = "0.1.0"
 dependencies = [
- "antbox-geom",
+ "antbox-grid",
  "derive-new",
  "derive_more",
  "movestate",
+]
+
+[[package]]
+name = "antbox-color"
+version = "0.1.0"
+dependencies = [
+ "antbox-float",
+]
+
+[[package]]
+name = "antbox-float"
+version = "0.1.0"
+dependencies = [
+ "derive_more",
+ "extension-traits",
+ "rand",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
@@ -163,7 +181,7 @@ name = "antbox-gameboard"
 version = "0.1.0"
 dependencies = [
  "antbox-clife",
- "antbox-geom",
+ "antbox-grid",
  "clap",
  "derive-new",
  "derive_more",
@@ -177,6 +195,16 @@ dependencies = [
 name = "antbox-geom"
 version = "0.1.0"
 dependencies = [
+ "antbox-float",
+ "derive-new",
+ "derive_more",
+ "rand",
+]
+
+[[package]]
+name = "antbox-grid"
+version = "0.1.0"
+dependencies = [
  "derive-new",
  "derive_more",
  "itertools",
@@ -185,12 +213,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "antbox-s2render"
+name = "antbox-render"
 version = "0.1.0"
 dependencies = [
+ "antbox-color",
+ "antbox-geom",
  "derive-new",
  "derive_more",
  "extension-traits",
+]
+
+[[package]]
+name = "antbox-s2render"
+version = "0.1.0"
+dependencies = [
+ "antbox-color",
+ "antbox-geom",
+ "antbox-render",
+ "derive_more",
  "speedy2d",
 ]
 
@@ -198,6 +238,9 @@ dependencies = [
 name = "antbox-s2win"
 version = "0.1.0"
 dependencies = [
+ "antbox-geom",
+ "antbox-render",
+ "antbox-s2render",
  "derive-debug",
  "derive-new",
  "derive_more",
@@ -217,16 +260,6 @@ dependencies = [
  "extension-traits",
  "log",
  "movestate",
-]
-
-[[package]]
-name = "antbox-trig"
-version = "0.1.0"
-dependencies = [
- "derive-new",
- "derive_more",
- "rand",
- "speedy2d",
 ]
 
 [[package]]
@@ -1159,7 +1192,7 @@ dependencies = [
  "jni-sys",
  "ndk-sys",
  "num_enum",
- "thiserror",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -1750,7 +1783,16 @@ version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 1.0.69",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f63587ca0f12b72a0600bcba1d40081f830876000bb46dd2337a3051618f4fc8"
+dependencies = [
+ "thiserror-impl 2.0.17",
 ]
 
 [[package]]
@@ -1758,6 +1800,17 @@ name = "thiserror-impl"
 version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.111",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ff15c8ecd7de3849db632e14d18d2571fa09dfc5ed93479bc4485c7a517c913"
 dependencies = [
  "proc-macro2",
  "quote",

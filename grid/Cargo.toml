@@ -1,0 +1,16 @@
+[package]
+name = "antbox-grid"
+description = "Two-dimensional logical grid coordinate utilities for `antbox`."
+version = "0.1.0"
+license.workspace = true
+homepage.workspace = true
+edition.workspace = true
+
+[dependencies]
+derive-new.workspace = true
+derive_more = { workspace  = true, features = [ "from", "into" ] }
+itertools.workspace = true
+rand.workspace = true
+
+[dev-dependencies]
+test-case.workspace = true

@@ -1,4 +1,4 @@
-use antbox_geom::{Bounds, Grid};
+use antbox_grid::{Bounds, Grid};
 use derive_more::Deref;
 use wyrand::WyRand;
 

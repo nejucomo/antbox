@@ -1,4 +1,4 @@
-use antbox_geom::Grid;
+use antbox_grid::Grid;
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use derive_new::new;
 use movestate::TakeIntoNext;

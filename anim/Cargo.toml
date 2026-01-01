@@ -8,11 +8,13 @@ homepage.workspace = true
 
 [dependencies]
 antbox-clife.workspace = true
+antbox-color.workspace = true
+antbox-float.workspace = true
 antbox-gameboard.workspace = true
 antbox-geom.workspace = true
-antbox-s2render.workspace = true
+antbox-grid.workspace = true
+antbox-render.workspace = true
 antbox-tick-timer.workspace = true
-antbox-trig.workspace = true
 derive-debug.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = ["deref", "deref_mut", "try_into"] }
@@ -21,5 +23,4 @@ log.workspace = true
 movestate.workspace = true
 rand.workspace = true
 rand_distr.workspace = true
-speedy2d.workspace = true
 wyrand = { workspace = true, features = ["rand_core"] }

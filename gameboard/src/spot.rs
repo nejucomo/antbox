@@ -1,4 +1,4 @@
-use antbox_geom::BoundPoint;
+use antbox_grid::GridCoord;
 use derive_more::{From, IsVariant, TryInto};
 use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
@@ -68,7 +68,7 @@ impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for Spot
 where
     R: rand::Rng,
 {
-    type Next = (Self, Option<BoundPoint>);
+    type Next = (Self, Option<GridCoord>);
 
     fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use Spot::*;

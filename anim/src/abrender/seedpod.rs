@@ -1,25 +1,23 @@
 use std::f32::consts::PI;
 
+use antbox_color::Color;
+use antbox_float::Norm;
 use antbox_gameboard::SeedPod;
-use antbox_s2render::{RectExt as _, RenderCycle, Vec2Ext as _, WithColor};
-use antbox_trig::Angle;
+use antbox_geom::{Angle, Distance, Point, Rect, Transformable as _};
+use antbox_render::{Backend, Colorable as _, RenderWithArg};
 use rand_distr::Distribution as _;
-use speedy2d::color::Color;
-use speedy2d::dimen::Vec2;
-use speedy2d::shape::Rect;
 use wyrand::WyRand;
 
-use crate::abrender::RWArg;
-use crate::colors::{self, ColorExt as _};
-use crate::layers::Layer::Plants;
+use crate::abrender::AntboxRender;
+use crate::colors;
 use crate::organic::OrganicScale;
 
 // Components to split up rendering:
 #[derive(Copy, Clone)]
 struct DrawParams {
     org: OrganicScale,
-    center: Vec2,
-    podrad: f32,
+    center: Point,
+    podrad: Distance,
     spotrot: Angle,
     seedcolor: Color,
 }
@@ -28,52 +26,62 @@ struct Pod(SeedPod);
 struct SingletonSeed;
 struct SeedCluster(SeedPod);
 
-impl RWArg<(Rect, &mut WyRand)> for SeedPod {
-    fn rwarg(self, cycle: &mut RenderCycle, (rect, wyr): (Rect, &mut WyRand)) {
+impl RenderWithArg<(Rect, &mut WyRand)> for AntboxRender<SeedPod> {
+    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, (rect, wyr): (Rect, &mut WyRand)) {
+        let seedpod = self.0;
         let org = OrganicScale::default();
         let center = rect.center();
         let dp = DrawParams {
             org,
             center,
-            podrad: rect.cell_radius() * 0.9 * org.sample(wyr),
-            spotrot: Angle::from(center.magnitude() * org.sample(wyr)),
-            seedcolor: colors::food_neighbor_count(self.seeds),
+            podrad: (rect.inner_radius() * 0.9 * org.sample(wyr))
+                .try_into()
+                .unwrap(),
+            spotrot: Angle::from(center.distance_from_origin() * org.sample(wyr)),
+            seedcolor: colors::food_neighbor_count(seedpod.seeds),
         };
 
-        Pod(self).rwarg(cycle, (dp, wyr));
+        Pod(seedpod).render_with_arg(rb, (dp, wyr));
 
-        if self.seeds == 1 {
-            SingletonSeed.rwarg(cycle, (dp, wyr));
+        if seedpod.seeds == 1 {
+            SingletonSeed.render_with_arg(rb, (dp, wyr));
         } else {
-            SeedCluster(self).rwarg(cycle, (dp, wyr));
+            SeedCluster(seedpod).render_with_arg(rb, (dp, wyr));
         }
     }
 }
 
-impl RWArg<(DrawParams, &mut WyRand)> for Pod {
-    fn rwarg(self, cycle: &mut RenderCycle, (dp, _wyr): (DrawParams, &mut WyRand)) {
+impl RenderWithArg<(DrawParams, &mut WyRand)> for Pod {
+    fn render_with_arg<B: ?Sized + Backend>(
+        self,
+        rb: &mut B,
+        (dp, _wyr): (DrawParams, &mut WyRand),
+    ) {
         let DrawParams { center, podrad, .. } = dp;
-        let ls = Plants.scheduler(cycle);
         let outer = center.with_radius(podrad);
 
         let Pod(SeedPod { seeds, ripe }) = self;
 
-        let alpha_ripe = if ripe { 0.75 } else { 0.25 };
-        let alpha_seeds = 1.0 - 0.5 * ((seeds as f32 - 3.0).abs() / 5.0).powi(2);
+        let alpha_ripe = Norm::fromp_f32(if ripe { 0.75 } else { 0.25 });
+        let alpha_seeds = Norm::fromp_f32(1.0 - 0.5 * ((seeds as f32 - 3.0).abs() / 5.0).powi(2));
 
         let life_color = colors::FOOD_LIFE.with_alpha(alpha_ripe * alpha_seeds);
 
-        ls.schedule(outer.with_color(life_color));
-        ls.schedule(
+        rb.render([
+            outer.with_color(life_color),
             outer
-                .scale(0.9)
-                .with_color(colors::SEEDPOD.interpolate(life_color, 0.1)),
-        );
+                .scale_by_f32(0.9)
+                .with_color(colors::SEEDPOD.interpolate(life_color, Norm::fromp_f32(0.1))),
+        ]);
     }
 }
 
-impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
-    fn rwarg(self, cycle: &mut RenderCycle, (dp, wyr): (DrawParams, &mut WyRand)) {
+impl RenderWithArg<(DrawParams, &mut WyRand)> for SingletonSeed {
+    fn render_with_arg<B: ?Sized + Backend>(
+        self,
+        rb: &mut B,
+        (dp, wyr): (DrawParams, &mut WyRand),
+    ) {
         let DrawParams {
             org,
             center,
@@ -81,7 +89,6 @@ impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
             spotrot,
             ..
         } = dp;
-        let ls = Plants.scheduler(cycle);
 
         let radf: f32 = 0.47 * org.sample(wyr);
         let distf = (org.sample(wyr) - radf).powi(2);
@@ -90,19 +97,22 @@ impl RWArg<(DrawParams, &mut WyRand)> for SingletonSeed {
             let offcenter = center
                 + spotrot
                     .with_distance(podrad)
-                    .scale(distf)
-                    .scale(0.8f32.powi(kernel + 1));
-            let circ = offcenter.with_radius(podrad).scale(radf);
-            let cwc = circ
-                .scale(0.6f32.powi(kernel))
-                .with_color(colors::SEED.with_alpha(1.0 - 0.9f32.powi(1 + kernel)));
-            ls.schedule(cwc);
+                    .scale_by_f32(distf)
+                    .scale_by_f32(0.8f32.powi(kernel + 1));
+            let circ = offcenter.with_radius(podrad).scale_by_f32(radf);
+            let cwc = circ.scale_by_f32(0.6f32.powi(kernel));
+            let color = colors::SEED.with_alpha(Norm::fromp_f32(1.0 - 0.9f32.powi(1 + kernel)));
+            rb.render(cwc.with_color(color));
         }
     }
 }
 
-impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
-    fn rwarg(self, cycle: &mut RenderCycle, (dp, wyr): (DrawParams, &mut WyRand)) {
+impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
+    fn render_with_arg<B: ?Sized + Backend>(
+        self,
+        rb: &mut B,
+        (dp, wyr): (DrawParams, &mut WyRand),
+    ) {
         let DrawParams {
             org,
             center,
@@ -110,29 +120,28 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
             spotrot,
             seedcolor,
         } = dp;
-        let ls = Plants.scheduler(cycle);
 
         let SeedCluster(SeedPod { seeds, ripe }) = self;
         assert_ne!(1, seeds);
         assert!(seeds <= 8);
 
         // The angle per seed spoke
-        let theta = PI / seeds as f32;
+        let theta = if seeds == 0 { 0.0 } else { PI / seeds as f32 };
 
         let radf = {
             let thetasin = theta.sin();
             org.sample(wyr) * thetasin / (1.0 + thetasin)
         };
 
-        let spokef = spotrot.with_distance(org.sample(wyr) - radf);
+        let spokef = spotrot.with_distance(Distance::fromp_f32(org.sample(wyr) - radf));
 
         // Draw the center flower hub:
         let (hub_circ, hub_color) = {
-            let ripecenter = center + spokef.scale(podrad).scale(0.1 * org.sample(wyr));
+            let ripecenter = center + spokef.scale(podrad).scale_by_f32(0.1 * org.sample(wyr));
 
             let circ = ripecenter
-                .with_radius(org.sample(wyr) - radf)
-                .scale(0.6)
+                .with_radius(Distance::fromp_f32(org.sample(wyr) - radf))
+                .scale_by_f32(0.6)
                 .scale(podrad);
 
             let clr = {
@@ -141,6 +150,9 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
                 } else {
                     (0.9, 0.3, 0.8)
                 };
+                let seedf = Norm::fromp_f32(seedf);
+                let dirtf = Norm::fromp_f32(dirtf);
+                let alpha = Norm::fromp_f32(alpha);
 
                 colors::FOOD_LIFE
                     .interpolate(seedcolor, seedf)
@@ -151,19 +163,23 @@ impl RWArg<(DrawParams, &mut WyRand)> for SeedCluster {
             (circ, clr)
         };
 
-        ls.schedule(hub_circ.with_color(hub_color));
+        if seeds > 1 {
+            rb.render(hub_circ.with_color(hub_color));
+        }
 
         for seed in 0..seeds {
             let bspokef = spokef.rotate(spotrot + 2.0 * org.sample(wyr) * theta * seed as f32);
             let bspoke = bspokef.scale(podrad);
 
-            ls.schedule(
-                (center + bspoke)
-                    .with_radius(radf * podrad * org.sample(wyr))
-                    .with_color(seedcolor),
-            );
+            let seedcenter = center + bspoke;
+            let seedcirc =
+                seedcenter.with_radius(Distance::fromp_f32(podrad * radf * org.sample(wyr)));
+
+            rb.render(seedcirc.with_color(seedcolor));
         }
 
-        ls.schedule(hub_circ.scale(0.7).with_color(hub_color.with_alpha(0.7)));
+        rb.render(hub_circ.scale_by_f32(0.7).with_color(
+            hub_color.with_alpha(Norm::fromp_f32(if seeds == 0 { 0.05 } else { 0.7 })),
+        ));
     }
 }

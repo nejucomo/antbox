@@ -1,14 +1,16 @@
 use antbox_animation::AnimationState;
 use antbox_gameboard::GenParams;
+use antbox_geom::Dimensions;
+use antbox_render::{Backend, RenderRefWithArg, RenderWithArg as _};
 use antbox_s2win::event::WinEvent;
-use antbox_s2win::{WindowEventHandler, WindowExt as _};
+use antbox_s2win::{Control, UserEventSender, WindowEventHandler, WindowExt as _};
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
 use moveslot::MoveSlot;
 use movestate::mutable::Update;
 use speedy2d::Window;
-use speedy2d::window::{WindowCreationOptions, WindowHelper, WindowStartupInfo};
+use speedy2d::window::{WindowCreationOptions, WindowStartupInfo};
 
 use crate::{Result, TARGET_FRAME_RATE, Tick};
 
@@ -56,14 +58,13 @@ impl<R> WinHandler<R>
 where
     R: rand::Rng,
 {
-    fn launch_tick_timer(&self, helper: &mut WindowHelper<Tick>) {
-        let uev = helper.create_user_event_sender();
+    fn launch_tick_timer(&self, ues: UserEventSender<Tick>) {
         std::thread::spawn(move || {
             let mut tt = TickTimer::with_frame_rate(TARGET_FRAME_RATE);
 
             loop {
                 tt.sleep_update();
-                uev.send_event(Tick).unwrap();
+                ues.send_event(Tick).unwrap();
             }
         });
     }
@@ -77,7 +78,7 @@ where
 
     fn start(
         (mut rng, gp): (R, GenParams),
-        helper: &mut WindowHelper<Tick>,
+        ues: UserEventSender<Tick>,
         _: WindowStartupInfo,
     ) -> Self {
         let anim = MoveSlot::from(AnimationState::new(&mut rng, gp));
@@ -86,60 +87,66 @@ where
             mode: Running,
             anim,
         };
-        winst.launch_tick_timer(helper);
-        helper.request_redraw();
+        winst.launch_tick_timer(ues);
         winst
     }
 }
 
-impl<'a, R> Update<WinEvent<'a, Tick>, ()> for WinHandler<R>
+impl<R> Update<WinEvent<Tick>, Control> for WinHandler<R>
 where
     R: rand::Rng,
 {
-    fn update(&mut self, WinEvent { helper, info }: WinEvent<'a, Tick>) {
+    fn update(&mut self, event: WinEvent<Tick>) -> Control {
+        use Control::{Idle, RequestRedraw};
         use antbox_s2win::event::{
             ButtonPosition::Down,
-            Info::{DrawRequest, Input, User},
-            Input::Key,
             KeyInput::Virtual,
+            WinEvent::{Key, User},
         };
         use speedy2d::window::VirtualKeyCode::{Escape, Return, Space};
 
-        match info {
+        match event {
             User(Tick) => {
                 self.anim.update(&mut self.rng);
-                helper.request_redraw();
+                RequestRedraw
             }
 
-            DrawRequest(gfx) => {
-                let winsize = helper.get_size_pixels().into_f32();
-                self.anim.draw(gfx, winsize);
-            }
-
-            Input(Key(Virtual(Down, Escape))) => {
+            Key(Virtual(Down, Escape)) => {
                 log::info!("bye!");
                 std::process::exit(0);
             }
 
-            Input(Key(Virtual(Down, Space))) => {
+            Key(Virtual(Down, Space)) => {
                 self.mode.toggle();
+                Idle
             }
 
-            Input(Key(Virtual(Down, Return))) => {
+            Key(Virtual(Down, Return)) => {
                 // TODO: Apply mode to only game state, allow animations to continue.
                 if self.mode.is_paused() {
                     self.anim.update(&mut self.rng);
                 };
+                RequestRedraw
             }
 
-            // Input(Resize(vector2)) => todo!(),
-            // Input(FullscreenStatusChanged(_)) => todo!(),
-            // Input(ScaleFactorChanged(_)) => todo!(),
-            // Input(Mouse(mouse_event)) => todo!(),
-            // Input(Unicode(_)) => todo!(),
+            // Resize(vector2) => todo!(),
+            // FullscreenStatusChanged(_) => todo!(),
+            // ScaleFactorChanged(_) => todo!(),
+            // Mouse(mouse_event) => todo!(),
+            // Unicode(_) => todo!(),
             _ => {
                 // Ignored
+                Idle
             }
         }
+    }
+}
+
+impl<R> RenderRefWithArg<Dimensions> for WinHandler<R>
+where
+    R: rand::Rng,
+{
+    fn render_ref_with_arg<B: ?Sized + Backend>(&self, rb: &mut B, dims: Dimensions) {
+        self.anim.render_with_arg(rb, dims);
     }
 }

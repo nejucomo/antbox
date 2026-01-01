@@ -1,4 +1,4 @@
-use antbox_geom::{BoundPoint, Grid};
+use antbox_grid::{Grid, GridCoord};
 
 use crate::{ConwayCell, conways_rule};
 
@@ -8,7 +8,7 @@ pub trait ConwayGrid: Sized {
     fn conway_step(self) -> Self;
 
     /// Get the life status and neighbor count at `pt` of the current state
-    fn life_and_neighbors(&self, pt: BoundPoint) -> (bool, usize);
+    fn life_and_neighbors(&self, pt: GridCoord) -> (bool, usize);
 }
 
 impl<C> ConwayGrid for Grid<C>
@@ -24,7 +24,7 @@ where
         self
     }
 
-    fn life_and_neighbors(&self, pt: BoundPoint) -> (bool, usize) {
+    fn life_and_neighbors(&self, pt: GridCoord) -> (bool, usize) {
         (
             self[pt].is_alive(),
             pt.neighbors().filter(|&npt| self[npt].is_alive()).count(),
@@ -45,7 +45,7 @@ where
 
 #[test]
 fn twiddler() {
-    use antbox_geom::Bounds;
+    use antbox_grid::Bounds;
 
     let mut gs: Vec<Grid<bool>> = vec![Grid::from(Bounds::new(5, 5))];
     gs[0][(2, 1)].set_alive(true);

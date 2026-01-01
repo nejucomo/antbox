@@ -3,20 +3,20 @@ use std::ops::Add;
 use derive_more::{From, Into};
 use derive_new::new;
 
-use crate::{Bounds, Direction, Point};
+use crate::{Bounds, Coord, Direction};
 
-/// A [Point] in the context
+/// A [Coord] within some [Bounds]
 #[derive(Copy, Clone, From, Into, new, Eq, Ord, PartialEq, PartialOrd)]
-pub struct BoundPoint {
+pub struct GridCoord {
     #[new(into)]
-    pt: Point,
+    pt: Coord,
     #[new(into)]
     bounds: Bounds,
 }
 
-impl BoundPoint {
-    /// The raw [Point]
-    pub fn point(self) -> Point {
+impl GridCoord {
+    /// The raw [Coord]
+    pub fn point(self) -> Coord {
         self.pt
     }
 
@@ -45,24 +45,24 @@ impl BoundPoint {
         self.bounds.height
     }
 
-    /// The (wrap-around) neighbor [BoundPoint]s
-    pub fn neighbors(self) -> impl Iterator<Item = BoundPoint> {
+    /// The (wrap-around) neighbor [GridCoord]s
+    pub fn neighbors(self) -> impl Iterator<Item = GridCoord> {
         Direction::each().map(move |d| self + d)
     }
 }
 
-impl From<BoundPoint> for usize {
-    fn from(bp: BoundPoint) -> Self {
+impl From<GridCoord> for usize {
+    fn from(bp: GridCoord) -> Self {
         bp.pt.y * bp.bounds.width + bp.pt.x
     }
 }
 
-impl Add<Direction> for BoundPoint {
-    type Output = BoundPoint;
+impl Add<Direction> for GridCoord {
+    type Output = GridCoord;
 
     fn add(self, dir: Direction) -> Self::Output {
-        let BoundPoint {
-            pt: Point { x, y },
+        let GridCoord {
+            pt: Coord { x, y },
             bounds: Bounds { width, height },
         } = self;
 
@@ -70,13 +70,13 @@ impl Add<Direction> for BoundPoint {
         let nx = (x + dx) % width;
         let ny = (y + dy) % height;
 
-        BoundPoint::new((nx, ny), self.bounds)
+        GridCoord::new((nx, ny), self.bounds)
     }
 }
 
-impl std::fmt::Debug for BoundPoint {
+impl std::fmt::Debug for GridCoord {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let BoundPoint { pt, bounds } = self;
+        let GridCoord { pt, bounds } = self;
         write!(f, "{pt:?} {bounds:?}")
     }
 }

@@ -5,26 +5,28 @@ use derive_more::Into;
 use rand::Rng;
 use rand::distr::{Distribution, StandardUniform};
 
-use crate::TrigVec;
+use crate::{Distance, Polar};
 
 /// An angle in radians
+///
+/// # Geomertry
+///
+/// An absolute/contextless [Angle] is from the positive X-axis measuring counterclockwise.
 #[derive(Copy, Clone, Into)]
 pub struct Angle(f32);
 
 impl Angle {
-    /// Produce a [TrigVec] from this angle and `distance`
-    pub fn with_distance(self, distance: f32) -> TrigVec {
-        TrigVec::new(self, distance)
+    /// Produce a [Polar] from this [Angle] and a [Distance]
+    pub fn with_distance<D>(self, distance: D) -> Polar
+    where
+        D: Into<Distance>,
+    {
+        Polar::new(self, distance)
     }
 
-    /// The cosine of this angle
-    pub fn cos(self) -> f32 {
-        self.0.cos()
-    }
-
-    /// The sine of this angle
-    pub fn sin(self) -> f32 {
-        self.0.sin()
+    /// The (sin, cos) of this angle
+    pub fn sin_cos(self) -> (f32, f32) {
+        self.0.sin_cos()
     }
 }
 

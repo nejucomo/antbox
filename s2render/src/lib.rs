@@ -1,23 +1,7 @@
-//! [Renderable] trait for layer-orderd (z-axis) rendering
+//! An [antbox_render::Backend] impl for [speedy2d]
 #![deny(unsafe_code, missing_docs)]
 
-mod circle;
-mod drawonto;
-mod line;
-mod rectext;
-mod rendarg;
-mod renderable;
-mod scheduler;
-mod shape;
-mod shwico;
-mod vec2ext;
+mod into_s2;
+mod s2backend;
 
-pub use self::circle::Circle;
-pub use self::line::Line;
-pub use self::rectext::RectExt;
-pub use self::rendarg::RenderWithArg;
-pub use self::renderable::Renderable;
-pub use self::scheduler::{LayerScheduler, RenderCycle, RenderScheduler};
-pub use self::shape::Shape;
-pub use self::shwico::{ShapeWithColor, WithColor};
-pub use self::vec2ext::Vec2Ext;
+pub use self::s2backend::Speedy2Backend;

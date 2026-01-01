@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{BoundPoint, Bounds, DirSet, Direction, Point};
+use crate::{Bounds, Coord, DirSet, Direction, GridCoord};
 
 /// A 2-D grid of `T` cells
 #[derive(Clone, PartialEq)]
@@ -26,7 +26,7 @@ impl<T> Grid<T> {
     }
 
     /// Iterate over `(pt, &T)`
-    pub fn iter(&self) -> impl Iterator<Item = (BoundPoint, &T)> {
+    pub fn iter(&self) -> impl Iterator<Item = (GridCoord, &T)> {
         self.cells
             .iter()
             .enumerate()
@@ -34,7 +34,7 @@ impl<T> Grid<T> {
     }
 
     /// Iterate over `(pt, &mut T)`
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = (BoundPoint, &mut T)> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = (GridCoord, &mut T)> {
         self.cells
             .iter_mut()
             .enumerate()
@@ -42,7 +42,7 @@ impl<T> Grid<T> {
     }
 
     /// The directions from `pt` where `f` is true
-    pub fn directions_where<F>(&self, pt: BoundPoint, mut f: F) -> DirSet
+    pub fn directions_where<F>(&self, pt: GridCoord, mut f: F) -> DirSet
     where
         F: FnMut(&T) -> bool,
     {
@@ -54,7 +54,7 @@ impl<T> Grid<T> {
     /// Map cells
     pub fn map_cell_refs<F, U>(&self, f: F) -> Grid<U>
     where
-        F: Fn(BoundPoint, &T) -> U,
+        F: Fn(GridCoord, &T) -> U,
     {
         Grid {
             bounds: self.bounds(),
@@ -75,19 +75,19 @@ where
     }
 }
 
-impl<T> Index<BoundPoint> for Grid<T> {
+impl<T> Index<GridCoord> for Grid<T> {
     type Output = T;
 
-    fn index(&self, bp: BoundPoint) -> &Self::Output {
+    fn index(&self, bp: GridCoord) -> &Self::Output {
         &self.cells[usize::from(bp)]
     }
 }
 
-impl<T> Index<Point> for Grid<T> {
+impl<T> Index<Coord> for Grid<T> {
     type Output = T;
 
-    fn index(&self, p: Point) -> &Self::Output {
-        &self[BoundPoint::new(p, self.bounds())]
+    fn index(&self, p: Coord) -> &Self::Output {
+        &self[GridCoord::new(p, self.bounds())]
     }
 }
 
@@ -95,26 +95,26 @@ impl<T> Index<(usize, usize)> for Grid<T> {
     type Output = T;
 
     fn index(&self, p: (usize, usize)) -> &Self::Output {
-        &self[Point::from(p)]
+        &self[Coord::from(p)]
     }
 }
 
-impl<T> IndexMut<BoundPoint> for Grid<T> {
-    fn index_mut(&mut self, bp: BoundPoint) -> &mut Self::Output {
+impl<T> IndexMut<GridCoord> for Grid<T> {
+    fn index_mut(&mut self, bp: GridCoord) -> &mut Self::Output {
         &mut self.cells[usize::from(bp)]
     }
 }
 
-impl<T> IndexMut<Point> for Grid<T> {
-    fn index_mut(&mut self, p: Point) -> &mut Self::Output {
+impl<T> IndexMut<Coord> for Grid<T> {
+    fn index_mut(&mut self, p: Coord) -> &mut Self::Output {
         let bounds = self.bounds();
-        &mut self[BoundPoint::new(p, bounds)]
+        &mut self[GridCoord::new(p, bounds)]
     }
 }
 
 impl<T> IndexMut<(usize, usize)> for Grid<T> {
     fn index_mut(&mut self, p: (usize, usize)) -> &mut Self::Output {
-        &mut self[Point::from(p)]
+        &mut self[Coord::from(p)]
     }
 }
 

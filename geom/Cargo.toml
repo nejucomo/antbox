@@ -1,16 +1,13 @@
 [package]
 name = "antbox-geom"
-description = "Two-dimensional logical grid coordinate utilities for `antbox`."
+description = "Two-dimensional polar coordinate support for `antbox` graphics."
 version = "0.1.0"
 license.workspace = true
 homepage.workspace = true
 edition.workspace = true
 
 [dependencies]
+antbox-float.workspace = true
 derive-new.workspace = true
-derive_more = { workspace  = true, features = [ "from", "into" ] }
-itertools.workspace = true
+derive_more = { workspace = true, features = ["from", "into"] }
 rand.workspace = true
-
-[dev-dependencies]
-test-case.workspace = true

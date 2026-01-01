@@ -1,19 +1,33 @@
-//! A simple 2D integer geometry crate for `antbox`
+//! Two-dimensional [f32] geometry for `antbox`
+//!
+//! # Design
+//!
+//! - Public fields
+//! - `::new` with `Into` parameters
+//! - Construct composite items from constituent build methods, e.g. `Point::with_radius(...) -> Circle`
 #![deny(unsafe_code, missing_docs)]
 
-mod boundpoint;
-mod bounds;
-mod direction;
-mod dirset;
-mod grid;
+mod angle;
+mod circle;
+mod dims;
+mod line;
 mod point;
+mod polar;
+mod rect;
+mod shape;
+mod transformable;
+mod vector;
 
-pub use crate::boundpoint::BoundPoint;
-pub use crate::bounds::Bounds;
-pub use crate::direction::{DirIter, Direction};
-pub use crate::dirset::{DirSet, DirSetIter};
-pub use crate::grid::Grid;
-pub use crate::point::Point;
+pub use self::angle::Angle;
+pub use self::circle::Circle;
+pub use self::dims::Dimensions;
+pub use self::line::Line;
+pub use self::point::Point;
+pub use self::polar::Polar;
+pub use self::rect::Rect;
+pub use self::shape::Shape;
+pub use self::transformable::Transformable;
+pub use self::vector::Vector;
 
-#[cfg(test)]
-mod tests;
+/// A [Distance] is a non-negative, finite [f32]
+pub type Distance = antbox_float::NNF;

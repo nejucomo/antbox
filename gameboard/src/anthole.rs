@@ -1,4 +1,4 @@
-use antbox_geom::{BoundPoint, Direction};
+use antbox_grid::{Direction, GridCoord};
 use movestate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
@@ -32,7 +32,7 @@ impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for AntHole
 where
     R: rand::Rng,
 {
-    type Next = (AntHole, Option<BoundPoint>);
+    type Next = (AntHole, Option<GridCoord>);
 
     fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use crate::AntMode::{Exploring, Hungry};

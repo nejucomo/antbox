@@ -1,6 +1,7 @@
-use antbox_geom::{BoundPoint, Bounds};
-use speedy2d::dimen::Vec2;
-use speedy2d::shape::Rect;
+use std::num::NonZero;
+
+use antbox_geom::{Dimensions, Rect, Transformable as _};
+use antbox_grid::{Bounds, GridCoord};
 
 /// A [GridLayout] matches logical [Bounds] to a pixel view coordinates
 #[derive(Copy, Clone, Debug)]
@@ -8,44 +9,38 @@ pub struct GridLayout {
     /// The logical bounds
     pub bounds: Bounds,
     /// The view size in (abstract) pixels
-    pub view_size: Vec2,
-    /// The cell size in (abstract) pixels
-    pub cell_bounds: Vec2,
-    /// The cell radius in (abstract) pixels
-    pub cell_radius: f32,
+    pub view_size: Dimensions,
+    /// The cell bounds around the origin in (abstract) pixels
+    pub cell_dims: Dimensions,
 }
 
 impl GridLayout {
     /// Construct a new [Self]
-    pub fn new(bounds: Bounds, view_size: Vec2) -> Self {
-        let cell_bounds = {
-            let w32 = bounds.width as f32;
-            let h32 = bounds.height as f32;
-
-            Vec2::new(view_size.x / w32, view_size.y / h32)
-        };
+    pub fn new(bounds: Bounds, view_size: Dimensions) -> Self {
+        let cell_dims = view_size
+            / (
+                NonZero::new(bounds.width).unwrap(),
+                NonZero::new(bounds.height).unwrap(),
+            );
 
         Self {
             bounds,
             view_size,
-            cell_bounds,
-            cell_radius: cell_bounds.x.min(cell_bounds.y) / 2.0,
+            cell_dims,
         }
     }
 
-    /// Iterate over logical [BoundPoint]s and their associated pixel [Rect]s
-    pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (BoundPoint, Rect)> {
-        let Vec2 { x: cellw, y: cellh } = self.cell_bounds;
+    /// Iterate over logical [GridCoord]s and their associated pixel [Rect]s
+    pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
+        let rect_top_left = Rect::from_origin_with_dimensions(self.cell_dims);
 
-        self.bounds.iter_points().map(move |pt| {
-            let left = cellw * (pt.x() as f32);
-            let top = cellh * (pt.y() as f32);
-            let right = left + cellw;
-            let bottom = top + cellh;
+        self.bounds.iter_points().map(move |coord| {
+            // The dimensions of all space above and to the left of this cell's [Rect]:
+            let upper_left_quadrant = self.cell_dims * (coord.x(), coord.y());
 
             (
-                pt,
-                Rect::new(Vec2::new(left, top), Vec2::new(right, bottom)),
+                coord,
+                rect_top_left.translate(upper_left_quadrant.into_bottom_right()),
             )
         })
     }
@@ -53,28 +48,30 @@ impl GridLayout {
 
 #[test]
 fn verify_pts_and_rects() {
-    let bounds = Bounds::new(2, 2);
-    let gl = GridLayout::new(bounds, Vec2::new(24., 18.));
-    let bprs: Vec<(BoundPoint, Rect)> = gl.iter_pts_and_rects().collect();
+    use antbox_geom::{Distance, Point};
+
+    let bounds = Bounds::new(3, 2);
+
+    let gl = GridLayout::new(
+        bounds,
+        Dimensions::new(Distance::fromp_f32(24.0), Distance::fromp_f32(18.0)),
+    );
+
+    let bprs: Vec<(GridCoord, Rect)> = gl.iter_pts_and_rects().collect();
+
+    fn rect(x1: f32, y1: f32, x2: f32, y2: f32) -> Rect {
+        Rect::from_diagonal(Point::new(x1, y1).vector_to((x2, y2)))
+    }
+
     assert_eq!(
         bprs,
         &[
-            (
-                bounds.bind((0, 0)).unwrap(),
-                Rect::from_tuples((0., 0.), (12., 9.))
-            ),
-            (
-                bounds.bind((1, 0)).unwrap(),
-                Rect::from_tuples((12., 0.), (24., 9.))
-            ),
-            (
-                bounds.bind((0, 1)).unwrap(),
-                Rect::from_tuples((0., 9.), (12., 18.))
-            ),
-            (
-                bounds.bind((1, 1)).unwrap(),
-                Rect::from_tuples((12., 9.), (24., 18.))
-            ),
+            (bounds.bind((0, 0)).unwrap(), rect(0., 0., 8., 9.)),
+            (bounds.bind((1, 0)).unwrap(), rect(8., 0., 16., 9.)),
+            (bounds.bind((2, 0)).unwrap(), rect(16., 0., 24., 9.)),
+            (bounds.bind((0, 1)).unwrap(), rect(0., 9., 8., 18.)),
+            (bounds.bind((1, 1)).unwrap(), rect(8., 9., 16., 18.)),
+            (bounds.bind((2, 1)).unwrap(), rect(16., 9., 24., 18.)),
         ]
     );
 }
