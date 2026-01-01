@@ -1,6 +1,6 @@
 use antbox_float::{NNF, Norm};
 
-use crate::{Angle, Dimensions, Distance, Point, Transformable, Vector};
+use crate::{Angle, Circle, Dimensions, Distance, Point, Transformable, Vector};
 
 /// A [Rect]angle
 ///
@@ -26,15 +26,20 @@ impl Rect {
         self.diagonal().scale(Norm::HALF).to()
     }
 
-    /// The minimum side length
-    pub fn minimum_side_length(self) -> Distance {
-        let Dimensions { width, height } = self.dimensions();
-        width.min(height) * Norm::HALF
+    /// The inner circle tangent to the closest sides
+    pub fn inner_circle(self) -> Circle {
+        self.center().with_radius(self.inner_radius())
     }
 
     /// The inner radius is half the minimum side length
     pub fn inner_radius(self) -> Distance {
         self.minimum_side_length() * Norm::HALF
+    }
+
+    /// The minimum side length
+    pub fn minimum_side_length(self) -> Distance {
+        let Dimensions { width, height } = self.dimensions();
+        width.min(height) * Norm::HALF
     }
 }
 

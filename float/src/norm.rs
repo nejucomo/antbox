@@ -3,7 +3,7 @@ use std::ops::Mul;
 use derive_more::Into;
 use rand::distr::{Distribution, StandardUniform};
 
-use crate::BoundedFloatError;
+use crate::{BoundedFloatError, NNF, PowUnsigned};
 
 /// A newtype wrapping [f32] on the interval `[0, 1]`
 #[derive(Copy, Clone, Debug, Into)]
@@ -41,6 +41,11 @@ impl Norm {
         Self(u as f32 / u8::MAX as f32)
     }
 
+    /// The `Norm::One - self` complement
+    pub const fn complement(self) -> Self {
+        Self(1.0 - self.0)
+    }
+
     /// Convert to a norm float approximating `u /` [`u8::MAX`]
     pub const fn interpolate(self, other: Self, proportion: Self) -> Self {
         Self((other.0 - self.0) * proportion.0 + self.0)
@@ -68,6 +73,24 @@ impl Mul<Norm> for f32 {
 
     fn mul(self, rhs: Norm) -> Self::Output {
         self * rhs.0
+    }
+}
+
+impl Mul<NNF> for Norm {
+    type Output = NNF;
+
+    fn mul(self, rhs: NNF) -> Self::Output {
+        rhs * self
+    }
+}
+
+impl PowUnsigned for Norm {
+    fn pow_nnf(self, pow: crate::NNF) -> Self {
+        Self(self.0.powf(pow.into()))
+    }
+
+    fn pow_u32(self, pow: u32) -> Self {
+        Self(self.0.powi(pow.try_into().unwrap()))
     }
 }
 
