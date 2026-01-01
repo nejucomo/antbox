@@ -72,7 +72,7 @@ impl Rect {
     /// The minimum side length
     pub fn minimum_side_length(self) -> Distance {
         let Dimensions { width, height } = self.dimensions();
-        width.min(height) * Norm::HALF
+        width.min(height)
     }
 }
 
