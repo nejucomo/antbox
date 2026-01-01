@@ -5,8 +5,17 @@ use antbox_float::Norm;
 
 #[allow(missing_docs)]
 pub const BLACK: Color = rgb(0, 0, 0);
+#[allow(missing_docs)]
+pub const WHITE: Color = rgb(u8::MAX, u8::MAX, u8::MAX);
+#[allow(missing_docs)]
+pub const RED: Color = rgb(u8::MAX, 0, 0);
+#[allow(missing_docs)]
+pub const GREEN: Color = rgb(0, u8::MAX, 0);
+#[allow(missing_docs)]
+pub const BLUE: Color = rgb(0, 0, u8::MAX);
 
 /// An _RGBA_ color representation with [Norm] bands
+#[derive(Copy, Clone, Debug)]
 pub struct Color {
     /// The red band
     pub r: Norm,
@@ -52,6 +61,11 @@ impl Color {
             b: self.b.interpolate(other.b, proportion),
             a: self.a.interpolate(other.a, proportion),
         }
+    }
+
+    /// Overwrite our `self.a` with `alpha`
+    pub const fn with_alpha(self, alpha: Norm) -> Color {
+        Color { a: alpha, ..self }
     }
 }
 

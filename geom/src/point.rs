@@ -21,6 +21,9 @@ pub struct Point {
 }
 
 impl Point {
+    /// The origin point
+    pub const ORIGIN: Point = Point { x: 0f32, y: 0f32 };
+
     /// The [Vector] which [start](Vector::start)s on `self` proceeding to [delta](Vector::delta)
     pub fn with_delta<P>(self, delta: P) -> Vector
     where
@@ -43,6 +46,13 @@ impl Point {
         R: Into<Distance>,
     {
         Circle::new(self, radius)
+    }
+
+    /// The [Distance] from the [Point::ORIGIN]
+    pub fn distance_from_origin(self) -> Distance {
+        let Point { x, y } = self;
+
+        Distance::fromp_f32((x.powi(2) + y.powi(2)).sqrt())
     }
 }
 

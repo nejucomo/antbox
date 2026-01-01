@@ -132,6 +132,7 @@ version = "0.1.0"
 dependencies = [
  "antbox-clife",
  "antbox-color",
+ "antbox-float",
  "antbox-gameboard",
  "antbox-geom",
  "antbox-grid",

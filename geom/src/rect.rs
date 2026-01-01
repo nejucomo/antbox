@@ -1,6 +1,6 @@
 use antbox_float::{NNF, Norm};
 
-use crate::{Angle, Distance, Point, Transformable, Vector};
+use crate::{Angle, Dimensions, Distance, Point, Transformable, Vector};
 
 /// A [Rect]angle
 ///
@@ -16,10 +16,9 @@ impl Rect {
         self.0
     }
 
-    /// The width and height
-    pub fn width_and_height(self) -> (Distance, Distance) {
-        let Point { x: w, y: h } = self.0.delta;
-        (Distance::fromp_f32(w), Distance::fromp_f32(h))
+    /// The [Dimensions]
+    pub fn dimensions(self) -> Dimensions {
+        Dimensions::fromp_point(self.0.delta)
     }
 
     /// The center [Point]
@@ -29,8 +28,8 @@ impl Rect {
 
     /// The minimum side length
     pub fn minimum_side_length(self) -> Distance {
-        let (w, h) = self.width_and_height();
-        w.min(h) * Norm::HALF
+        let Dimensions { width, height } = self.dimensions();
+        width.min(height) * Norm::HALF
     }
 
     /// The inner radius is half the minimum side length
