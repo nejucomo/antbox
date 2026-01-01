@@ -219,6 +219,7 @@ dependencies = [
  "antbox-color",
  "antbox-float",
  "antbox-geom",
+ "derive-debug",
  "derive-new",
  "derive_more",
  "extension-traits",

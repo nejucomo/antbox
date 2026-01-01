@@ -1,18 +1,20 @@
 use antbox_color::Color;
 use antbox_float::NNF;
 use antbox_geom::{Angle, Point, Shape, Transformable};
+use derive_debug::Dbg;
 use derive_new::new;
 
 use crate::Backend;
 
 /// Transform all [Shape]s when rendering to an inner [Backend]
-#[derive(Debug, new)]
+#[derive(Dbg, new)]
 #[new(visibility = "pub(crate)")]
 pub struct TransformationLayer<'a, B: ?Sized + Backend> {
+    #[dbg(placeholder = "...")]
     inner: &'a mut B,
     #[new(value = "Angle::from(0.0)")]
     angle: Angle,
-    #[new(value = "NNF::ZERO")]
+    #[new(value = "NNF::ONE")]
     scale: NNF,
     #[new(value = "Point::ORIGIN")]
     translation: Point,
@@ -28,7 +30,7 @@ impl<'a, B: ?Sized + Backend> Transformable for TransformationLayer<'a, B> {
 
     fn scale_by_nnf(self, s: NNF) -> Self {
         Self {
-            scale: self.scale + s,
+            scale: self.scale * s,
             ..self
         }
     }
