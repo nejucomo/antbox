@@ -12,7 +12,7 @@ use crate::{Angle, Circle, Distance, Polar, Transformable, Vector};
 ///  
 /// X-axis is horizontal from left to right.
 /// Y-axis is vertical from top to bottom.
-#[derive(Copy, Clone, Debug, new, From, Into)]
+#[derive(Copy, Clone, Debug, new, From, Into, PartialEq)]
 pub struct Point {
     /// The x coordinate
     pub x: f32,

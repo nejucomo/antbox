@@ -86,6 +86,14 @@ impl Mul<f32> for NNF {
     }
 }
 
+impl Mul<usize> for NNF {
+    type Output = NNF;
+
+    fn mul(self, rhs: usize) -> Self::Output {
+        Self(self.0 * rhs as f32)
+    }
+}
+
 impl PowUnsigned for NNF {
     fn pow_nnf(self, pow: NNF) -> Self {
         Self(self.0.powf(pow.0))

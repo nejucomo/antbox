@@ -63,6 +63,11 @@ impl Color {
         }
     }
 
+    /// Interpolate linearly between two colors with a raw [f32]
+    pub const fn interpolate_by_f32(self, other: Color, proportion: f32) -> Color {
+        self.interpolate(other, Norm::fromp_f32(proportion))
+    }
+
     /// Overwrite our `self.a` with `alpha`
     pub const fn with_alpha(self, alpha: Norm) -> Color {
         Color { a: alpha, ..self }

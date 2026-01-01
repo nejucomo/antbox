@@ -1,4 +1,6 @@
-use antbox_geom::{Dimensions, Point, Rect};
+use std::num::NonZero;
+
+use antbox_geom::{Dimensions, Rect, Transformable as _};
 use antbox_grid::{Bounds, GridCoord};
 
 /// A [GridLayout] matches logical [Bounds] to a pixel view coordinates
@@ -15,7 +17,11 @@ pub struct GridLayout {
 impl GridLayout {
     /// Construct a new [Self]
     pub fn new(bounds: Bounds, view_size: Dimensions) -> Self {
-        let cell_dims = view_size / (bounds.width, bounds.height);
+        let cell_dims = view_size
+            / (
+                NonZero::new(bounds.width).unwrap(),
+                NonZero::new(bounds.height).unwrap(),
+            );
 
         Self {
             bounds,
@@ -26,12 +32,15 @@ impl GridLayout {
 
     /// Iterate over logical [BoundPoint]s and their associated pixel [Rect]s
     pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
-        let rect_top_left = Rect::from_point_and_dimensions(Point::ORIGIN, self.cell_dims);
+        let rect_top_left = Rect::from_origin_with_dimensions(self.cell_dims);
 
         self.bounds.iter_points().map(move |coord| {
+            // The dimensions of all space above and to the left of this cell's [Rect]:
+            let upper_left_quadrant = self.cell_dims * (coord.x(), coord.y());
+
             (
                 coord,
-                rect_top_left.translate(self.cell_dims * (coord.x(), coord.y())),
+                rect_top_left.translate(upper_left_quadrant.into_bottom_right()),
             )
         })
     }
@@ -39,28 +48,27 @@ impl GridLayout {
 
 #[test]
 fn verify_pts_and_rects() {
-    let bounds = Bounds::new(2, 2);
-    let gl = GridLayout::new(bounds, Dimensions::new(24., 18.));
+    use antbox_geom::{Distance, Point};
+
+    let bounds = Bounds::new(3, 2);
+
+    let gl = GridLayout::new(
+        bounds,
+        Dimensions::new(Distance::fromp_f32(24.0), Distance::fromp_f32(18.0)),
+    );
+
     let bprs: Vec<(GridCoord, Rect)> = gl.iter_pts_and_rects().collect();
+
+    fn rect(x1: f32, y1: f32, x2: f32, y2: f32) -> Rect {
+        Rect::from_diagonal(Point::new(x1, y1).vector_to((x2, y2)))
+    }
+
     assert_eq!(
         bprs,
         &[
-            (
-                bounds.bind((0, 0)).unwrap(),
-                Rect::from_tuples((0., 0.), (12., 9.))
-            ),
-            (
-                bounds.bind((1, 0)).unwrap(),
-                Rect::from_tuples((12., 0.), (24., 9.))
-            ),
-            (
-                bounds.bind((0, 1)).unwrap(),
-                Rect::from_tuples((0., 9.), (12., 18.))
-            ),
-            (
-                bounds.bind((1, 1)).unwrap(),
-                Rect::from_tuples((12., 9.), (24., 18.))
-            ),
+            (bounds.bind((0, 0)).unwrap(), rect(0., 0., 12., 9.)),
+            (bounds.bind((1, 0)).unwrap(), rect(8., 0., 24., 9.)),
+            (bounds.bind((2, 0)).unwrap(), rect(16., 0., 24., 9.)),
         ]
     );
 }

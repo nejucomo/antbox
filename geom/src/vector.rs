@@ -4,7 +4,7 @@ use derive_new::new;
 use crate::{Angle, Distance, Line, Point, Transformable};
 
 /// A [Vector] [start](Self::start)s at a [Point] and proceeds to another point by a [delta](Self::delta)
-#[derive(Copy, Clone, Debug, new)]
+#[derive(Copy, Clone, Debug, new, PartialEq)]
 pub struct Vector {
     /// The starting [Point]
     #[new(into)]

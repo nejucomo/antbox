@@ -7,10 +7,33 @@ use crate::{Angle, Circle, Dimensions, Distance, Point, Transformable, Vector};
 /// # Diagonals
 ///
 /// [Rect] is constructed from (and represented by) a [Vector] representing any diagonal of the rectangle. Internally it always stores top-left to bottom-right.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rect(Vector);
 
 impl Rect {
+    /// Construct from the [Point::ORIGIN] and [Dimensions]
+    pub fn from_origin_with_dimensions(dims: Dimensions) -> Self {
+        Self::from_top_left_and_dimensions(Point::ORIGIN, dims)
+    }
+
+    /// Construct from the top-left point and [Dimensions]
+    pub fn from_top_left_and_dimensions(top_left: Point, dims: Dimensions) -> Self {
+        Self::from_diagonal(top_left.with_delta(dims.into_bottom_right()))
+    }
+
+    /// Construct from (either) diagonal [Vector]
+    pub fn from_diagonal(diag: Vector) -> Self {
+        Rect(if diag.delta.x >= 0.0 && diag.delta.y >= 0.0 {
+            diag
+        } else {
+            let (x1, y1) = diag.start.into();
+            let (x2, y2) = diag.to().into();
+            let top_left = Point::new(x1.min(x2), y1.min(y2));
+            let bottom_right = Point::new(x1.max(x2), y1.max(y2));
+            top_left.vector_to(bottom_right)
+        })
+    }
+
     /// The top-left to borrom-right diagonal
     pub fn diagonal(self) -> Vector {
         self.0
@@ -54,19 +77,5 @@ impl Transformable for Rect {
 
     fn translate_by_point(self, p: Point) -> Self {
         Self(self.0.translate_by_point(p))
-    }
-}
-
-impl From<Vector> for Rect {
-    fn from(diag: Vector) -> Self {
-        Rect(if diag.delta.x >= 0.0 && diag.delta.y >= 0.0 {
-            diag
-        } else {
-            let (x1, y1) = diag.start.into();
-            let (x2, y2) = diag.to().into();
-            let top_left = Point::new(x1.min(x2), y1.min(y2));
-            let bottom_right = Point::new(x1.max(x2), y1.max(y2));
-            top_left.vector_to(bottom_right)
-        })
     }
 }
