@@ -2,9 +2,13 @@ use moveslot::{MapInPlace as _, MoveSlot};
 
 use crate::TakeIntoStout;
 
-/// Mutable update with input `I` to produce a `O`
+/// Mutable update with input `I` to produce an `O`
+///
+/// # TODO
+///
+/// - Make `O` an associated parameter and pivot all of `movestate` to match.
 pub trait Update<I, O> {
-    /// Mutable update with `input` to produce a `O`
+    /// Mutable update with `input` to produce an `O`
     fn update(&mut self, input: I) -> O;
 }
 

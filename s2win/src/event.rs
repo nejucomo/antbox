@@ -3,37 +3,18 @@
 use std::fmt::Debug;
 
 use antbox_geom::{Dimensions, Point};
-use antbox_s2render::Speedy2Backend;
 use derive_debug::Dbg;
 use derive_more::{From, IsVariant};
 use speedy2d::window::{
-    KeyScancode, ModifiersState, MouseButton, MouseScrollDistance, VirtualKeyCode, WindowHelper,
+    KeyScancode, ModifiersState, MouseButton, MouseScrollDistance, VirtualKeyCode,
 };
 
-/// An event with an associated [WindowHelper]
-#[derive(Dbg)]
-#[allow(missing_docs)]
-pub struct WinEvent<'a, U: 'static> {
-    #[dbg(placeholder = "...")]
-    pub helper: &'a mut WindowHelper<U>,
-    pub info: Info<'a, U>,
-}
-
-/// Top-level event info, aside from the [WindowHelper]
+/// An event from the windowing system
 #[derive(Dbg, From)]
-pub enum Info<'a, U> {
+pub enum WinEvent<U> {
     /// An application-specified user event
     #[from(skip)]
     User(#[dbg(placeholder = "...")] U),
-    /// A request to draw the window from the framework
-    DrawRequest(#[dbg(placeholder = "...")] Speedy2Backend<'a>),
-    /// Input event information
-    Input(Input),
-}
-
-/// A pure input event
-#[derive(Debug)]
-pub enum Input {
     /// The window was resized
     Resize(Dimensions),
     /// The window's fullscreen status changed

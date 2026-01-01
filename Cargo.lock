@@ -239,6 +239,7 @@ name = "antbox-s2win"
 version = "0.1.0"
 dependencies = [
  "antbox-geom",
+ "antbox-render",
  "antbox-s2render",
  "derive-debug",
  "derive-new",

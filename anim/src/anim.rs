@@ -1,6 +1,6 @@
 use antbox_gameboard::{BoardState as AntboxState, GenParams};
 use antbox_geom::Dimensions;
-use antbox_render::{Backend, RenderWithArg, Renderable};
+use antbox_render::{Backend, RenderRefWithArg, RenderWithArg, Renderable};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use movestate::TakeIntoNext;
 use movestate::next::State;
@@ -42,8 +42,8 @@ where
     }
 }
 
-impl RenderWithArg<Dimensions> for &AnimationState {
-    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, view_size: Dimensions) {
+impl RenderRefWithArg<Dimensions> for AnimationState {
+    fn render_ref_with_arg<B: ?Sized + Backend>(&self, rb: &mut B, view_size: Dimensions) {
         let layout = GridLayout::new(self.antbox.bounds(), view_size);
 
         (

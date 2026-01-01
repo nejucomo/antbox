@@ -7,6 +7,7 @@ homepage.workspace = true
 
 [dependencies]
 antbox-geom.workspace = true
+antbox-render.workspace = true
 antbox-s2render.workspace = true
 derive-debug.workspace = true
 derive-new.workspace = true
