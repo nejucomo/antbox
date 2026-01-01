@@ -1,14 +1,15 @@
 use antbox_color::Color;
 use antbox_geom::{Circle, Line, Shape};
 use antbox_render::Backend;
+use derive_debug::Dbg;
 use derive_more::From;
 use speedy2d::Graphics2D;
 
 use crate::into_s2::IntoS2 as _;
 
 /// A newtype wrapper for `&mut` [Graphics2D] which implements [Backend]
-#[derive(From)]
-pub struct Speedy2Backend<'a>(&'a mut Graphics2D);
+#[derive(Dbg, From)]
+pub struct Speedy2Backend<'a>(#[dbg(placeholder = "...")] &'a mut Graphics2D);
 
 impl<'a> Backend for Speedy2Backend<'a> {
     fn clear_screen(&mut self, color: Color) {

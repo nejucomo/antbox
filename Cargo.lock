@@ -217,6 +217,7 @@ name = "antbox-render"
 version = "0.1.0"
 dependencies = [
  "antbox-color",
+ "antbox-float",
  "antbox-geom",
  "derive-new",
  "derive_more",
@@ -230,6 +231,7 @@ dependencies = [
  "antbox-color",
  "antbox-geom",
  "antbox-render",
+ "derive-debug",
  "derive_more",
  "speedy2d",
 ]
