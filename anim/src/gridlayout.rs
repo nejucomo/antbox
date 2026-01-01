@@ -31,7 +31,7 @@ impl GridLayout {
     }
 
     /// Iterate over logical [GridCoord]s and their associated pixel [Rect]s
-    pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
+    pub fn iter_coords_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
         let rect_top_left = Rect::from_origin_with_dimensions(self.cell_dims);
 
         self.bounds.iter_points().map(move |coord| {
@@ -57,7 +57,7 @@ fn verify_pts_and_rects() {
         Dimensions::new(Distance::fromp_f32(24.0), Distance::fromp_f32(18.0)),
     );
 
-    let bprs: Vec<(GridCoord, Rect)> = gl.iter_pts_and_rects().collect();
+    let bprs: Vec<(GridCoord, Rect)> = gl.iter_coords_and_rects().collect();
 
     fn rect(x1: f32, y1: f32, x2: f32, y2: f32) -> Rect {
         Rect::from_diagonal(Point::new(x1, y1).vector_to((x2, y2)))

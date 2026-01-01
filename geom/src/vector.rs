@@ -39,8 +39,8 @@ impl Transformable for Vector {
 
     fn scale_by_nnf(self, s: NNF) -> Self {
         Vector {
+            start: self.start.scale_by_nnf(s),
             delta: self.delta.scale_by_nnf(s),
-            ..self
         }
     }
 

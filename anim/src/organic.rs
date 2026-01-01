@@ -1,5 +1,6 @@
 //! Utilities to make rendering look more "wild" and "organic" using [Rng]
 
+use antbox_float::NNF;
 use derive_new::new;
 use rand::Rng;
 use rand_distr::Distribution;
@@ -21,8 +22,8 @@ impl Default for OrganicScale {
     }
 }
 
-impl Distribution<f32> for OrganicScale {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> f32 {
+impl Distribution<NNF> for OrganicScale {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> NNF {
         // This is probably a known, existing, more efficiently implemented distribution:
         let mut lo = self.lo;
         let mut hi = self.hi;
@@ -32,6 +33,6 @@ impl Distribution<f32> for OrganicScale {
             hi = rng.random_range(1.0..hi);
         }
 
-        rng.random_range(lo..=hi)
+        NNF::fromp_f32(rng.random_range(lo..=hi))
     }
 }
