@@ -32,8 +32,8 @@ impl Transformable for Circle {
 
     fn scale_by_nnf(self, s: NNF) -> Self {
         Circle {
+            center: self.center.scale(s),
             radius: self.radius * s,
-            ..self
         }
     }
 
