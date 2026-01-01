@@ -87,7 +87,7 @@ impl RenderWithArg<&mut WyRand> for AntboxRender<Pheromones> {
                 home_color
             };
 
-            let spoke: Point = wyr.random::<Polar>().into();
+            let spoke: Point = wyr.random::<Polar>().scale_by_f32(1.2).into();
             let radf = decay * decay.squeeze_up(Norm::HALF) * Norm::fromp_f32(0.8);
             let rad = Distance::fromp_f32(wyr.random_range(0.2..0.3)) * radf;
 
