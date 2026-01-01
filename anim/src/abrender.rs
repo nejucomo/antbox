@@ -9,9 +9,11 @@ use antbox_grid::Grid;
 use antbox_render::{Backend, Colorable as _, RenderWithArg, Renderable};
 use derive_more::From;
 use rand::Rng as _;
+use rand_distr::Distribution as _;
 use wyrand::WyRand;
 
 use crate::colors;
+use crate::organic::OrganicScale;
 use crate::{GridLayout, WyrGrid};
 
 /// Convert into a [Renderable]
@@ -34,12 +36,18 @@ impl RenderWithArg<(GridLayout, &WyrGrid)> for AntboxRender<&Grid<Spot>> {
     ) {
         for (coords, rect) in layout.iter_coords_and_rects() {
             let mut wyr = wyrg[coords].clone();
-            let mut tl = rb
+            let mut view_layer = rb
                 .transformation_layer()
-                .translate_by_point(rect.center())
-                .scale_by_nnf(rect.inner_radius());
+                .scale_by_nnf(rect.inner_radius())
+                .translate_by_point(rect.center());
 
-            AntboxRender(self.0[coords]).render_with_arg(&mut tl, &mut wyr);
+            let orgscale = OrganicScale::default();
+            let mut org_layer = view_layer
+                .transformation_layer()
+                .rotate_by_angle(wyr.random())
+                .scale_by_nnf(orgscale.sample(&mut wyr));
+
+            AntboxRender(self.0[coords]).render_with_arg(&mut org_layer, &mut wyr);
         }
     }
 }

@@ -32,7 +32,7 @@ impl RenderWithArg<&mut WyRand> for AntboxRender<SeedPod> {
         let org = OrganicScale::default();
         let dp = DrawParams {
             org,
-            podrad: (0.9 * org.sample(wyr)).try_into().unwrap(),
+            podrad: (org.sample(wyr) * 0.9).try_into().unwrap(),
             spotrot: wyr.random(),
             seedcolor: colors::food_neighbor_count(seedpod.seeds),
         };
@@ -81,8 +81,8 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SingletonSeed {
             ..
         } = dp;
 
-        let radf: f32 = 0.47 * org.sample(wyr);
-        let distf = (org.sample(wyr) - radf).powi(2);
+        let radf: f32 = org.sample(wyr) * 0.47;
+        let distf = (f32::from(org.sample(wyr)) - radf).powi(2);
 
         for kernel in 0..2 {
             let offcenter = spotrot
@@ -124,14 +124,14 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
             org.sample(wyr) * thetasin / (1.0 + thetasin)
         };
 
-        let spokef = spotrot.with_distance(Distance::fromp_f32(org.sample(wyr) - radf));
+        let spokef = spotrot.with_distance(Distance::fromp_f32(f32::from(org.sample(wyr)) - radf));
 
         // Draw the center flower hub:
         let (hub_circ, hub_color) = {
-            let ripecenter = spokef.scale(podrad).scale_by_f32(0.1 * org.sample(wyr));
+            let ripecenter = spokef.scale(podrad).scale_by_f32(org.sample(wyr) * 0.1);
 
             let circ = Point::from(ripecenter)
-                .with_radius(Distance::fromp_f32(org.sample(wyr) - radf))
+                .with_radius(Distance::fromp_f32(f32::from(org.sample(wyr)) - radf))
                 .scale_by_f32(0.6)
                 .scale(podrad);
 
@@ -159,11 +159,11 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
         }
 
         for seed in 0..seeds {
-            let bspokef = spokef.rotate(spotrot + 2.0 * org.sample(wyr) * theta * seed as f32);
+            let bspokef = spokef.rotate(spotrot + org.sample(wyr) * theta * seed as f32 * 2.0);
 
             let seedcenter = bspokef.scale(podrad);
             let seedcirc = Point::from(seedcenter)
-                .with_radius(Distance::fromp_f32(podrad * radf * org.sample(wyr)));
+                .with_radius(Distance::fromp_f32(podrad * org.sample(wyr) * radf));
 
             rb.render(seedcirc.with_color(seedcolor));
         }
