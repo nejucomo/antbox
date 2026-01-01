@@ -23,11 +23,11 @@ impl GridLayout {
                 NonZero::new(bounds.height).unwrap(),
             );
 
-        Self {
+        dbg!(Self {
             bounds,
             view_size,
             cell_dims,
-        }
+        })
     }
 
     /// Iterate over logical [GridCoord]s and their associated pixel [Rect]s

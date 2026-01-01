@@ -56,7 +56,8 @@ impl Rect {
 
     /// The center [Point]
     pub fn center(self) -> Point {
-        self.diagonal().scale(Norm::HALF).to()
+        let d = self.diagonal();
+        d.start + d.delta.scale(Norm::HALF)
     }
 
     /// The inner circle tangent to the closest sides
