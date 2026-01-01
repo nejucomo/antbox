@@ -3,7 +3,7 @@ use antbox_float::NNF;
 use crate::{Angle, Point};
 
 /// Types which can be geometrically transformed
-pub trait Transformable: Sized + Copy {
+pub trait Transformable: Sized {
     /// Rotate by `angle`
     fn rotate<A>(self, angle: A) -> Self
     where

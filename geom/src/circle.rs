@@ -14,6 +14,14 @@ pub struct Circle {
     pub radius: Distance,
 }
 
+impl Circle {
+    /// The unit circle about the origin
+    pub const UNIT: Circle = Circle {
+        center: Point::ORIGIN,
+        radius: Distance::ONE,
+    };
+}
+
 impl Transformable for Circle {
     fn rotate_by_angle(self, a: Angle) -> Self {
         Circle {

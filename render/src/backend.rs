@@ -1,6 +1,5 @@
 use antbox_color::Color;
-use antbox_float::NNF;
-use antbox_geom::{Angle, Point, Shape};
+use antbox_geom::Shape;
 
 use crate::{Renderable, TransformationLayer};
 
@@ -12,18 +11,8 @@ pub trait Backend {
     }
 
     /// Wrap `&mut self` into a [TransformationLayer] which transforms all shapes
-    fn transformation_layer<A, S, P>(
-        &mut self,
-        angle: A,
-        scale: S,
-        translation: P,
-    ) -> TransformationLayer<'_, Self>
-    where
-        A: Into<Angle>,
-        S: Into<NNF>,
-        P: Into<Point>,
-    {
-        TransformationLayer::new(self, angle.into(), scale.into(), translation.into())
+    fn transformation_layer(&mut self) -> TransformationLayer<'_, Self> {
+        TransformationLayer::new(self)
     }
 
     /// Clear the screen with the given `color`

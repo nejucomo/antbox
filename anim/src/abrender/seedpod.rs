@@ -3,8 +3,9 @@ use std::f32::consts::PI;
 use antbox_color::Color;
 use antbox_float::Norm;
 use antbox_gameboard::SeedPod;
-use antbox_geom::{Angle, Distance, Point, Rect, Transformable as _};
+use antbox_geom::{Angle, Distance, Point, Transformable as _};
 use antbox_render::{Backend, Colorable as _, RenderWithArg};
+use rand::Rng as _;
 use rand_distr::Distribution as _;
 use wyrand::WyRand;
 
@@ -16,7 +17,6 @@ use crate::organic::OrganicScale;
 #[derive(Copy, Clone)]
 struct DrawParams {
     org: OrganicScale,
-    center: Point,
     podrad: Distance,
     spotrot: Angle,
     seedcolor: Color,
@@ -26,22 +26,18 @@ struct Pod(SeedPod);
 struct SingletonSeed;
 struct SeedCluster(SeedPod);
 
-impl RenderWithArg<(Rect, &mut WyRand)> for AntboxRender<SeedPod> {
-    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, (rect, wyr): (Rect, &mut WyRand)) {
+impl RenderWithArg<&mut WyRand> for AntboxRender<SeedPod> {
+    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, wyr: &mut WyRand) {
         let seedpod = self.0;
         let org = OrganicScale::default();
-        let center = rect.center();
         let dp = DrawParams {
             org,
-            center,
-            podrad: (rect.inner_radius() * 0.9 * org.sample(wyr))
-                .try_into()
-                .unwrap(),
-            spotrot: Angle::from(center.distance_from_origin() * org.sample(wyr)),
+            podrad: (0.9 * org.sample(wyr)).try_into().unwrap(),
+            spotrot: wyr.random(),
             seedcolor: colors::food_neighbor_count(seedpod.seeds),
         };
 
-        Pod(seedpod).render_with_arg(rb, (dp, wyr));
+        Pod(seedpod).render_with_arg(rb, dp);
 
         if seedpod.seeds == 1 {
             SingletonSeed.render_with_arg(rb, (dp, wyr));
@@ -51,14 +47,10 @@ impl RenderWithArg<(Rect, &mut WyRand)> for AntboxRender<SeedPod> {
     }
 }
 
-impl RenderWithArg<(DrawParams, &mut WyRand)> for Pod {
-    fn render_with_arg<B: ?Sized + Backend>(
-        self,
-        rb: &mut B,
-        (dp, _wyr): (DrawParams, &mut WyRand),
-    ) {
-        let DrawParams { center, podrad, .. } = dp;
-        let outer = center.with_radius(podrad);
+impl RenderWithArg<DrawParams> for Pod {
+    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, dp: DrawParams) {
+        let DrawParams { podrad, .. } = dp;
+        let outer = Point::ORIGIN.with_radius(podrad);
 
         let Pod(SeedPod { seeds, ripe }) = self;
 
@@ -84,7 +76,6 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SingletonSeed {
     ) {
         let DrawParams {
             org,
-            center,
             podrad,
             spotrot,
             ..
@@ -94,12 +85,13 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SingletonSeed {
         let distf = (org.sample(wyr) - radf).powi(2);
 
         for kernel in 0..2 {
-            let offcenter = center
-                + spotrot
-                    .with_distance(podrad)
-                    .scale_by_f32(distf)
-                    .scale_by_f32(0.8f32.powi(kernel + 1));
-            let circ = offcenter.with_radius(podrad).scale_by_f32(radf);
+            let offcenter = spotrot
+                .with_distance(podrad)
+                .scale_by_f32(distf)
+                .scale_by_f32(0.8f32.powi(kernel + 1));
+            let circ = Point::from(offcenter)
+                .with_radius(podrad)
+                .scale_by_f32(radf);
             let cwc = circ.scale_by_f32(0.6f32.powi(kernel));
             let color = colors::SEED.with_alpha(Norm::fromp_f32(1.0 - 0.9f32.powi(1 + kernel)));
             rb.render(cwc.with_color(color));
@@ -115,7 +107,6 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
     ) {
         let DrawParams {
             org,
-            center,
             podrad,
             spotrot,
             seedcolor,
@@ -137,9 +128,9 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
 
         // Draw the center flower hub:
         let (hub_circ, hub_color) = {
-            let ripecenter = center + spokef.scale(podrad).scale_by_f32(0.1 * org.sample(wyr));
+            let ripecenter = spokef.scale(podrad).scale_by_f32(0.1 * org.sample(wyr));
 
-            let circ = ripecenter
+            let circ = Point::from(ripecenter)
                 .with_radius(Distance::fromp_f32(org.sample(wyr) - radf))
                 .scale_by_f32(0.6)
                 .scale(podrad);
@@ -169,11 +160,10 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
 
         for seed in 0..seeds {
             let bspokef = spokef.rotate(spotrot + 2.0 * org.sample(wyr) * theta * seed as f32);
-            let bspoke = bspokef.scale(podrad);
 
-            let seedcenter = center + bspoke;
-            let seedcirc =
-                seedcenter.with_radius(Distance::fromp_f32(podrad * radf * org.sample(wyr)));
+            let seedcenter = bspokef.scale(podrad);
+            let seedcirc = Point::from(seedcenter)
+                .with_radius(Distance::fromp_f32(podrad * radf * org.sample(wyr)));
 
             rb.render(seedcirc.with_color(seedcolor));
         }
