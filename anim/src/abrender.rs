@@ -2,7 +2,7 @@ mod ant;
 mod seedpod;
 
 use antbox_color::RED;
-use antbox_float::Norm;
+use antbox_float::{Norm, PowUnsigned as _};
 use antbox_gameboard::{Pheromones, Spot};
 use antbox_geom::{Distance, Point, Polar, Transformable as _};
 use antbox_grid::Grid;
@@ -45,7 +45,8 @@ impl RenderWithArg<(GridLayout, &WyrGrid)> for AntboxRender<&Grid<Spot>> {
             let mut org_layer = view_layer
                 .transformation_layer()
                 .rotate_by_angle(wyr.random())
-                .scale_by_nnf(orgscale.sample(&mut wyr));
+                .scale_by_nnf(orgscale.sample(&mut wyr))
+                .translate(wyr.random::<Polar>().scale(Norm::HALF.pow_u32(2)));
 
             AntboxRender(self.0[coords]).render_with_arg(&mut org_layer, &mut wyr);
         }
