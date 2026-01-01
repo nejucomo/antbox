@@ -2,6 +2,7 @@ use std::cell::RefCell;
 
 use antbox_animation::{GridLayout, WyrGrid, layers, spots_into_renderable};
 use antbox_gameboard::{GenParams, Spot};
+use antbox_geom::{Dimensions, Distance};
 use antbox_grid::{Bounds, Grid};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
@@ -44,9 +45,8 @@ where
     ) -> Self {
         log::debug!("note: ignoring `--cell-prob {}`", gp.cell_prob);
         helper.request_redraw();
-        let rs = RefCell::new(RenderScheduler::new(Layer::count()));
         let grid = setup_grid(&mut rng, gp.grid_size);
-        IRHandler { rng, rs, grid }
+        IRHandler { rng, grid }
     }
 }
 
@@ -65,12 +65,10 @@ where
 
         match info {
             DrawRequest(gfx) => {
-                let winsize = helper.get_size_pixels().into_f32();
-                let layout = GridLayout::new(self.grid.bounds(), winsize);
+                let speedy2d::dimen::Vector2 { x, y } = helper.get_size_pixels().into_f32();
+                let dims = Dimensions::new(Distance::fromp_f32(x), Distance::fromp_f32(y));
+                let layout = GridLayout::new(self.grid.bounds(), dims);
                 let wyrgrid = WyrGrid::new(self.grid.bounds(), &mut self.rng);
-
-                let mut rsched = self.rs.borrow_mut();
-                let mut cycle = rsched.start_cycle();
 
                 cycle.schedule(layers::Background);
                 cycle.schedule(spots_into_renderable(&self.grid, layout, &wyrgrid));

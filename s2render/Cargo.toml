@@ -6,3 +6,8 @@ license.workspace = true
 homepage.workspace = true
 
 [dependencies]
+antbox-color.workspace = true
+antbox-geom.workspace = true
+antbox-render.workspace = true
+derive_more.workspace = true
+speedy2d.workspace = true

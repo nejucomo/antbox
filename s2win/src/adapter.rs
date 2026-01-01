@@ -1,3 +1,4 @@
+use antbox_s2render::Speedy2Backend;
 use moveslot::MoveSlot;
 use movestate::mutable::Update as _;
 use speedy2d::Graphics2D;
@@ -15,6 +16,7 @@ use crate::event::Input::{
 use crate::event::MouseInput::{Button, Grabbed, Move, WheelScroll};
 use crate::event::{Info, WinEvent};
 use crate::inner::AdapterInner;
+use crate::into_ab::IntoAntbox as _;
 
 pub(crate) struct HandlerAdapter<H, U>(MoveSlot<AdapterInner<H, U>>)
 where
@@ -55,7 +57,7 @@ where
     }
 
     fn on_resize(&mut self, helper: &mut WindowHelper<U>, size_pixels: UVec2) {
-        self.update_event(helper, Resize(size_pixels));
+        self.update_event(helper, Resize(size_pixels.into_antbox()));
     }
 
     fn on_fullscreen_status_changed(&mut self, helper: &mut WindowHelper<U>, fullscreen: bool) {
@@ -67,7 +69,7 @@ where
     }
 
     fn on_draw(&mut self, helper: &mut WindowHelper<U>, graphics: &mut Graphics2D) {
-        self.update_event(helper, graphics);
+        self.update_event(helper, Speedy2Backend::from(graphics));
     }
 
     fn on_mouse_grab_status_changed(&mut self, helper: &mut WindowHelper<U>, grabbed: bool) {
@@ -75,7 +77,7 @@ where
     }
 
     fn on_mouse_move(&mut self, helper: &mut WindowHelper<U>, position: Vec2) {
-        self.update_event(helper, Mouse(Move(position)));
+        self.update_event(helper, Mouse(Move(position.into_antbox())));
     }
 
     fn on_mouse_button_down(&mut self, helper: &mut WindowHelper<U>, button: MouseButton) {

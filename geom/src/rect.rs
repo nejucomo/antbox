@@ -34,6 +34,16 @@ impl Rect {
         })
     }
 
+    /// The top-left [Point]
+    pub fn top_left(self) -> Point {
+        self.0.start
+    }
+
+    /// The bottom-right [Point]
+    pub fn bottom_right(self) -> Point {
+        self.0.to()
+    }
+
     /// The top-left to borrom-right diagonal
     pub fn diagonal(self) -> Vector {
         self.0

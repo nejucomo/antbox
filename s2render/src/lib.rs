@@ -1,14 +1,7 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! An [antbox_render::Backend] impl for [speedy2d]
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod into_s2;
+mod s2backend;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::s2backend::Speedy2Backend;

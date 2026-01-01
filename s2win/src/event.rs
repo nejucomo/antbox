@@ -2,10 +2,10 @@
 
 use std::fmt::Debug;
 
+use antbox_geom::{Dimensions, Point};
+use antbox_s2render::Speedy2Backend;
 use derive_debug::Dbg;
 use derive_more::{From, IsVariant};
-use speedy2d::Graphics2D;
-use speedy2d::dimen::{UVec2, Vec2};
 use speedy2d::window::{
     KeyScancode, ModifiersState, MouseButton, MouseScrollDistance, VirtualKeyCode, WindowHelper,
 };
@@ -26,7 +26,7 @@ pub enum Info<'a, U> {
     #[from(skip)]
     User(#[dbg(placeholder = "...")] U),
     /// A request to draw the window from the framework
-    DrawRequest(#[dbg(placeholder = "...")] &'a mut Graphics2D),
+    DrawRequest(#[dbg(placeholder = "...")] Speedy2Backend<'a>),
     /// Input event information
     Input(Input),
 }
@@ -35,7 +35,7 @@ pub enum Info<'a, U> {
 #[derive(Debug)]
 pub enum Input {
     /// The window was resized
-    Resize(UVec2),
+    Resize(Dimensions),
     /// The window's fullscreen status changed
     FullscreenStatusChanged(bool),
     /// The window's scale factor changed
@@ -54,7 +54,7 @@ pub enum MouseInput {
     /// The mouse cursor was (un-)grabbed
     Grabbed(bool),
     /// The mouse moved
-    Move(Vec2),
+    Move(Point),
     /// A mouse button changed position
     Button(MouseButton, ButtonPosition),
     /// A mouse scroll wheel changed position

@@ -226,11 +226,20 @@ dependencies = [
 [[package]]
 name = "antbox-s2render"
 version = "0.1.0"
+dependencies = [
+ "antbox-color",
+ "antbox-geom",
+ "antbox-render",
+ "derive_more",
+ "speedy2d",
+]
 
 [[package]]
 name = "antbox-s2win"
 version = "0.1.0"
 dependencies = [
+ "antbox-geom",
+ "antbox-s2render",
  "derive-debug",
  "derive-new",
  "derive_more",
