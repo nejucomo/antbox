@@ -1,10 +1,8 @@
 use std::cell::RefCell;
 
-use antbox_animation::layers::Layer;
 use antbox_animation::{GridLayout, WyrGrid, layers, spots_into_renderable};
 use antbox_gameboard::{GenParams, Spot};
 use antbox_grid::{Bounds, Grid};
-use antbox_render::{RenderScheduler, RenderWithArg as _};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{WindowEventHandler, WindowExt as _};
 use derive_debug::Dbg;
@@ -30,7 +28,6 @@ where
 {
     #[dbg(placeholder = "...")]
     rng: R,
-    rs: RefCell<RenderScheduler>,
     grid: Grid<Spot>,
 }
 

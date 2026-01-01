@@ -43,11 +43,14 @@ where
 }
 
 impl RenderWithArg<Dimensions> for &AnimationState {
-    fn render_with_arg<B: Backend>(self, rb: &mut B, view_size: Dimensions) {
+    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, view_size: Dimensions) {
         let layout = GridLayout::new(self.antbox.bounds(), view_size);
 
-        rb.render_to(layers::Background);
-        rb.render_to(spots_into_renderable(&self.antbox, layout, &self.wyrgrid));
-        rb.render_with_arg(layers::WireFrame, layout);
+        (
+            layers::Background,
+            spots_into_renderable(&self.antbox, layout, &self.wyrgrid),
+            layers::WireFrame.with_render_arg(layout),
+        )
+            .render_to(rb);
     }
 }

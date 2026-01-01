@@ -30,7 +30,7 @@ impl GridLayout {
         }
     }
 
-    /// Iterate over logical [BoundPoint]s and their associated pixel [Rect]s
+    /// Iterate over logical [GridCoord]s and their associated pixel [Rect]s
     pub fn iter_pts_and_rects(&self) -> impl Iterator<Item = (GridCoord, Rect)> {
         let rect_top_left = Rect::from_origin_with_dimensions(self.cell_dims);
 
@@ -66,9 +66,12 @@ fn verify_pts_and_rects() {
     assert_eq!(
         bprs,
         &[
-            (bounds.bind((0, 0)).unwrap(), rect(0., 0., 12., 9.)),
-            (bounds.bind((1, 0)).unwrap(), rect(8., 0., 24., 9.)),
+            (bounds.bind((0, 0)).unwrap(), rect(0., 0., 8., 9.)),
+            (bounds.bind((1, 0)).unwrap(), rect(8., 0., 16., 9.)),
             (bounds.bind((2, 0)).unwrap(), rect(16., 0., 24., 9.)),
+            (bounds.bind((0, 1)).unwrap(), rect(0., 9., 8., 18.)),
+            (bounds.bind((1, 1)).unwrap(), rect(8., 9., 16., 18.)),
+            (bounds.bind((2, 1)).unwrap(), rect(16., 9., 24., 18.)),
         ]
     );
 }

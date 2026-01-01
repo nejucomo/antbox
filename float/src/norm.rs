@@ -27,6 +27,12 @@ impl Norm {
         }
     }
 
+    /// Construct a [Norm] from a ratio
+    pub const fn fromp_ratio(num: usize, denom: usize) -> Self {
+        assert!(num <= denom);
+        Self::fromp_f32(num as f32 / denom as f32)
+    }
+
     /// Try to construct from a raw [f32]
     pub const fn try_from_f32(f: f32) -> Result<Self, BoundedFloatError> {
         if 0.0 <= f && f <= 1.0 {
@@ -49,6 +55,11 @@ impl Norm {
     /// Convert to a norm float approximating `u /` [`u8::MAX`]
     pub const fn interpolate(self, other: Self, proportion: Self) -> Self {
         Self((other.0 - self.0) * proportion.0 + self.0)
+    }
+
+    /// Scale to [floor, 1]
+    pub const fn squeeze_up(self, floor: Self) -> Self {
+        Self(floor.0 + self.0 * floor.complement().0)
     }
 }
 

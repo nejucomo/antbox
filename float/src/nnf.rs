@@ -10,6 +10,11 @@ use crate::{BoundedFloatError, Norm, PowUnsigned};
 pub struct NNF(f32);
 
 impl NNF {
+    #[allow(missing_docs)]
+    pub const ZERO: NNF = NNF(0f32);
+    #[allow(missing_docs)]
+    pub const ONE: NNF = NNF(1f32);
+
     /// Wrap `f`, panicking if `f` is out-of-range
     pub const fn fromp_f32(f: f32) -> Self {
         // Self::try_from_f32(f).unwrap()

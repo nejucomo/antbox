@@ -1,6 +1,6 @@
-use antbox_geom::{Dimensions, Point};
+use antbox_geom::{Dimensions, Distance, Point};
 use antbox_grid::Bounds;
-use antbox_render::{Backend, RenderWithArg};
+use antbox_render::{Backend, Colorable as _, RenderWithArg};
 
 use crate::{GridLayout, colors};
 
@@ -9,7 +9,7 @@ use crate::{GridLayout, colors};
 pub struct WireFrame;
 
 impl RenderWithArg<GridLayout> for WireFrame {
-    fn render_with_arg<B: Backend>(self, rb: &mut B, layout: GridLayout) {
+    fn render_with_arg<B: ?Sized + Backend>(self, rb: &mut B, layout: GridLayout) {
         let GridLayout {
             bounds:
                 Bounds {
@@ -28,18 +28,25 @@ impl RenderWithArg<GridLayout> for WireFrame {
                 },
         } = layout;
 
+        let view_width = f32::from(view_width);
+        let view_height = f32::from(view_height);
+
         for col in 0..columns {
-            let x = cell_width * col;
+            let x = f32::from(cell_width * col);
             rb.render(
-                Point::new(x, 0.0).vector_to((x, view_height)),
-                colors::WIRE_FRAME,
+                Point::new(x, 0.0)
+                    .vector_to((x, view_height))
+                    .with_width(Distance::ONE)
+                    .with_color(colors::WIRE_FRAME),
             );
         }
         for row in 0..rows {
-            let y = cell_height * row;
+            let y = f32::from(cell_height * row);
             rb.render(
-                Point::new(0.0, y).vector_to((view_width, y)),
-                colors::WIRE_FRAME,
+                Point::new(0.0, y)
+                    .vector_to((view_width, y))
+                    .with_width(Distance::ONE)
+                    .with_color(colors::WIRE_FRAME),
             );
         }
     }

@@ -4,7 +4,9 @@
 mod backend;
 mod rarg;
 mod renderable;
+mod sac;
 
 pub use self::backend::Backend;
 pub use self::rarg::RenderWithArg;
 pub use self::renderable::Renderable;
+pub use self::sac::{Colorable, ShapeAndColor};

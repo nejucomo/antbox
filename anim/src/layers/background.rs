@@ -7,7 +7,7 @@ use crate::colors;
 pub struct Background;
 
 impl Renderable for Background {
-    fn render_to<B: Backend>(self, rb: &mut B) {
+    fn render_to<B: ?Sized + Backend>(self, rb: &mut B) {
         rb.clear_screen(colors::DIRT);
     }
 }
