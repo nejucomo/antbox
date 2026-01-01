@@ -126,7 +126,7 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
         assert!(seeds <= 8);
 
         // The angle per seed spoke
-        let theta = PI / seeds as f32;
+        let theta = if seeds == 0 { 0.0 } else { PI / seeds as f32 };
 
         let radf = {
             let thetasin = theta.sin();
@@ -163,7 +163,9 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
             (circ, clr)
         };
 
-        rb.render(hub_circ.with_color(hub_color));
+        if seeds > 1 {
+            rb.render(hub_circ.with_color(hub_color));
+        }
 
         for seed in 0..seeds {
             let bspokef = spokef.rotate(spotrot + 2.0 * org.sample(wyr) * theta * seed as f32);
@@ -176,10 +178,8 @@ impl RenderWithArg<(DrawParams, &mut WyRand)> for SeedCluster {
             rb.render(seedcirc.with_color(seedcolor));
         }
 
-        rb.render(
-            hub_circ
-                .scale_by_f32(0.7)
-                .with_color(hub_color.with_alpha(Norm::fromp_f32(0.7))),
-        );
+        rb.render(hub_circ.scale_by_f32(0.7).with_color(
+            hub_color.with_alpha(Norm::fromp_f32(if seeds == 0 { 0.05 } else { 0.7 })),
+        ));
     }
 }
