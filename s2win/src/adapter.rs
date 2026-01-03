@@ -1,7 +1,7 @@
 use antbox_render::RenderWithArg as _;
 use antbox_s2render::Speedy2Backend;
 use moveslot::MoveSlot;
-use movestate::mutable::Update as _;
+use mstate::{Responder as _, Update as _};
 use speedy2d::Graphics2D;
 use speedy2d::dimen::{UVec2, Vec2};
 use speedy2d::window::{
@@ -38,7 +38,7 @@ where
     {
         use Control::*;
 
-        match self.0.update(info.into()) {
+        match self.0.handle(info.into()) {
             Idle => {}
             RequestRedraw => helper.request_redraw(),
         }

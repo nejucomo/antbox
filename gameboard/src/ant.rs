@@ -1,7 +1,7 @@
 use antbox_grid::{DirSet, GridCoord};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
-use movestate::TakeIntoNext;
+use mstate::MStateIn;
 use rand::distr::Distribution;
 
 use crate::interesting::Interesting;
@@ -99,13 +99,13 @@ impl AntMode {
     }
 }
 
-impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for Ant
+impl<'a, R> MStateIn<SpotUpdate<'a, R>> for Ant
 where
     R: rand::Rng,
 {
     type Next = (Either<Self, Pheromones>, Option<GridCoord>);
 
-    fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn into_with(self, su: SpotUpdate<'a, R>) -> Self::Next {
         let dirs = self.mode.sense(su.field, su.pt);
         let dir = dirs.sample(su.rng).unwrap();
         let dst = su.pt + dir;

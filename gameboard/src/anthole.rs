@@ -1,5 +1,5 @@
 use antbox_grid::{Direction, GridCoord};
-use movestate::TakeIntoNext;
+use mstate::MStateIn;
 use rand::distr::Distribution as _;
 
 use crate::consts::{
@@ -28,13 +28,13 @@ impl Default for AntHole {
     }
 }
 
-impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for AntHole
+impl<'a, R> MStateIn<SpotUpdate<'a, R>> for AntHole
 where
     R: rand::Rng,
 {
     type Next = (AntHole, Option<GridCoord>);
 
-    fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn into_with(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use crate::AntMode::{Exploring, Hungry};
 
         let freeant = WCOIN_FREE_ANT.sample(su.rng);

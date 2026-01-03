@@ -8,7 +8,7 @@ use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
 use moveslot::MoveSlot;
-use movestate::mutable::Update;
+use mstate::{Responder, Update as _};
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowStartupInfo};
 
@@ -92,11 +92,13 @@ where
     }
 }
 
-impl<R> Update<WinEvent<Tick>, Control> for WinHandler<R>
+impl<R> Responder<WinEvent<Tick>> for WinHandler<R>
 where
     R: rand::Rng,
 {
-    fn update(&mut self, event: WinEvent<Tick>) -> Control {
+    type Response = Control;
+
+    fn handle(&mut self, event: WinEvent<Tick>) -> Control {
         use Control::{Idle, RequestRedraw};
         use antbox_s2win::event::{
             ButtonPosition::Down,

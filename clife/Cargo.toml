@@ -10,4 +10,4 @@ edition.workspace = true
 antbox-grid.workspace = true
 derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into", "deref", "deref_mut" ] }
-movestate.workspace = true
+mstate.workspace = true

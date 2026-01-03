@@ -2,7 +2,7 @@ use std::ops::{Add, Sub};
 
 use derive_more::From;
 use derive_new::new;
-use movestate::TakeIntoNext;
+use mstate::MStateIn;
 
 use crate::interesting::Interesting;
 
@@ -60,13 +60,13 @@ impl From<Pheromone> for Pheromones {
     }
 }
 
-impl<R> TakeIntoNext<&mut R> for Pheromones
+impl<R> MStateIn<&mut R> for Pheromones
 where
     R: rand::Rng,
 {
     type Next = Self;
 
-    fn take_into_next(self, rng: &mut R) -> Self {
+    fn into_with(self, rng: &mut R) -> Self {
         if !self.is_empty() && rng.random_ratio(1, DECAY_DENOMINATOR) {
             Pheromones::new(self.food - 2.min(self.food), self.home - 1.min(self.home))
         } else {

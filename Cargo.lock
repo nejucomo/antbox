@@ -121,7 +121,7 @@ dependencies = [
  "log",
  "logging-options",
  "moveslot",
- "movestate",
+ "mstate",
  "rand",
  "speedy2d",
 ]
@@ -143,7 +143,7 @@ dependencies = [
  "derive_more",
  "extension-traits",
  "log",
- "movestate",
+ "mstate",
  "rand",
  "rand_distr",
  "wyrand",
@@ -156,7 +156,7 @@ dependencies = [
  "antbox-grid",
  "derive-new",
  "derive_more",
- "movestate",
+ "mstate",
 ]
 
 [[package]]
@@ -187,7 +187,7 @@ dependencies = [
  "derive_more",
  "either",
  "log",
- "movestate",
+ "mstate",
  "rand",
 ]
 
@@ -249,7 +249,7 @@ dependencies = [
  "derive_more",
  "extension-traits",
  "moveslot",
- "movestate",
+ "mstate",
  "speedy2d",
 ]
 
@@ -262,7 +262,7 @@ dependencies = [
  "either",
  "extension-traits",
  "log",
- "movestate",
+ "mstate",
 ]
 
 [[package]]
@@ -1176,7 +1176,7 @@ name = "moveslot"
 version = "0.1.0"
 
 [[package]]
-name = "movestate"
+name = "mstate"
 version = "0.1.0"
 dependencies = [
  "derive-new",

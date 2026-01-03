@@ -6,7 +6,7 @@ use antbox_render::{Backend, RenderRefWithArg, RenderWithArg as _, Renderable as
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{Control, UserEventSender, WindowEventHandler, WindowExt as _};
 use derive_debug::Dbg;
-use movestate::mutable::Update;
+use mstate::Responder;
 use speedy2d::Window;
 
 use crate::Result;
@@ -50,11 +50,13 @@ where
     }
 }
 
-impl<R> Update<WinEvent<()>, Control> for IRHandler<R>
+impl<R> Responder<WinEvent<()>> for IRHandler<R>
 where
     R: rand::Rng + 'static,
 {
-    fn update(&mut self, event: WinEvent<()>) -> Control {
+    type Response = Control;
+
+    fn handle(&mut self, event: WinEvent<()>) -> Control {
         use Control::{Idle, RequestRedraw};
         use antbox_s2win::event::{ButtonPosition::Down, KeyInput::Virtual, WinEvent::Key};
         use speedy2d::window::VirtualKeyCode::{Escape, Space};
