@@ -2,8 +2,7 @@ use antbox_gameboard::{BoardState as AntboxState, GenParams};
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderRefWithArg, RenderWithArg, Renderable};
 use antbox_tick_timer::{RateLimiter, TickTimer};
-use mstate::TakeIntoNext;
-use mstate::next::State;
+use mstate::MStateIn;
 
 use crate::{GridLayout, WyrGrid, layers, spots_into_renderable};
 
@@ -27,18 +26,17 @@ impl AnimationState {
     }
 }
 
-impl<R> TakeIntoNext<&mut R> for AnimationState
+impl<R> MStateIn<&mut R> for AnimationState
 where
     R: rand::Rng,
 {
-    type Next = State<Self>;
+    type Next = Self;
 
-    fn take_into_next(self, rng: &mut R) -> Self::Next {
+    fn into_with(self, rng: &mut R) -> Self {
         AnimationState {
-            antbox: self.antbox.take_into_next(rng),
+            antbox: self.antbox.into_with(rng),
             wyrgrid: self.wyrgrid,
         }
-        .into()
     }
 }
 

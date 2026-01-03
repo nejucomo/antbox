@@ -1,35 +1,53 @@
-#![doc = include_str!("../README.md")]
-#![deny(unsafe_code, missing_docs)]
+// #![deny(unsafe_code, missing_docs)]
+#![deny(unsafe_code)]
 
-mod into_halting_state;
-mod into_halting_stout;
-mod into_map_state;
-mod into_next;
-mod into_state;
-mod into_stout;
-mod stditer;
-mod take_into_halting_state;
-mod take_into_halting_stout;
-mod take_into_map_state;
-mod take_into_next;
-mod take_into_state;
-mod take_into_stout;
+use moveslot::{MapInPlace as _, MoveSlot};
 
-pub mod combinators;
-pub mod next;
-pub use self::into_halting_state::IntoHaltingState;
-pub use self::into_halting_stout::IntoHaltingStout;
-pub use self::into_map_state::IntoMapState;
-pub use self::into_next::IntoNext;
-pub use self::into_state::IntoState;
-pub use self::into_stout::IntoStout;
-pub use self::take_into_halting_state::TakeIntoHaltingState;
-pub use self::take_into_halting_stout::TakeIntoHaltingStout;
-pub use self::take_into_map_state::TakeIntoMapState;
-pub use self::take_into_next::TakeIntoNext;
-pub use self::take_into_state::TakeIntoState;
-pub use self::take_into_stout::TakeIntoStout;
-pub mod mutable;
+pub trait MStateIn<I>: Sized {
+    type Next;
 
-#[cfg(test)]
-mod tests;
+    fn into_with(self, input: I) -> Self::Next;
+}
+
+pub trait MState: MStateIn<()> {
+    fn into_next(self) -> Self::Next;
+}
+
+impl<B> MState for B
+where
+    B: MStateIn<()>,
+{
+    fn into_next(self) -> Self::Next {
+        self.into_with(())
+    }
+}
+
+pub trait Update<I> {
+    fn update(&mut self, notification: I);
+}
+
+impl<T, I> Update<I> for MoveSlot<T>
+where
+    T: MStateIn<I, Next = T>,
+{
+    fn update(&mut self, input: I) {
+        self.map_in_place(|t| t.into_with(input))
+    }
+}
+
+pub trait Responder<I> {
+    type Response;
+
+    fn handle(&mut self, request: I) -> Self::Response;
+}
+
+impl<T, I, O> Responder<I> for MoveSlot<T>
+where
+    T: MStateIn<I, Next = (T, O)>,
+{
+    type Response = O;
+
+    fn handle(&mut self, input: I) -> Self::Response {
+        self.mip_out(|t| t.into_with(input))
+    }
+}

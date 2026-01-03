@@ -1,6 +1,6 @@
 use antbox_grid::GridCoord;
 use derive_more::{From, IsVariant, TryInto};
-use mstate::TakeIntoNext;
+use mstate::MStateIn;
 use rand::distr::Distribution as _;
 
 use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};
@@ -64,13 +64,13 @@ impl Default for Spot {
     }
 }
 
-impl<'a, R> TakeIntoNext<SpotUpdate<'a, R>> for Spot
+impl<'a, R> MStateIn<SpotUpdate<'a, R>> for Spot
 where
     R: rand::Rng,
 {
     type Next = (Self, Option<GridCoord>);
 
-    fn take_into_next(self, su: SpotUpdate<'a, R>) -> Self::Next {
+    fn into_with(self, su: SpotUpdate<'a, R>) -> Self::Next {
         use Spot::*;
 
         match self {
@@ -81,22 +81,22 @@ where
                 {
                     (Food(SeedPod::default()), None)
                 } else {
-                    (Empty(ph.take_into_next(su.rng)), None)
+                    (Empty(ph.into_with(su.rng)), None)
                 }
             }
             Food(pod) => {
-                if let Some(pod) = pod.take_into_next(su) {
+                if let Some(pod) = pod.into_with(su) {
                     (Food(pod), None)
                 } else {
                     (Empty(Pheromones::new(PHEROMONE_SEED_POD_DIES, 0)), None)
                 }
             }
             Ant(ant) => {
-                let (antorph, optbp) = ant.take_into_next(su);
+                let (antorph, optbp) = ant.into_with(su);
                 (antorph.either(Ant, Empty), optbp)
             }
             AntHole(ah) => {
-                let (ah, optbp) = ah.take_into_next(su);
+                let (ah, optbp) = ah.into_with(su);
                 (AntHole(ah), optbp)
             }
         }

@@ -3,8 +3,7 @@ use std::fmt::Debug;
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderWithArg};
 use derive_more::Unwrap;
-use mstate::TakeIntoNext;
-use mstate::next::{State, Stout};
+use mstate::MStateIn;
 use speedy2d::window::WindowStartupInfo;
 
 use crate::event::WinEvent;
@@ -33,30 +32,29 @@ where
     }
 }
 
-impl<H, U> TakeIntoNext<(UserEventSender<U>, WindowStartupInfo)> for AdapterInner<H, U>
+impl<H, U> MStateIn<(UserEventSender<U>, WindowStartupInfo)> for AdapterInner<H, U>
 where
     U: 'static,
     H: WindowEventHandler<U>,
 {
-    type Next = State<Self>;
+    type Next = Self;
 
-    fn take_into_next(self, (ues, info): (UserEventSender<U>, WindowStartupInfo)) -> Self::Next {
+    fn into_with(self, (ues, info): (UserEventSender<U>, WindowStartupInfo)) -> Self::Next {
         let params = self.unwrap_pending();
-        let s = H::start(params, ues, info);
-        Started(s).into()
+        Started(H::start(params, ues, info))
     }
 }
 
-impl<H, U> TakeIntoNext<WinEvent<U>> for AdapterInner<H, U>
+impl<H, U> MStateIn<WinEvent<U>> for AdapterInner<H, U>
 where
     U: 'static,
     H: WindowEventHandler<U>,
 {
-    type Next = Stout<Self, Control>;
+    type Next = (Self, Control);
 
-    fn take_into_next(mut self, ev: WinEvent<U>) -> Self::Next {
-        let out = self.unwrap_started_mut().update(ev);
-        Stout::new(self, out)
+    fn into_with(mut self, ev: WinEvent<U>) -> Self::Next {
+        let out = self.unwrap_started_mut().handle(ev);
+        (self, out)
     }
 }
 
