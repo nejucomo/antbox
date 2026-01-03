@@ -1,5 +1,5 @@
 use antbox_grid::{Direction, GridCoord};
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{

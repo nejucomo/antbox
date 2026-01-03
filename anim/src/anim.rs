@@ -2,8 +2,8 @@ use antbox_gameboard::{BoardState as AntboxState, GenParams};
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderRefWithArg, RenderWithArg, Renderable};
 use antbox_tick_timer::{RateLimiter, TickTimer};
-use movestate::TakeIntoNext;
-use movestate::next::State;
+use mstate::TakeIntoNext;
+use mstate::next::State;
 
 use crate::{GridLayout, WyrGrid, layers, spots_into_renderable};
 

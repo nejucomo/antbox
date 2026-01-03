@@ -1,6 +1,6 @@
 use antbox_grid::GridCoord;
 use derive_more::{From, IsVariant, TryInto};
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 use rand::distr::Distribution as _;
 
 use crate::consts::{PHEROMONE_SEED_POD_DIES, WCOIN_POD_APPEARS, WCOIN_POD_UPDATES};

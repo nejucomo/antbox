@@ -8,7 +8,7 @@ use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
 use derive_more::IsVariant;
 use moveslot::MoveSlot;
-use movestate::mutable::Update;
+use mstate::mutable::Update;
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowStartupInfo};
 

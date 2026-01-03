@@ -20,7 +20,7 @@ derive-new.workspace = true
 derive_more = { workspace = true, features = ["deref", "deref_mut", "try_into"] }
 extension-traits.workspace = true
 log.workspace = true
-movestate.workspace = true
+mstate.workspace = true
 rand.workspace = true
 rand_distr.workspace = true
 wyrand = { workspace = true, features = ["rand_core"] }

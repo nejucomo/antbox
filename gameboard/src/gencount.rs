@@ -1,6 +1,6 @@
 use derive_more::Deref;
 use derive_new::new;
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 
 #[derive(Debug, new, Deref)]
 pub struct GenerationCounter<S> {

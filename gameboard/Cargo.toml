@@ -14,5 +14,5 @@ derive-new.workspace = true
 derive_more = { workspace = true, features = [ "from", "into", "try_unwrap", "is_variant", "try_into" ] }
 either.workspace = true
 log.workspace = true
-movestate.workspace = true
+mstate.workspace = true
 rand.workspace = true

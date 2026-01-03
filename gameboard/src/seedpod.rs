@@ -1,6 +1,6 @@
 use derive_more::From;
 use derive_new::new;
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 use rand::Rng;
 use rand::distr::Distribution as _;
 

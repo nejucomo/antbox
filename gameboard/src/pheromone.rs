@@ -2,7 +2,7 @@ use std::ops::{Add, Sub};
 
 use derive_more::From;
 use derive_new::new;
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 
 use crate::interesting::Interesting;
 

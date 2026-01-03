@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use antbox_clife::{ConwayGrid, ConwayMachine};
 use antbox_grid::{DirSet, Direction, Grid, GridCoord};
 use derive_more::{Deref, From, Into};
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 
 use crate::gencount::{Cycler, GenerationCount};
 use crate::randutil::ShuffleIntoVec as _;

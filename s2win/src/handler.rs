@@ -1,6 +1,6 @@
 use antbox_geom::Dimensions;
 use antbox_render::RenderRefWithArg;
-use movestate::mutable::Update;
+use mstate::mutable::Update;
 use speedy2d::window::WindowStartupInfo;
 
 use crate::event::WinEvent;

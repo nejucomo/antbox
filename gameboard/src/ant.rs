@@ -1,7 +1,7 @@
 use antbox_grid::{DirSet, GridCoord};
 use derive_more::{IsVariant, TryInto};
 use either::Either::{self, Left, Right};
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 use rand::distr::Distribution;
 
 use crate::interesting::Interesting;

@@ -3,7 +3,7 @@ use crate::combinators::{CaptureClone, CaptureCopy};
 
 /// `(S, I) -> N`; providers impl only this trait
 ///
-/// The base implementation trait which defines the [movestate](crate) family.
+/// The base implementation trait which defines the [mstate](crate) family.
 ///
 /// ## Implementors
 ///
@@ -12,7 +12,7 @@ use crate::combinators::{CaptureClone, CaptureCopy};
 /// ```
 /// mod provider {
 ///     // The producer code only impls `TakeIntoNext`:
-///     use movestate::TakeIntoNext;
+///     use mstate::TakeIntoNext;
 ///
 ///     /// A sequence of naturals, e.g. `1..`
 ///     #[derive(Copy, Clone, Default)]
@@ -30,7 +30,7 @@ use crate::combinators::{CaptureClone, CaptureCopy};
 ///
 /// fn consumer() {
 ///     // The consumer code only uses `IntoStout`:
-///     use movestate::IntoStout;
+///     use mstate::IntoStout;
 ///
 ///     let s0 = provider::Naturals::default();
 ///     let (s1, n1) = s0.into_self_out();

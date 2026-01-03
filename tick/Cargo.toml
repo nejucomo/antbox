@@ -12,4 +12,4 @@ derive-new.workspace = true
 either.workspace = true
 extension-traits.workspace = true
 log.workspace = true
-movestate.workspace = true
+mstate.workspace = true

@@ -6,7 +6,7 @@ use crate::TakeIntoStout;
 ///
 /// # TODO
 ///
-/// - Make `O` an associated parameter and pivot all of `movestate` to match.
+/// - Make `O` an associated parameter and pivot all of `mstate` to match.
 pub trait Update<I, O> {
     /// Mutable update with `input` to produce an `O`
     fn update(&mut self, input: I) -> O;

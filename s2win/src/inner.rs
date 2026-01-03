@@ -3,8 +3,8 @@ use std::fmt::Debug;
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderWithArg};
 use derive_more::Unwrap;
-use movestate::TakeIntoNext;
-use movestate::next::{State, Stout};
+use mstate::TakeIntoNext;
+use mstate::next::{State, Stout};
 use speedy2d::window::WindowStartupInfo;
 
 use crate::event::WinEvent;

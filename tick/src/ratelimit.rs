@@ -1,6 +1,6 @@
 use derive_more::{AsRef, Deref, DerefMut};
 use derive_new::new;
-use movestate::TakeIntoNext;
+use mstate::TakeIntoNext;
 
 use crate::TickTimer;
 

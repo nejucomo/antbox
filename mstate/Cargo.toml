@@ -1,5 +1,5 @@
 [package]
-name = "movestate"
+name = "mstate"
 description = "A trait family for state evolution with move semantics"
 version = "0.1.0"
 license.workspace = true
