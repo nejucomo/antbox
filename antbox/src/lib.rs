@@ -1,4 +1,3 @@
-pub mod inspect_render;
 pub mod options;
 pub mod window;
 
@@ -39,7 +38,7 @@ impl Command {
 
         match self {
             Run => window::run(rng, gp),
-            InspectRender => inspect_render::run(rng, gp),
+            InspectRender => todo!("fix inspect render"),
         }
     }
 }

@@ -4,7 +4,10 @@ use antbox_render::{Backend, RenderRefWithArg, RenderWithArg, Renderable};
 use antbox_tick_timer::{RateLimiter, TickTimer};
 use mstate::MStateIn;
 
-use crate::{GridLayout, WyrGrid, layers, spots_into_renderable};
+use crate::abrender::spots_into_renderable;
+use crate::gridlayout::GridLayout;
+use crate::layers;
+use crate::wyrgrid::WyrGrid;
 
 const ANTBOX_FRAME_RATE: f64 = 5.0;
 

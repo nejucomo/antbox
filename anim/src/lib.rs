@@ -10,11 +10,8 @@ mod abrender;
 mod anim;
 mod colors;
 mod gridlayout;
-pub mod layers;
+mod layers;
 mod organic;
 mod wyrgrid;
 
-pub use self::abrender::spots_into_renderable;
 pub use self::anim::AnimationState;
-pub use self::gridlayout::GridLayout;
-pub use self::wyrgrid::WyrGrid;

@@ -2,7 +2,8 @@ use antbox_geom::{Dimensions, Distance, Point};
 use antbox_grid::Bounds;
 use antbox_render::{Backend, Colorable as _, RenderWithArg};
 
-use crate::{GridLayout, colors};
+use crate::colors;
+use crate::gridlayout::GridLayout;
 
 /// The wireframe layer, showing the grid cell rectangles
 #[derive(Debug)]

@@ -13,8 +13,9 @@ use rand_distr::Distribution as _;
 use wyrand::WyRand;
 
 use crate::colors;
+use crate::gridlayout::GridLayout;
 use crate::organic::OrganicScale;
-use crate::{GridLayout, WyrGrid};
+use crate::wyrgrid::WyrGrid;
 
 /// Convert into a [Renderable]
 pub fn spots_into_renderable(
