@@ -14,13 +14,13 @@ pub fn run<R>(rng: R, gp: GenParams) -> Result<()>
 where
     R: rand::Rng + 'static,
 {
-    WinHandler::launch((rng, gp))
+    AntboxApp::launch((rng, gp))
 }
 
 #[derive(Debug)]
-struct WinHandler<R: rand::Rng>(Animator<R>);
+struct AntboxApp<R: rand::Rng>(Animator<R>);
 
-impl<R> S2App for WinHandler<R>
+impl<R> S2App for AntboxApp<R>
 where
     R: 'static + rand::Rng,
 {
@@ -30,7 +30,7 @@ where
     type Event = Tick;
 }
 
-impl<R> From<InitEvent<(R, GenParams), Tick>> for WinHandler<R>
+impl<R> From<InitEvent<(R, GenParams), Tick>> for AntboxApp<R>
 where
     R: rand::Rng,
 {
@@ -50,11 +50,11 @@ where
             }
         });
 
-        WinHandler(Animator::new(rng, gp, Running))
+        AntboxApp(Animator::new(rng, gp, Running))
     }
 }
 
-impl<R> Responder<Tick> for WinHandler<R>
+impl<R> Responder<Tick> for AntboxApp<R>
 where
     R: rand::Rng,
 {
@@ -66,7 +66,7 @@ where
     }
 }
 
-impl<R> Responder<WinEvent> for WinHandler<R>
+impl<R> Responder<WinEvent> for AntboxApp<R>
 where
     R: rand::Rng,
 {
@@ -101,7 +101,7 @@ where
     }
 }
 
-impl<R> RenderRefWithArg<Dimensions> for WinHandler<R>
+impl<R> RenderRefWithArg<Dimensions> for AntboxApp<R>
 where
     R: rand::Rng,
 {
