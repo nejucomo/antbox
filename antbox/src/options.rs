@@ -22,5 +22,5 @@ pub enum Command {
     #[default]
     Run,
 
-    InspectRender,
+    Inspector,
 }

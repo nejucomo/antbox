@@ -7,14 +7,16 @@
 #![allow(dead_code)]
 
 mod abrender;
-mod anim;
+mod animator;
+mod antbox;
 mod colors;
 mod gridlayout;
-pub mod layers;
+mod layers;
 mod organic;
+mod runmode;
+mod upev;
 mod wyrgrid;
 
-pub use self::abrender::spots_into_renderable;
-pub use self::anim::AnimationState;
-pub use self::gridlayout::GridLayout;
-pub use self::wyrgrid::WyrGrid;
+pub use self::animator::Animator;
+pub use self::runmode::RunMode;
+pub use self::upev::UpdateSource;

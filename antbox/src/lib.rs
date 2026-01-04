@@ -1,6 +1,5 @@
-pub mod inspect_render;
+pub mod app;
 pub mod options;
-pub mod window;
 
 use antbox_gameboard::GenParams;
 use clap::Parser as _;
@@ -38,8 +37,8 @@ impl Command {
         use Command::*;
 
         match self {
-            Run => window::run(rng, gp),
-            InspectRender => inspect_render::run(rng, gp),
+            Run => app::run(rng, gp),
+            Inspector => todo!("inspector"),
         }
     }
 }
