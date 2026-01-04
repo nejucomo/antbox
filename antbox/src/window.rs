@@ -1,4 +1,5 @@
-use antbox_animation::AnimationState;
+use antbox_animation::UpdateSource::{ClockTick, Step};
+use antbox_animation::{AntboxAnimation, RunMode::Running, UpdateEvent};
 use antbox_gameboard::GenParams;
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderRefWithArg, RenderWithArg as _};
@@ -6,15 +7,12 @@ use antbox_s2win::event::WinEvent;
 use antbox_s2win::{Control, UserEventSender, WindowEventHandler, WindowExt as _};
 use antbox_tick_timer::TickTimer;
 use derive_debug::Dbg;
-use derive_more::IsVariant;
 use moveslot::MoveSlot;
 use mstate::{Responder, Update as _};
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowStartupInfo};
 
 use crate::{Result, TARGET_FRAME_RATE, Tick};
-
-use self::RunMode::{Paused, Running};
 
 pub fn run<R>(rng: R, gp: GenParams) -> Result<()>
 where
@@ -35,24 +33,7 @@ where
 {
     #[dbg(placeholder = "...")]
     rng: R,
-    mode: RunMode,
-    anim: MoveSlot<AnimationState>,
-}
-
-#[derive(Copy, Clone, Debug, IsVariant)]
-enum RunMode {
-    Running,
-    Paused,
-}
-
-impl RunMode {
-    fn toggle(&mut self) {
-        *self = match self {
-            Running => Paused,
-            Paused => Running,
-        };
-        log::info!("{self:?}");
-    }
+    anim: MoveSlot<AntboxAnimation>,
 }
 
 impl<R> WinHandler<R>
@@ -82,12 +63,8 @@ where
         ues: UserEventSender<Tick>,
         _: WindowStartupInfo,
     ) -> Self {
-        let anim = MoveSlot::from(AnimationState::new(&mut rng, gp));
-        let winst = WinHandler {
-            rng,
-            mode: Running,
-            anim,
-        };
+        let anim = MoveSlot::from(AntboxAnimation::new(&mut rng, gp, Running));
+        let winst = WinHandler { rng, anim };
         winst.launch_tick_timer(ues);
         winst
     }
@@ -110,12 +87,8 @@ where
 
         match event {
             User(Tick) => {
-                if self.mode.is_running() {
-                    self.anim.update(&mut self.rng);
-                    RequestRedraw
-                } else {
-                    Idle
-                }
+                self.anim.update(UpdateEvent::new(&mut self.rng, ClockTick));
+                RequestRedraw
             }
 
             Key(Virtual(Down, Escape)) => {
@@ -124,15 +97,12 @@ where
             }
 
             Key(Virtual(Down, Space)) => {
-                self.mode.toggle();
+                self.anim.runmode.toggle();
                 Idle
             }
 
             Key(Virtual(Down, Return)) => {
-                // TODO: Apply mode to only game state, allow animations to continue.
-                if self.mode.is_paused() {
-                    self.anim.update(&mut self.rng);
-                };
+                self.anim.update(UpdateEvent::new(&mut self.rng, Step));
                 RequestRedraw
             }
 

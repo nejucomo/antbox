@@ -7,11 +7,15 @@
 #![allow(dead_code)]
 
 mod abrender;
-mod anim;
+mod antbox;
 mod colors;
 mod gridlayout;
 mod layers;
 mod organic;
+mod runmode;
+mod upev;
 mod wyrgrid;
 
-pub use self::anim::AnimationState;
+pub use self::antbox::AntboxAnimation;
+pub use self::runmode::RunMode;
+pub use self::upev::{UpdateEvent, UpdateSource};
