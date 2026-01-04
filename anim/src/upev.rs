@@ -3,7 +3,7 @@ use derive_new::new;
 
 /// An update to [AntboxAnimation](crate::AntboxAnimation)
 #[derive(Debug, new)]
-pub struct UpdateEvent<'r, R: rand::Rng> {
+pub(crate) struct UpdateEvent<'r, R: rand::Rng> {
     /// The application rng
     pub rng: &'r mut R,
     /// The source of the update

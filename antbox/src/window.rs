@@ -1,14 +1,12 @@
 use antbox_animation::UpdateSource::{ClockTick, Step};
-use antbox_animation::{AntboxAnimation, RunMode::Running, UpdateEvent};
+use antbox_animation::{Animator, RunMode::Running};
 use antbox_gameboard::GenParams;
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderRefWithArg, RenderWithArg as _};
 use antbox_s2win::event::WinEvent;
 use antbox_s2win::{Control, UserEventSender, WindowEventHandler, WindowExt as _};
 use antbox_tick_timer::TickTimer;
-use derive_debug::Dbg;
-use moveslot::MoveSlot;
-use mstate::{Responder, Update as _};
+use mstate::Responder;
 use speedy2d::Window;
 use speedy2d::window::{WindowCreationOptions, WindowStartupInfo};
 
@@ -26,21 +24,11 @@ where
     w.run_loop_simplified::<WinHandler<R>>((rng, gp))
 }
 
-#[derive(Dbg)]
-struct WinHandler<R>
-where
-    R: rand::Rng,
-{
-    #[dbg(placeholder = "...")]
-    rng: R,
-    anim: MoveSlot<AntboxAnimation>,
-}
+#[derive(Debug)]
+struct WinHandler<R: rand::Rng>(Animator<R>);
 
-impl<R> WinHandler<R>
-where
-    R: rand::Rng,
-{
-    fn launch_tick_timer(&self, ues: UserEventSender<Tick>) {
+impl<R: rand::Rng> WinHandler<R> {
+    fn new(rng: R, gp: GenParams, ues: UserEventSender<Tick>) -> Self {
         std::thread::spawn(move || {
             let mut tt = TickTimer::with_frame_rate(TARGET_FRAME_RATE);
 
@@ -49,6 +37,8 @@ where
                 ues.send_event(Tick).unwrap();
             }
         });
+
+        WinHandler(Animator::new(rng, gp, Running))
     }
 }
 
@@ -58,15 +48,8 @@ where
 {
     type Params = (R, GenParams);
 
-    fn start(
-        (mut rng, gp): (R, GenParams),
-        ues: UserEventSender<Tick>,
-        _: WindowStartupInfo,
-    ) -> Self {
-        let anim = MoveSlot::from(AntboxAnimation::new(&mut rng, gp, Running));
-        let winst = WinHandler { rng, anim };
-        winst.launch_tick_timer(ues);
-        winst
+    fn start((rng, gp): (R, GenParams), ues: UserEventSender<Tick>, _: WindowStartupInfo) -> Self {
+        Self::new(rng, gp, ues)
     }
 }
 
@@ -87,7 +70,7 @@ where
 
         match event {
             User(Tick) => {
-                self.anim.update(UpdateEvent::new(&mut self.rng, ClockTick));
+                self.0.update(ClockTick);
                 RequestRedraw
             }
 
@@ -97,12 +80,12 @@ where
             }
 
             Key(Virtual(Down, Space)) => {
-                self.anim.runmode.toggle();
+                self.0.toggle_run_mode();
                 Idle
             }
 
             Key(Virtual(Down, Return)) => {
-                self.anim.update(UpdateEvent::new(&mut self.rng, Step));
+                self.0.update(Step);
                 RequestRedraw
             }
 
@@ -124,6 +107,6 @@ where
     R: rand::Rng,
 {
     fn render_ref_with_arg<B: ?Sized + Backend>(&self, rb: &mut B, dims: Dimensions) {
-        self.anim.render_with_arg(rb, dims);
+        self.0.render_with_arg(rb, dims);
     }
 }

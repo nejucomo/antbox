@@ -6,16 +6,16 @@ use mstate::MStateIn;
 
 use crate::abrender::spots_into_renderable;
 use crate::gridlayout::GridLayout;
+use crate::upev::UpdateEvent;
 use crate::wyrgrid::WyrGrid;
-use crate::{RunMode, UpdateEvent, layers};
+use crate::{RunMode, layers};
 
 const ANTBOX_FRAME_RATE: f64 = 5.0;
 
 /// Encapsulate a [AntboxState] with extra animation-specific state
 #[derive(Debug)]
-pub struct AntboxAnimation {
-    /// The runmode of the [AntboxState]
-    pub runmode: RunMode,
+pub(crate) struct AntboxAnimation {
+    pub(crate) runmode: RunMode,
     antbox: RateLimiter<AntboxState>,
     wyrgrid: WyrGrid,
 }
