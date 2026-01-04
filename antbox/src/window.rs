@@ -54,6 +54,7 @@ impl RunMode {
         log::info!("{self:?}");
     }
 }
+
 impl<R> WinHandler<R>
 where
     R: rand::Rng,
@@ -109,8 +110,12 @@ where
 
         match event {
             User(Tick) => {
-                self.anim.update(&mut self.rng);
-                RequestRedraw
+                if self.mode.is_running() {
+                    self.anim.update(&mut self.rng);
+                    RequestRedraw
+                } else {
+                    Idle
+                }
             }
 
             Key(Virtual(Down, Escape)) => {
