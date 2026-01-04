@@ -1,4 +1,4 @@
-/// A [WindowEventHandler](crate::WindowEventHandler) responds to [WinEvent](crate::event::WinEvent)s with a [Control] to conrol windowing system
+/// An [S2App](crate::S2App) responds to app events or [WinEvent](crate::event::WinEvent)s with a [Control] to control windowing system
 #[derive(Copy, Clone, Debug)]
 pub enum Control {
     /// Cause the window system idle

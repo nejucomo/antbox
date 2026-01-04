@@ -3,12 +3,10 @@ use antbox_animation::{Animator, RunMode::Running};
 use antbox_gameboard::GenParams;
 use antbox_geom::Dimensions;
 use antbox_render::{Backend, RenderRefWithArg, RenderWithArg as _};
-use antbox_s2win::event::WinEvent;
-use antbox_s2win::{Control, UserEventSender, WindowEventHandler, WindowExt as _};
+use antbox_s2win::event::{InitEvent, WinEvent};
+use antbox_s2win::{Control, S2App};
 use antbox_tick_timer::TickTimer;
 use mstate::Responder;
-use speedy2d::Window;
-use speedy2d::window::{WindowCreationOptions, WindowStartupInfo};
 
 use crate::{Result, TARGET_FRAME_RATE, Tick};
 
@@ -16,19 +14,33 @@ pub fn run<R>(rng: R, gp: GenParams) -> Result<()>
 where
     R: rand::Rng + 'static,
 {
-    let w = Window::new_with_user_events(
-        env!("CARGO_PKG_NAME"),
-        WindowCreationOptions::new_fullscreen_borderless(),
-    )?;
-
-    w.run_loop_simplified::<WinHandler<R>>((rng, gp))
+    WinHandler::launch((rng, gp))
 }
 
 #[derive(Debug)]
 struct WinHandler<R: rand::Rng>(Animator<R>);
 
-impl<R: rand::Rng> WinHandler<R> {
-    fn new(rng: R, gp: GenParams, ues: UserEventSender<Tick>) -> Self {
+impl<R> S2App for WinHandler<R>
+where
+    R: 'static + rand::Rng,
+{
+    const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
+
+    type Params = (R, GenParams);
+    type Event = Tick;
+}
+
+impl<R> From<InitEvent<(R, GenParams), Tick>> for WinHandler<R>
+where
+    R: rand::Rng,
+{
+    fn from(init: InitEvent<(R, GenParams), Tick>) -> Self {
+        let InitEvent {
+            params: (rng, gp),
+            ues,
+            info: _,
+        } = init;
+
         std::thread::spawn(move || {
             let mut tt = TickTimer::with_frame_rate(TARGET_FRAME_RATE);
 
@@ -42,38 +54,30 @@ impl<R: rand::Rng> WinHandler<R> {
     }
 }
 
-impl<R> WindowEventHandler<Tick> for WinHandler<R>
-where
-    R: rand::Rng,
-{
-    type Params = (R, GenParams);
-
-    fn start((rng, gp): (R, GenParams), ues: UserEventSender<Tick>, _: WindowStartupInfo) -> Self {
-        Self::new(rng, gp, ues)
-    }
-}
-
-impl<R> Responder<WinEvent<Tick>> for WinHandler<R>
+impl<R> Responder<Tick> for WinHandler<R>
 where
     R: rand::Rng,
 {
     type Response = Control;
 
-    fn handle(&mut self, event: WinEvent<Tick>) -> Control {
+    fn handle(&mut self, _: Tick) -> Self::Response {
+        self.0.update(ClockTick);
+        Control::RequestRedraw
+    }
+}
+
+impl<R> Responder<WinEvent> for WinHandler<R>
+where
+    R: rand::Rng,
+{
+    type Response = Control;
+
+    fn handle(&mut self, event: WinEvent) -> Control {
         use Control::{Idle, RequestRedraw};
-        use antbox_s2win::event::{
-            ButtonPosition::Down,
-            KeyInput::Virtual,
-            WinEvent::{Key, User},
-        };
+        use antbox_s2win::event::{ButtonPosition::Down, KeyInput::Virtual, WinEvent::Key};
         use speedy2d::window::VirtualKeyCode::{Escape, Return, Space};
 
         match event {
-            User(Tick) => {
-                self.0.update(ClockTick);
-                RequestRedraw
-            }
-
             Key(Virtual(Down, Escape)) => {
                 log::info!("bye!");
                 std::process::exit(0);
@@ -89,11 +93,6 @@ where
                 RequestRedraw
             }
 
-            // Resize(vector2) => todo!(),
-            // FullscreenStatusChanged(_) => todo!(),
-            // ScaleFactorChanged(_) => todo!(),
-            // Mouse(mouse_event) => todo!(),
-            // Unicode(_) => todo!(),
             _ => {
                 // Ignored
                 Idle

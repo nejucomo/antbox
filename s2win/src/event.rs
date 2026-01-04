@@ -7,14 +7,27 @@ use derive_debug::Dbg;
 use derive_more::{From, IsVariant};
 use speedy2d::window::{
     KeyScancode, ModifiersState, MouseButton, MouseScrollDistance, VirtualKeyCode,
+    WindowStartupInfo,
 };
+
+use crate::UserEventSender;
+
+/// The initialization Event is a one time startup event which initializes the application
+pub struct InitEvent<P, V>
+where
+    V: 'static,
+{
+    /// The initialization parameters
+    pub params: P,
+    /// A thread-safe app event sender
+    pub ues: UserEventSender<V>,
+    /// Information about the windowing system
+    pub info: WindowStartupInfo,
+}
 
 /// An event from the windowing system
 #[derive(Dbg, From)]
-pub enum WinEvent<U> {
-    /// An application-specified user event
-    #[from(skip)]
-    User(#[dbg(placeholder = "...")] U),
+pub enum WinEvent {
     /// The window was resized
     Resize(Dimensions),
     /// The window's fullscreen status changed
